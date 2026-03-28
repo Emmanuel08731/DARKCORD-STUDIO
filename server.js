@@ -1,8 +1,3 @@
-/**
- * ECNHACA - SERVER CORE v2.0
- * Optimizado para despliegues en Render con PostgreSQL
- */
-
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
@@ -13,120 +8,106 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 10000;
 
-// --- CONFIGURACIÓN DE SEGURIDAD ---
+// --- CONFIGURACIÓN DE BASE DE DATOS ---
+// El bloque SSL es vital para que Render no rechace la conexión
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+// Verificar conexión e inicializar tabla
+const iniciarDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id SERIAL PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log("✅ [DB] Tabla de usuarios lista y conectada.");
+    } catch (err) {
+        console.error("❌ [DB] Error al conectar:", err.message);
+    }
+};
+iniciarDB();
+
+// --- MIDDLEWARES ---
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- CONEXIÓN A BASE DE DATOS ---
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // Requerido para Render
-});
+// --- RUTAS DE AUTENTICACIÓN ---
 
-// Verificación de salud de la DB
-const checkDatabase = async () => {
-    try {
-        const client = await pool.connect();
-        console.log("--- 📦 DATABASE CONNECTED ---");
-        
-        // Creación de esquema profesional
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(100) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                avatar_url TEXT DEFAULT 'https://i.pravatar.cc/150',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_login TIMESTAMP
-            );
-        `);
-        client.release();
-    } catch (err) {
-        console.error("--- ❌ DATABASE ERROR ---", err.message);
-    }
-};
-checkDatabase();
-
-// --- RUTAS DE API ---
-
-// 1. REGISTRO (Normalizado)
+// 1. REGISTRO
 app.post('/auth/register', async (req, res) => {
-    let { nombre, email, password } = req.body;
+    const { nombre, email, password } = req.body;
     
-    // Validación básica de entrada
     if (!nombre || !email || !password) {
-        return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        return res.status(400).json({ error: "Faltan datos obligatorios" });
     }
 
     try {
-        const emailNormal = email.toLowerCase().trim();
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const emailLimpio = email.toLowerCase().trim();
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const result = await pool.query(
-            'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre',
-            [nombre.trim(), emailNormal, hashedPassword]
+        await pool.query(
+            'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3)',
+            [nombre.trim(), emailLimpio, hashedPassword]
         );
 
-        console.log(`🆕 Nuevo usuario registrado: ${emailNormal}`);
-        res.status(201).json({ 
-            message: "¡Bienvenido a la familia Ecnhaca!",
-            user: result.rows[0]
-        });
+        console.log(`👤 Nuevo usuario: ${emailLimpio}`);
+        res.status(201).json({ message: "¡Cuenta creada con éxito!" });
     } catch (err) {
         if (err.code === '23505') {
-            return res.status(409).json({ error: "Este correo ya tiene una cuenta activa" });
+            return res.status(400).json({ error: "Este correo ya está registrado." });
         }
-        res.status(500).json({ error: "Error interno al procesar el registro" });
+        console.error("Error en registro:", err);
+        res.status(500).json({ error: "Error interno en el servidor." });
     }
 });
 
-// 2. LOGIN (Resiliente)
+// 2. LOGIN
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const emailNormal = email.toLowerCase().trim();
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [emailNormal]);
+        const emailLimpio = email.toLowerCase().trim();
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [emailLimpio]);
 
         if (result.rows.length === 0) {
-            console.log(`⚠️ Intento fallido (No encontrado): ${emailNormal}`);
-            return res.status(404).json({ error: "No encontramos ninguna cuenta con ese correo" });
+            return res.status(404).json({ error: "El usuario no existe." });
         }
 
-        const user = result.rows[0];
-        const isMatch = await bcrypt.compare(password, user.password);
+        const usuario = result.rows[0];
+        const esValida = await bcrypt.compare(password, usuario.password);
 
-        if (!isMatch) {
-            return res.status(401).json({ error: "La contraseña es incorrecta" });
+        if (!esValida) {
+            return res.status(401).json({ error: "Contraseña incorrecta." });
         }
 
-        // Actualizar último login
-        await pool.query('UPDATE usuarios SET last_login = NOW() WHERE id = $1', [user.id]);
-
+        console.log(`🔓 Login exitoso: ${emailLimpio}`);
         res.json({ 
-            message: "Acceso concedido", 
-            nombre: user.nombre,
-            email: user.email
+            message: "¡Bienvenido!", 
+            nombre: usuario.nombre 
         });
+
     } catch (err) {
-        res.status(500).json({ error: "Error en el servidor de autenticación" });
+        console.error("Error en login:", err);
+        res.status(500).json({ error: "Error en el servidor de autenticación." });
     }
 });
 
-// --- MANEJO DE FRONTEND ---
+// --- SERVIR EL FRONTEND ---
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// --- INICIO ---
+// --- LANZAMIENTO ---
 app.listen(port, () => {
-    console.log(`
-    ====================================
-    🚀 ECNHACA CLOUD SERVER RUNNING
-    🌍 Port: ${port}
-    🛡️ Mode: Production
-    ====================================
-    `);
+    console.log(`🚀 Servidor de Ecnhaca encendido en el puerto ${port}`);
 });
