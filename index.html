@@ -3,309 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARKCORD STUDIO | ACCOUNTS & STEAM</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700;800&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
+    <title>EMMANUEL STORE | OFICIAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #000000;
-            --surface: #0a0a0a;
-            --text: #ffffff;
-            --text-dim: #a1a1a6;
-            --danger: #ff3b30;
-            --border: rgba(255, 255, 255, 0.1);
-            --radius: 20px;
+            --accent: #0071e3;
+            --bg: #ffffff;
+            --surface: #f5f5f7;
+            --text: #1d1d1f;
+            --border: rgba(0,0,0,0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        /* Notificaciones */
-        #notification-center { position: fixed; top: 110px; right: 30px; z-index: 100000; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
-        .toast { min-width: 320px; padding: 20px; border-radius: 15px; background: #fff; color: #000; font-weight: 800; box-shadow: 0 20px 40px rgba(0,0,0,0.5); animation: toastIn 0.5s ease; pointer-events: auto; }
-        .toast-error { background: var(--danger); color: #fff; }
+        /* Navegación */
+        nav {
+            position: fixed; top: 0; width: 100%; height: 80px;
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; z-index: 1000; border-bottom: 1px solid var(--border);
+        }
 
-        @keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .logo { font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 5px; font-weight: 700; }
 
-        /* Nav */
-        nav { position: fixed; top: 0; width: 100%; height: 90px; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); display: flex; justify-content: space-between; align-items: center; padding: 0 8%; z-index: 1000; border-bottom: 1px solid var(--border); }
-        .logo { font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 8px; font-weight: 800; }
-        .logo span { color: #555; }
+        /* Sección de Usuario / Perfil */
+        .user-section { position: relative; }
+        .user-pill {
+            background: var(--surface); padding: 10px 22px; border-radius: 50px;
+            cursor: pointer; font-weight: 800; display: flex; align-items: center; gap: 10px;
+            border: 1px solid var(--border); transition: 0.3s;
+        }
+        .user-pill:hover { background: #e8e8ed; }
 
-        .nav-btns { display: flex; gap: 15px; align-items: center; }
-        .btn-nav { padding: 12px 25px; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.3s; }
-        .btn-login { background: transparent; color: #fff; border: 1px solid var(--border); }
-        .btn-cart { background: #fff; color: #000; position: relative; }
+        .dropdown {
+            position: absolute; top: 60px; right: 0; width: 280px;
+            background: #fff; border-radius: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            border: 1px solid var(--border); display: none; flex-direction: column; padding: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dropdown.active { display: flex; }
+        .dropdown-header { padding: 12px; border-bottom: 1px solid var(--surface); margin-bottom: 10px; }
+        .dropdown-btn {
+            padding: 12px; border-radius: 12px; text-align: left; background: none;
+            border: none; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 0.9rem;
+        }
+        .dropdown-btn:hover { background: var(--surface); }
 
         /* Modales */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: var(--surface); width: 90%; max-width: 400px; padding: 40px; border-radius: var(--radius); border: 1px solid var(--border); text-align: center; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 0.7rem; font-weight: 800; margin-bottom: 8px; color: var(--text-dim); }
-        .auth-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #000; color: #fff; font-family: inherit; }
-        .btn-auth { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #fff; color: #000; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .modal-content { 
+            background: #fff; width: 90%; max-width: 500px; padding: 40px; 
+            border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
 
-        /* Hero */
-        .hero { padding: 180px 10% 60px; text-align: center; }
-        .hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 900; letter-spacing: -3px; margin-bottom: 15px; }
-        .hero p { color: var(--text-dim); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        /* Tienda Estilo Apple */
+        .hero { padding: 160px 5% 60px; text-align: center; }
+        .hero h1 { font-size: 3.5rem; letter-spacing: -2px; font-weight: 800; margin-bottom: 10px; }
+        
+        .catalog { 
+            padding: 40px 5%; display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; 
+        }
+        .card { 
+            background: var(--surface); padding: 40px; border-radius: 28px; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent;
+        }
+        .card:hover { transform: scale(1.02); background: #fff; border-color: var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .card h3 { font-size: 1.4rem; margin-bottom: 10px; }
 
-        /* Catálogo */
-        .catalog { padding: 0 10% 100px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: var(--surface); padding: 35px; border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s; position: relative; }
-        .card:hover { border-color: #fff; transform: translateY(-5px); }
-        .card .tag { font-size: 0.65rem; color: #fff; letter-spacing: 3px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
-        .card h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        .card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; }
-        .card .price { font-weight: 900; font-size: 1.8rem; display: block; margin-bottom: 25px; }
-        .btn-add { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #fff; background: transparent; color: #fff; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-add:hover { background: #fff; color: #000; }
+        /* Admin UI */
+        .admin-tag { background: #eef6ff; color: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+        .search-input { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border); margin: 20px 0; background: var(--surface); }
+        .user-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--surface); font-size: 0.9rem; }
 
-        #checkout-view { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; padding: 120px 10% 60px; overflow-y: auto; }
+        .btn-black { background: #000; color: #fff; border: none; padding: 15px; border-radius: 14px; font-weight: 700; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div id="notification-center"></div>
-
-    <div class="modal" id="auth-modal">
-        <div class="modal-content">
-            <h2 id="auth-title" style="margin-bottom: 25px; letter-spacing: -1px; font-size: 1.8rem;">Iniciar Sesión</h2>
-            
-            <div class="input-group">
-                <label>CORREO ELECTRÓNICO</label>
-                <input type="email" id="auth-email" class="auth-input" placeholder="tu@email.com">
-            </div>
-            
-            <div class="input-group">
-                <label>CONTRASEÑA</label>
-                <input type="password" id="auth-pass" class="auth-input" placeholder="••••••••">
-            </div>
-
-            <button class="btn-auth" onclick="handleAuth()">CONTINUAR</button>
-
-            <p style="margin-top: 25px; font-size: 0.8rem; color: var(--text-dim);">
-                <span id="auth-switch-text">¿No tienes cuenta?</span> 
-                <a href="#" onclick="toggleAuthMode()" style="color: #fff; text-decoration: none; font-weight: 800;">Regístrate aquí</a>
-            </p>
-            <button class="btn-nav" onclick="closeAuth()" style="margin-top: 20px; width: 100%; opacity: 0.5;">Cerrar</button>
-        </div>
-    </div>
-
     <nav>
-        <div class="logo">DARKCORD <span>STUDIO</span></div>
-        <div class="nav-btns">
-            <button class="btn-nav btn-login" id="user-btn" onclick="openAuth()">CUENTA</button>
-            <button class="btn-nav btn-cart" onclick="openCheckout()">
-                BOLSA (<span id="cart-count">0</span>)
-            </button>
+        <div class="logo">EMMANUEL STORE</div>
+        
+        <div id="auth-section">
+            <button class="user-pill" onclick="openModal('login-modal')">INICIAR SESIÓN</button>
+        </div>
+
+        <div class="user-section" id="profile-section" style="display: none;">
+            <div class="user-pill" onclick="toggleDropdown()">
+                <div style="background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">E</div>
+                <span id="user-name-display">Cargando...</span>
+            </div>
+            <div class="dropdown" id="user-dropdown">
+                <div class="dropdown-header">
+                    <p id="user-email-display" style="font-weight: 800;"></p>
+                    <span id="admin-label" class="admin-tag" style="display: none; margin-top: 5px; display: inline-block;">ADMINISTRADOR</span>
+                </div>
+                <button class="dropdown-btn" id="admin-panel-btn" style="display: none; color: var(--accent);" onclick="openModal('admin-modal')">Panel de Control</button>
+                <button class="dropdown-btn" onclick="logout()" style="color: #ff3b30;">Cerrar Sesión</button>
+            </div>
         </div>
     </nav>
 
     <header class="hero">
-        <span style="font-weight: 800; font-size: 0.75rem; letter-spacing: 4px; color: var(--text-dim); display: block; margin-bottom: 10px;" data-aos="fade-up">STEAM & DIGITAL GOODS</span>
-        <h1 data-aos="fade-up" data-aos-delay="100">DarkCord Studio.</h1>
-        <p data-aos="fade-up" data-aos-delay="200">Adquiere cuentas de Steam con juegos AAA y perfiles listos para jugar. 100% de propiedad con accesos totales.</p>
+        <h1>Emmanuel Store.</h1>
+        <p style="color: #86868b; font-size: 1.2rem;">Calidad premium en cada cuenta digital.</p>
     </header>
 
-    <main class="catalog">
-        <div class="card" data-aos="fade-up">
-            <div class="tag">Steam Account</div>
-            <h3>Cuenta Random Tier 1</h3>
-            <p>Incluye de 1 a 5 juegos aleatorios. No se garantiza juegos AAA. Full acceso a correo.</p>
-            <span class="price">$15.00</span>
-            <button class="btn-add" onclick="addToCart('Cuenta Random Tier 1', 15)">AÑADIR A LA BOLSA</button>
-        </div>
+    <main class="catalog" id="product-grid"></main>
 
-        <div class="card" data-aos="fade-up" data-aos-delay="100">
-            <div class="tag">Premium Account</div>
-            <h3>Cuenta GTA V + RDR 2</h3>
-            <p>Acceso completo. Cero baneos, lista para juego online. Correo cambiable.</p>
-            <span class="price">$35.00</span>
-            <button class="btn-add" onclick="addToCart('Cuenta GTA V + RDR 2', 35)">AÑADIR A LA BOLSA</button>
-        </div>
-
-        <div class="card" data-aos="fade-up" data-aos-delay="200">
-            <div class="tag">VIP Account</div>
-            <h3>Cuenta CS2 Prime + Medallas</h3>
-            <p>Estatus prime habilitado, skins básicas incluidas. Nivel alto de confianza.</p>
-            <span class="price">$50.00</span>
-            <button class="btn-add" onclick="addToCart('CS2 Prime', 50)">AÑADIR A LA BOLSA</button>
-        </div>
-    </main>
-
-    <div id="checkout-view">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h2 style="font-size: 3rem; letter-spacing: -2px;">Tu Bolsa</h2>
-            <p style="color: var(--text-dim);">Revisa los artículos antes de procesar el pago.</p>
-        </div>
-        
-        <div style="max-width: 600px; margin: 0 auto; width: 100%;" id="cart-items-list">
-            </div>
-
-        <div style="max-width: 600px; margin: 40px auto 0; text-align: right; width: 100%; border-top: 1px solid var(--border); padding-top: 30px;">
-            <p style="font-size: 0.8rem; font-weight: 800; color: var(--text-dim); margin-bottom: 10px;">TOTAL ESTIMADO</p>
-            <h3 id="cart-total-price" style="font-size: 3rem; margin-bottom: 30px;">$0.00</h3>
-            
-            <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                <button class="btn-nav btn-login" onclick="closeCheckout()">SEGUIR COMPRANDO</button>
-                <button class="btn-nav btn-cart" onclick="checkoutOrder()">ENVIAR PEDIDO</button>
-            </div>
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 25px; letter-spacing: -1px;">Identifícate</h2>
+            <input type="email" id="in-email" placeholder="Correo electrónico" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid var(--border);">
+            <input type="password" id="in-pass" placeholder="Contraseña" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid var(--border);">
+            <button class="btn-black" onclick="login()">ENTRAR</button>
+            <p onclick="closeModal('login-modal')" style="text-align:center; margin-top:20px; cursor:pointer; color:#86868b; font-size:0.9rem;">Cancelar</p>
         </div>
     </div>
 
-    <footer><p>© 2026 DARKCORD STUDIO | TODOS LOS DERECHOS RESERVADOS</p></footer>
-
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ once: true });
-
-        const API_URL = 'http://localhost:3000'; // Tu backend de Node.js
-        let currentUser = JSON.parse(localStorage.getItem('user_session')) || null;
-        let userCart = [];
-        let isRegistering = false;
-
-        function notify(msg, type = "success") {
-            const container = document.getElementById('notification-center');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'error' ? 'toast-error' : ''}`;
-            toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
-        }
-
-        function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
-        function closeAuth() { document.getElementById('auth-modal').style.display = 'none'; }
-
-        function toggleAuthMode() {
-            isRegistering = !isRegistering;
-            document.getElementById('auth-title').innerText = isRegistering ? "Crear Cuenta" : "Iniciar Sesión";
-            document.getElementById('auth-switch-text').innerText = isRegistering ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?";
-        }
-
-        // COMUNICACIÓN CON NODE.JS + POSTGRESQL
-        async function handleAuth() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-
-            if (!email || !pass) return notify("Completa todos los campos", "error");
-
-            const endpoint = isRegistering ? `${API_URL}/register` : `${API_URL}/login`;
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, pass })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    currentUser = { email };
-                    localStorage.setItem('user_session', JSON.stringify(currentUser));
-                    notify(isRegistering ? "Cuenta creada en PostgreSQL con éxito" : "Sesión iniciada");
-                    updateUI();
-                    closeAuth();
-                } else {
-                    notify(data.error || "Error de autenticación", "error");
-                }
-            } catch (error) {
-                notify("No se pudo conectar con el servidor Backend de Node.", "error");
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('user_session');
-            userCart = [];
-            updateUI();
-            notify("Sesión cerrada.");
-        }
-
-        function addToCart(name, price) {
-            // Protección: Si no está autenticado, manda error
-            if (!currentUser) {
-                notify("Debes tener una cuenta en DarkCord para comprar", "error");
-                openAuth();
-                return;
-            }
-
-            userCart.push({ name, price });
-            updateUI();
-            notify(`${name} añadido a la bolsa`);
-        }
-
-        function openCheckout() {
-            // Tu regla de oro: No abrir si no hay productos
-            if (userCart.length === 0) {
-                notify("No puedes abrir el carrito porque no tienes ningún producto", "error");
-                return;
-            }
-
-            renderCart();
-            document.getElementById('checkout-view').style.display = 'flex';
-        }
-
-        function closeCheckout() { document.getElementById('checkout-view').style.display = 'none'; }
-
-        function renderCart() {
-            const list = document.getElementById('cart-items-list');
-            list.innerHTML = "";
-            let total = 0;
-
-            userCart.forEach((item, index) => {
-                total += item.price;
-                list.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #111; padding: 20px; border-radius: 12px; margin-bottom: 10px;">
-                        <div>
-                            <span style="font-weight: 800;">${item.name}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <span style="font-weight: 800;">$${item.price}</span>
-                            <button onclick="removeItem(${index})" style="background: var(--danger); color: #fff; border: none; font-size: 0.8rem; padding: 10px; border-radius: 8px; cursor: pointer;">X</button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            document.getElementById('cart-total-price').innerText = `$${total.toFixed(2)}`;
-        }
-
-        function removeItem(index) {
-            userCart.splice(index, 1);
-            if (userCart.length === 0) {
-                closeCheckout();
-                notify("Se vació tu bolsa de compras", "error");
-            } else {
-                renderCart();
-            }
-            updateUI();
-        }
-
-        function checkoutOrder() {
-            notify("Pedido registrado, revisaremos tu base de datos pronto.");
-            userCart = [];
-            updateUI();
-            closeCheckout();
-        }
-
-        function updateUI() {
-            document.getElementById('cart-count').innerText = userCart.length;
-            const userBtn = document.getElementById('user-btn');
+    <div class="modal" id="admin-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="margin-bottom: 10px;">Panel Administrativo</h2>
             
-            if (currentUser) {
-                userBtn.innerText = "CERRAR SESIÓN";
-                userBtn.onclick = logout;
+            <input type="text" class="search-input" id="user-search" placeholder="Buscar usuarios registrados..." onkeyup="filterUsers()">
+            <div id="users-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 30px;">
+                </div>
+
+            <h3 style="margin-bottom: 15px;">Gestión de Inventario</h3>
+            <input type="text" id="new-prod-name" placeholder="Nombre del producto" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border);">
+            <input type="number" id="new-prod-price" placeholder="Precio (R$)" style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid var(--border);">
+            <button class="btn-black" style="background: var(--accent);" onclick="addStock()">AÑADIR AL STOCK</button>
+            <button class="btn-black" style="background:#eee; color:#000; margin-top:10px;" onclick="closeModal('admin-modal')">CERRAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATOS INICIALES ---
+        let products = [
+            { id: 1, name: "Suscripción Premium", price: 1500 },
+            { id: 2, name: "Pack Recursos Dev", price: 800 }
+        ];
+
+        let registeredUsers = []; // Se llenará desde el Backend
+
+        // --- FUNCIONES DE SESIÓN ---
+        async function login() {
+            const email = document.getElementById('in-email').value;
+            const pass = document.getElementById('in-pass').value;
+
+            // CUENTA ADMIN POR DEFECTO
+            if(email === 'admin@emmanuel.com' && pass === 'admin123') {
+                showUser({ email: 'admin@emmanuel.com', role: 'admin' });
             } else {
-                userBtn.innerText = "CUENTA";
-                userBtn.onclick = openAuth;
+                alert("Usuario no reconocido o requiere conexión a Base de Datos");
             }
         }
 
-        updateUI();
+        function showUser(user) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'block';
+            document.getElementById('user-name-display').innerText = user.email.split('@')[0].toUpperCase();
+            document.getElementById('user-email-display').innerText = user.email;
+            
+            if(user.role === 'admin') {
+                document.getElementById('admin-label').style.display = 'inline-block';
+                document.getElementById('admin-panel-btn').style.display = 'block';
+            }
+            closeModal('login-modal');
+            loadUsersFromDB(); // Intentar cargar usuarios reales
+        }
+
+        function logout() { location.reload(); }
+
+        // --- FUNCIONES DE TIENDA ---
+        function renderStore() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="card">
+                    <h3>${p.name}</h3>
+                    <p style="font-weight: 800; font-size: 1.8rem; margin: 20px 0;">${p.price} R$</p>
+                    <button class="btn-black" onclick="alert('Pedido enviado')">COMPRAR AHORA</button>
+                </div>
+            `).join('');
+        }
+
+        // --- FUNCIONES ADMIN (CONEXIÓN BACKEND) ---
+        async function loadUsersFromDB() {
+            try {
+                // Detecta automáticamente si usa localhost o la URL de Render
+                const response = await fetch('/api/users');
+                if(response.ok) {
+                    registeredUsers = await response.json();
+                    renderUserList(registeredUsers);
+                }
+            } catch (err) {
+                console.log("Servidor Backend no detectado aún.");
+            }
+        }
+
+        function renderUserList(list) {
+            const container = document.getElementById('users-list');
+            container.innerHTML = list.map(u => `
+                <div class="user-row">
+                    <span>${u.email}</span>
+                    <span style="color: #86868b; font-size: 0.7rem;">ID: ${u.id || 'N/A'}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterUsers() {
+            const val = document.getElementById('user-search').value.toLowerCase();
+            const filtered = registeredUsers.filter(u => u.email.toLowerCase().includes(val));
+            renderUserList(filtered);
+        }
+
+        function addStock() {
+            const name = document.getElementById('new-prod-name').value;
+            const price = document.getElementById('new-prod-price').value;
+            if(!name || !price) return alert("Completa los datos");
+
+            products.push({ id: Date.now(), name, price });
+            renderStore();
+            alert("¡Stock actualizado!");
+        }
+
+        // --- UTILIDADES ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function toggleDropdown() { document.getElementById('user-dropdown').classList.toggle('active'); }
+
+        // Inicializar
+        renderStore();
     </script>
 </body>
 </html>
