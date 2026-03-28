@@ -3,243 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMMANUEL STORE | OFICIAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>DARKCORD STUDIO | EXCLUSIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #0071e3;
-            --bg: #ffffff;
-            --surface: #f5f5f7;
-            --text: #1d1d1f;
-            --border: rgba(0,0,0,0.1);
+            --accent: #5865F2; /* Color Discord */
+            --bg: #09090b;
+            --surface: #18181b;
+            --text: #ffffff;
+            --text-dim: #a1a1aa;
+            --border: rgba(255,255,255,0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        /* Navegación */
+        /* Decoración de fondo */
+        .glow {
+            position: fixed; top: -10%; left: -10%; width: 40%; height: 40%;
+            background: radial-gradient(circle, rgba(88,101,242,0.15) 0%, transparent 70%);
+            z-index: -1; pointer-events: none;
+        }
+
         nav {
-            position: fixed; top: 0; width: 100%; height: 80px;
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 5%; z-index: 1000; border-bottom: 1px solid var(--border);
         }
 
-        .logo { font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 5px; font-weight: 700; }
+        .logo { font-family: 'Syncopate'; font-size: 0.9rem; letter-spacing: 4px; color: var(--accent); }
 
-        /* Sección de Usuario / Perfil */
-        .user-section { position: relative; }
         .user-pill {
-            background: var(--surface); padding: 10px 22px; border-radius: 50px;
-            cursor: pointer; font-weight: 800; display: flex; align-items: center; gap: 10px;
+            background: var(--surface); padding: 8px 20px; border-radius: 12px;
+            cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px;
+            border: 1px solid var(--border); transition: 0.3s; color: white;
+        }
+        .user-pill:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(88,101,242,0.3); }
+
+        /* Dropdown Estilo Dark */
+        .dropdown {
+            position: absolute; top: 60px; right: 0; width: 260px;
+            background: var(--surface); border-radius: 16px; border: 1px solid var(--border);
+            display: none; flex-direction: column; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .dropdown.active { display: flex; }
+        .dropdown-btn {
+            padding: 10px; border-radius: 8px; text-align: left; background: none;
+            border: none; cursor: pointer; color: var(--text-dim); font-weight: 500;
+        }
+        .dropdown-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+
+        /* Hero Section */
+        .hero { padding: 140px 5% 40px; text-align: center; }
+        .hero h1 { font-size: 4rem; font-weight: 800; letter-spacing: -3px; margin-bottom: 15px; }
+        .hero p { color: var(--text-dim); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        /* Catálogo Vacío */
+        .catalog { 
+            padding: 40px 5%; display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; 
+        }
+        .empty-state { grid-column: 1/-1; text-align: center; padding: 100px; border: 2px dashed var(--border); border-radius: 20px; color: var(--text-dim); }
+
+        /* Cards de Producto */
+        .card { 
+            background: var(--surface); padding: 30px; border-radius: 20px; 
             border: 1px solid var(--border); transition: 0.3s;
         }
-        .user-pill:hover { background: #e8e8ed; }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card h3 { margin-bottom: 10px; font-size: 1.5rem; }
+        .price { font-size: 2rem; font-weight: 800; color: var(--accent); margin: 15px 0; }
 
-        .dropdown {
-            position: absolute; top: 60px; right: 0; width: 280px;
-            background: #fff; border-radius: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-            border: 1px solid var(--border); display: none; flex-direction: column; padding: 15px;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .dropdown.active { display: flex; }
-        .dropdown-header { padding: 12px; border-bottom: 1px solid var(--surface); margin-bottom: 10px; }
-        .dropdown-btn {
-            padding: 12px; border-radius: 12px; text-align: left; background: none;
-            border: none; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 0.9rem;
-        }
-        .dropdown-btn:hover { background: var(--surface); }
-
-        /* Modales */
+        /* Modales Dark */
         .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
         .modal-content { 
-            background: #fff; width: 90%; max-width: 500px; padding: 40px; 
-            border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            background: var(--surface); width: 90%; max-width: 400px; padding: 30px; 
+            border-radius: 24px; border: 1px solid var(--border);
         }
-
-        /* Tienda Estilo Apple */
-        .hero { padding: 160px 5% 60px; text-align: center; }
-        .hero h1 { font-size: 3.5rem; letter-spacing: -2px; font-weight: 800; margin-bottom: 10px; }
         
-        .catalog { 
-            padding: 40px 5%; display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; 
+        input {
+            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 10px;
+            background: #09090b; border: 1px solid var(--border); color: white;
         }
-        .card { 
-            background: var(--surface); padding: 40px; border-radius: 28px; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent;
+        input:focus { outline: none; border-color: var(--accent); }
+
+        .btn-accent { 
+            width: 100%; padding: 15px; border-radius: 10px; border: none;
+            background: var(--accent); color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
         }
-        .card:hover { transform: scale(1.02); background: #fff; border-color: var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-        .card h3 { font-size: 1.4rem; margin-bottom: 10px; }
+        .btn-accent:hover { opacity: 0.9; transform: scale(0.98); }
 
-        /* Admin UI */
-        .admin-tag { background: #eef6ff; color: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-        .search-input { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border); margin: 20px 0; background: var(--surface); }
-        .user-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--surface); font-size: 0.9rem; }
-
-        .btn-black { background: #000; color: #fff; border: none; padding: 15px; border-radius: 14px; font-weight: 700; cursor: pointer; width: 100%; }
+        .admin-badge { background: rgba(88,101,242,0.2); color: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; margin-top: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">EMMANUEL STORE</div>
-        
-        <div id="auth-section">
-            <button class="user-pill" onclick="openModal('login-modal')">INICIAR SESIÓN</button>
-        </div>
+    <div class="glow"></div>
 
-        <div class="user-section" id="profile-section" style="display: none;">
-            <div class="user-pill" onclick="toggleDropdown()">
-                <div style="background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">E</div>
-                <span id="user-name-display">Cargando...</span>
+    <nav>
+        <div class="logo">DARKCORD STUDIO</div>
+        <div class="user-section" id="user-area">
+            <div id="logged-out-ui">
+                <button class="user-pill" onclick="openModal('auth-modal')">CUENTA</button>
             </div>
-            <div class="dropdown" id="user-dropdown">
-                <div class="dropdown-header">
-                    <p id="user-email-display" style="font-weight: 800;"></p>
-                    <span id="admin-label" class="admin-tag" style="display: none; margin-top: 5px; display: inline-block;">ADMINISTRADOR</span>
+            <div id="logged-in-ui" style="display: none;">
+                <div class="user-pill" onclick="toggleDropdown()">
+                    <div id="avatar" style="width:24px; height:24px; background:var(--accent); border-radius:5px;"></div>
+                    <span id="user-name">Usuario</span>
                 </div>
-                <button class="dropdown-btn" id="admin-panel-btn" style="display: none; color: var(--accent);" onclick="openModal('admin-modal')">Panel de Control</button>
-                <button class="dropdown-btn" onclick="logout()" style="color: #ff3b30;">Cerrar Sesión</button>
+                <div class="dropdown" id="main-dropdown">
+                    <div style="padding: 10px; border-bottom: 1px solid var(--border); margin-bottom: 5px;">
+                        <p id="user-email" style="font-size: 0.8rem; color: var(--text-dim);"></p>
+                        <span id="is-admin" class="admin-badge" style="display:none;">STAFF ACCESS</span>
+                    </div>
+                    <button class="dropdown-btn" id="admin-link" style="display:none; color: var(--accent);" onclick="openModal('admin-panel')">Panel Admin</button>
+                    <button class="dropdown-btn" onclick="location.reload()" style="color: #ff4d4d;">Cerrar Sesión</button>
+                </div>
             </div>
         </div>
     </nav>
 
     <header class="hero">
-        <h1>Emmanuel Store.</h1>
-        <p style="color: #86868b; font-size: 1.2rem;">Calidad premium en cada cuenta digital.</p>
+        <h1>Digital Goods.</h1>
+        <p>Tu proveedor exclusivo de servicios digitales y cuentas de alto rendimiento.</p>
     </header>
 
-    <main class="catalog" id="product-grid"></main>
+    <main class="catalog" id="store">
+        <div class="empty-state">
+            <h3>No hay stock disponible</h3>
+            <p>Inicia sesión como administrador para añadir productos.</p>
+        </div>
+    </main>
 
-    <div class="modal" id="login-modal">
+    <div class="modal" id="auth-modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 25px; letter-spacing: -1px;">Identifícate</h2>
-            <input type="email" id="in-email" placeholder="Correo electrónico" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid var(--border);">
-            <input type="password" id="in-pass" placeholder="Contraseña" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid var(--border);">
-            <button class="btn-black" onclick="login()">ENTRAR</button>
-            <p onclick="closeModal('login-modal')" style="text-align:center; margin-top:20px; cursor:pointer; color:#86868b; font-size:0.9rem;">Cancelar</p>
+            <h2 id="auth-title" style="margin-bottom: 20px;">Iniciar Sesión</h2>
+            <input type="email" id="email" placeholder="Correo Electrónico">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button class="btn-accent" id="auth-btn" onclick="handleAuth()">ENTRAR</button>
+            
+            <p style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--text-dim);">
+                <span id="auth-switch-text">¿No tienes cuenta?</span> 
+                <a href="#" onclick="switchAuth()" style="color:var(--accent); text-decoration:none;" id="auth-link">Regístrate</a>
+            </p>
+            <button onclick="closeModal('auth-modal')" style="background:none; border:none; color:var(--text-dim); width:100%; margin-top:10px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
 
-    <div class="modal" id="admin-modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2 style="margin-bottom: 10px;">Panel Administrativo</h2>
-            
-            <input type="text" class="search-input" id="user-search" placeholder="Buscar usuarios registrados..." onkeyup="filterUsers()">
-            <div id="users-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 30px;">
-                </div>
-
-            <h3 style="margin-bottom: 15px;">Gestión de Inventario</h3>
-            <input type="text" id="new-prod-name" placeholder="Nombre del producto" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border);">
-            <input type="number" id="new-prod-price" placeholder="Precio (R$)" style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid var(--border);">
-            <button class="btn-black" style="background: var(--accent);" onclick="addStock()">AÑADIR AL STOCK</button>
-            <button class="btn-black" style="background:#eee; color:#000; margin-top:10px;" onclick="closeModal('admin-modal')">CERRAR</button>
+    <div class="modal" id="admin-panel">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2>Panel Administrativo</h2>
+            <div style="margin: 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+                <h4 style="margin-bottom:10px;">AÑADIR PRODUCTO</h4>
+                <input type="text" id="p-name" placeholder="Nombre (Ej: Nitro 1 Mes)">
+                <input type="number" id="p-price" placeholder="Precio (R$)">
+                <button class="btn-accent" onclick="addToStore()">PUBLICAR PRODUCTO</button>
+            </div>
+            <h4>USUARIOS REGISTRADOS</h4>
+            <div id="admin-users" style="max-height: 150px; overflow-y: auto; margin-top:10px; font-size:0.8rem; color:var(--text-dim);">
+                Cargando usuarios...
+            </div>
+            <button onclick="closeModal('admin-panel')" style="background:var(--surface); border:1px solid var(--border); color:white; width:100%; margin-top:20px; padding:10px; border-radius:10px; cursor:pointer;">SALIR</button>
         </div>
     </div>
 
     <script>
-        // --- DATOS INICIALES ---
-        let products = [
-            { id: 1, name: "Suscripción Premium", price: 1500 },
-            { id: 2, name: "Pack Recursos Dev", price: 800 }
-        ];
+        let isLoginView = true;
+        let products = [];
+        let users = [];
 
-        let registeredUsers = []; // Se llenará desde el Backend
+        function switchAuth() {
+            isLoginView = !isLoginView;
+            document.getElementById('auth-title').innerText = isLoginView ? 'Iniciar Sesión' : 'Crear Cuenta';
+            document.getElementById('auth-btn').innerText = isLoginView ? 'ENTRAR' : 'REGISTRARME';
+            document.getElementById('auth-switch-text').innerText = isLoginView ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?';
+            document.getElementById('auth-link').innerText = isLoginView ? 'Regístrate' : 'Inicia Sesión';
+        }
 
-        // --- FUNCIONES DE SESIÓN ---
-        async function login() {
-            const email = document.getElementById('in-email').value;
-            const pass = document.getElementById('in-pass').value;
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
 
-            // CUENTA ADMIN POR DEFECTO
-            if(email === 'admin@emmanuel.com' && pass === 'admin123') {
-                showUser({ email: 'admin@emmanuel.com', role: 'admin' });
+            if (isLoginView) {
+                // LOGIN ADMIN POR DEFECTO
+                if(email === 'admin@emmanuel.com' && pass === 'admin123') {
+                    loginSuccess({ email, role: 'admin' });
+                } else {
+                    alert("Para este demo usa la cuenta admin o conecta el backend.");
+                }
             } else {
-                alert("Usuario no reconocido o requiere conexión a Base de Datos");
+                // REGISTRO (Simulado o Backend)
+                alert("Cuenta creada correctamente. Ahora inicia sesión.");
+                switchAuth();
             }
         }
 
-        function showUser(user) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('profile-section').style.display = 'block';
-            document.getElementById('user-name-display').innerText = user.email.split('@')[0].toUpperCase();
-            document.getElementById('user-email-display').innerText = user.email;
+        function loginSuccess(user) {
+            document.getElementById('logged-out-ui').style.display = 'none';
+            document.getElementById('logged-in-ui').style.display = 'block';
+            document.getElementById('user-name').innerText = user.email.split('@')[0].toUpperCase();
+            document.getElementById('user-email').innerText = user.email;
             
             if(user.role === 'admin') {
-                document.getElementById('admin-label').style.display = 'inline-block';
-                document.getElementById('admin-panel-btn').style.display = 'block';
+                document.getElementById('is-admin').style.display = 'inline-block';
+                document.getElementById('admin-link').style.display = 'block';
             }
-            closeModal('login-modal');
-            loadUsersFromDB(); // Intentar cargar usuarios reales
+            closeModal('auth-modal');
         }
 
-        function logout() { location.reload(); }
+        function addToStore() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            if(!name || !price) return;
 
-        // --- FUNCIONES DE TIENDA ---
-        function renderStore() {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = products.map(p => `
+            products.push({ name, price });
+            updateStoreUI();
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            alert("Producto añadido");
+        }
+
+        function updateStoreUI() {
+            const store = document.getElementById('store');
+            if(products.length === 0) return;
+
+            store.innerHTML = products.map(p => `
                 <div class="card">
                     <h3>${p.name}</h3>
-                    <p style="font-weight: 800; font-size: 1.8rem; margin: 20px 0;">${p.price} R$</p>
-                    <button class="btn-black" onclick="alert('Pedido enviado')">COMPRAR AHORA</button>
+                    <div class="price">${p.price} R$</div>
+                    <button class="btn-accent" onclick="alert('Enlace de compra generado')">ADQUIRIR</button>
                 </div>
             `).join('');
         }
 
-        // --- FUNCIONES ADMIN (CONEXIÓN BACKEND) ---
-        async function loadUsersFromDB() {
-            try {
-                // Detecta automáticamente si usa localhost o la URL de Render
-                const response = await fetch('/api/users');
-                if(response.ok) {
-                    registeredUsers = await response.json();
-                    renderUserList(registeredUsers);
-                }
-            } catch (err) {
-                console.log("Servidor Backend no detectado aún.");
-            }
-        }
-
-        function renderUserList(list) {
-            const container = document.getElementById('users-list');
-            container.innerHTML = list.map(u => `
-                <div class="user-row">
-                    <span>${u.email}</span>
-                    <span style="color: #86868b; font-size: 0.7rem;">ID: ${u.id || 'N/A'}</span>
-                </div>
-            `).join('');
-        }
-
-        function filterUsers() {
-            const val = document.getElementById('user-search').value.toLowerCase();
-            const filtered = registeredUsers.filter(u => u.email.toLowerCase().includes(val));
-            renderUserList(filtered);
-        }
-
-        function addStock() {
-            const name = document.getElementById('new-prod-name').value;
-            const price = document.getElementById('new-prod-price').value;
-            if(!name || !price) return alert("Completa los datos");
-
-            products.push({ id: Date.now(), name, price });
-            renderStore();
-            alert("¡Stock actualizado!");
-        }
-
-        // --- UTILIDADES ---
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleDropdown() { document.getElementById('user-dropdown').classList.toggle('active'); }
-
-        // Inicializar
-        renderStore();
+        function toggleDropdown() { document.getElementById('main-dropdown').classList.toggle('active'); }
     </script>
 </body>
 </html>
