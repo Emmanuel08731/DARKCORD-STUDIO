@@ -3,303 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecnhaca | Universe of Entertainment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Ecnhaca | El Universo en tu Pantalla</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700;900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #00a8ff;
             --primary-glow: rgba(0, 168, 255, 0.4);
-            --accent: #0056b3;
+            --accent: #00d2ff;
             --bg-dark: #020617;
-            --card-bg: rgba(15, 23, 42, 0.7);
-            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(15, 23, 42, 0.75);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* --- REINICIO Y SCROLL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         body {
-            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
-            color: #f8fafc;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
-            line-height: 1.6;
+            scroll-behavior: smooth;
         }
 
-        /* --- FONDO CINEMATOGRÁFICO ANIMADO --- */
-        .hero-background {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 10% 10%, rgba(0, 74, 124, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(0, 168, 255, 0.1) 0%, transparent 40%),
-                var(--bg-dark);
-            z-index: -1;
+        /* --- SISTEMA DE FONDO ESPACIAL --- */
+        .universe {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            z-index: -2;
         }
 
-        /* Partículas de luz sutiles */
-        .light-particle {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: float-particle 15s infinite linear;
+        .stars {
+            width: 1px; height: 1px; background: transparent;
+            box-shadow: 1500px 500px #FFF, 200px 1000px #FFF, 800px 200px #FFF; /* Generado dinámicamente vía JS */
+            animation: animStar 50s linear infinite;
         }
 
-        @keyframes float-particle {
-            from { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            50% { opacity: 0.2; }
-            to { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        @keyframes animStar { from { transform: translateY(0px); } to { transform: translateY(-2000px); } }
+
+        /* --- AURORA GLOW --- */
+        .aurora {
+            position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
+            background: var(--primary);
+            filter: blur(150px); opacity: 0.15; z-index: -1;
+            animation: auroraMove 20s infinite alternate;
         }
 
-        /* --- BARRA DE CARGA SUPERIOR --- */
-        #top-loader {
-            position: fixed;
-            top: 0; left: 0; height: 3px;
-            width: 0%; background: var(--primary);
+        @keyframes auroraMove {
+            0% { transform: translate(0,0) rotate(0deg); }
+            100% { transform: translate(50vw, 30vh) rotate(180deg); }
+        }
+
+        /* --- BARRA DE CARGA --- */
+        #loader-line {
+            position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             box-shadow: 0 0 15px var(--primary);
-            transition: width 0.4s; z-index: 9999;
+            z-index: 10000; transition: width 0.3s ease;
         }
 
-        /* --- HÉROE & AUTENTICACIÓN --- */
-        .hero {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            min-height: 100vh; padding: 20px;
+        /* --- HEADER / NAV --- */
+        nav {
+            padding: 20px 5%; display: flex; justify-content: space-between;
+            align-items: center; position: absolute; width: 100%; z-index: 100;
+        }
+
+        .brand { font-size: 1.8rem; font-weight: 900; letter-spacing: 4px; color: var(--primary); }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .main-stage {
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 80px 20px;
+        }
+
+        /* --- TARJETA DE AUTENTICACIÓN --- */
+        .auth-container {
+            width: 100%; max-width: 440px;
+            perspective: 1000px;
         }
 
         .auth-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-            padding: 50px;
-            border-radius: 24px;
-            width: 100%; max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            transform: translateY(20px);
-            opacity: 0;
-            animation: slideUpFade 1s ease-out forwards;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px; padding: 50px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            transform-style: preserve-3d;
+            animation: cardIn 1.2s ease-out;
         }
 
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes cardIn {
+            from { opacity: 0; transform: rotateX(20deg) translateY(50px); }
+            to { opacity: 1; transform: rotateX(0deg) translateY(0); }
         }
 
-        .auth-card:hover { border-color: var(--primary-glow); }
-
-        .logo-text {
-            font-size: 3.5rem; font-weight: 900;
-            background: linear-gradient(to bottom, #fff 30%, var(--primary) 100%);
+        .logo-mega {
+            font-size: 4rem; font-weight: 900; text-align: center;
+            margin-bottom: 40px; letter-spacing: 12px;
+            background: linear-gradient(to bottom, #fff, var(--primary));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 8px; margin-bottom: 30px;
-            text-align: center; filter: drop-shadow(0 0 15px var(--primary-glow));
+            filter: drop-shadow(0 0 20px var(--primary-glow));
         }
 
-        .input-group { position: relative; margin-bottom: 20px; }
+        /* --- FORMULARIOS --- */
+        .input-group { position: relative; margin-bottom: 25px; }
 
         input {
-            width: 100%; padding: 16px 20px;
-            background: rgba(2, 6, 23, 0.8);
-            border: 1px solid var(--border);
-            border-radius: 12px; color: white;
-            font-size: 1rem; transition: all 0.3s;
+            width: 100%; padding: 18px 25px;
+            background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.05);
+            border-radius: 16px; color: white; font-size: 1rem;
+            transition: var(--transition);
         }
 
         input:focus {
             outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.1);
-            background: #020617;
+            background: rgba(0,0,0,0.6); transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 168, 255, 0.2);
         }
 
-        .btn-main {
-            width: 100%; padding: 16px;
+        .btn-neon {
+            width: 100%; padding: 18px;
             background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none; border-radius: 12px;
-            color: white; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; transition: 0.4s;
-            text-transform: uppercase; letter-spacing: 1px;
+            border: none; border-radius: 16px; color: #020617;
+            font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px;
+            transition: var(--transition);
+            position: relative; overflow: hidden;
         }
 
-        .btn-main:hover {
-            box-shadow: 0 0 25px var(--primary-glow);
-            transform: translateY(-2px); filter: brightness(1.1);
+        .btn-neon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px var(--primary-glow);
+            filter: brightness(1.1);
         }
+
+        .btn-neon::after {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg); transition: 0.6s;
+        }
+
+        .btn-neon:hover::after { left: 120%; }
+
+        .toggle-text {
+            text-align: center; margin-top: 30px; font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .toggle-text b { color: var(--primary); cursor: pointer; transition: 0.3s; }
+        .toggle-text b:hover { color: white; text-shadow: 0 0 10px var(--primary); }
 
         /* --- SECCIÓN MOTIVOS (GRID PREMIUM) --- */
-        .section-reasons {
-            max-width: 1200px; margin: 0 auto 100px;
-            padding: 0 20px;
-        }
-
-        .section-reasons h2 {
-            font-size: 2.5rem; margin-bottom: 40px;
-            text-align: center; font-weight: 800;
-        }
+        .reasons-header { width: 100%; max-width: 1200px; margin: 100px 0 50px; }
+        .reasons-header h2 { font-size: 2.8rem; font-weight: 800; }
 
         .reasons-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; width: 100%; max-width: 1200px;
+            margin-bottom: 100px;
         }
 
-        .reason-item {
-            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-            border: 1px solid var(--border);
-            padding: 35px; border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; overflow: hidden;
-            opacity: 0;
-            animation: slideUpFade 0.8s ease-out forwards;
+        .reason-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px; border-radius: 24px;
+            position: relative; transition: var(--transition);
+            overflow: hidden; border-bottom: 4px solid var(--primary);
         }
 
-        /* Animación escalonada */
-        .reasons-grid .reason-item:nth-child(1) { animation-delay: 0.2s; }
-        .reasons-grid .reason-item:nth-child(2) { animation-delay: 0.4s; }
-        .reasons-grid .reason-item:nth-child(3) { animation-delay: 0.6s; }
-        .reasons-grid .reason-item:nth-child(4) { animation-delay: 0.8s; }
-
-        .reason-item:hover {
-            background: rgba(255,255,255,0.08);
-            transform: scale(1.03);
+        .reason-card:hover {
+            transform: translateY(-15px) rotateX(5deg);
+            background: rgba(30, 41, 59, 0.6);
             border-color: var(--primary);
         }
 
-        .reason-item h3 { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
-        .reason-item p { color: #94a3b8; font-weight: 300; }
+        .reason-card h3 { font-size: 1.8rem; margin-bottom: 15px; }
+        .reason-card p { color: var(--text-dim); line-height: 1.7; font-size: 1.05rem; }
 
-        .icon-box {
-            margin-top: 30px; text-align: right;
-            font-size: 3rem; opacity: 0.4;
-            filter: grayscale(1) brightness(2);
+        .icon-overlay {
+            position: absolute; bottom: -10px; right: -10px;
+            font-size: 6rem; opacity: 0.05; transform: rotate(-15deg);
+            pointer-events: none; transition: 0.5s;
+        }
+
+        .reason-card:hover .icon-overlay {
+            opacity: 0.2; transform: rotate(0deg) scale(1.1);
+            color: var(--primary);
+        }
+
+        .status-pill {
+            padding: 8px 16px; border-radius: 20px; font-weight: bold;
+            display: inline-block; margin-bottom: 20px; font-size: 0.8rem;
+            opacity: 0; transition: 0.5s;
         }
 
         .hidden { display: none; }
 
-        .text-link {
-            color: var(--primary); cursor: pointer;
-            font-weight: 600; text-decoration: none;
-            font-size: 0.9rem;
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .logo-mega { font-size: 2.8rem; }
+            .auth-card { padding: 30px; }
+            .reasons-header h2 { font-size: 2rem; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div id="top-loader"></div>
-    <div class="hero-background">
-        <script>
-            for (let i = 0; i < 30; i++) {
-                let p = document.createElement('div');
-                p.className = 'light-particle';
-                p.style.width = Math.random() * 5 + 'px';
-                p.style.height = p.style.width;
-                p.style.left = Math.random() * 100 + 'vw';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                document.querySelector('.hero-background').appendChild(p);
-            }
-        </script>
-    </div>
+    <div id="loader-line"></div>
+    <div class="universe"><div class="stars" id="starfield"></div></div>
+    <div class="aurora"></div>
 
-    <main class="hero">
-        <div class="auth-card">
-            <h1 class="logo-text">ECNHACA</h1>
-            <div id="status-msg" style="text-align:center; margin-bottom:15px; min-height:24px; font-weight:700;"></div>
+    <nav>
+        <div class="brand">ECNHACA</div>
+        <div style="font-size: 0.8rem; color: var(--text-dim);">PREMIUM STREAMING v2.0</div>
+    </nav>
 
-            <div id="login-container">
-                <div class="input-group">
-                    <input type="email" id="l-email" placeholder="Correo electrónico">
+    <main class="main-stage">
+        
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="logo-mega">ECNHACA</div>
+                
+                <div id="status-box" class="status-pill"></div>
+
+                <div id="login-form">
+                    <div class="input-group">
+                        <input type="email" id="l-email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="l-pass" placeholder="Contraseña" required>
+                    </div>
+                    <button class="btn-neon" onclick="handleAuth('/auth/login', 'l')">Iniciar Sesión</button>
+                    <p class="toggle-text">¿No tienes cuenta? <b onclick="toggleForms()">Únete ahora</b></p>
                 </div>
-                <div class="input-group">
-                    <input type="password" id="l-pass" placeholder="Contraseña">
-                </div>
-                <button class="btn-main" onclick="auth('/auth/login', 'l')">Iniciar Sesión</button>
-                <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#64748b;">
-                    ¿Nuevo en Ecnhaca? <span class="text-link" onclick="toggleView()">Crea una cuenta</span>
-                </p>
-            </div>
 
-            <div id="reg-container" class="hidden">
-                <div class="input-group"><input type="text" id="r-name" placeholder="Nombre completo"></div>
-                <div class="input-group"><input type="email" id="r-email" placeholder="Correo electrónico"></div>
-                <div class="input-group"><input type="password" id="r-pass" placeholder="Contraseña"></div>
-                <button class="btn-main" onclick="auth('/auth/register', 'r')">Unirse Ahora</button>
-                <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#64748b;">
-                    ¿Ya tienes cuenta? <span class="text-link" onclick="toggleView()">Inicia sesión</span>
-                </p>
+                <div id="reg-form" class="hidden">
+                    <div class="input-group">
+                        <input type="text" id="r-name" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="r-email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="r-pass" placeholder="Contraseña" required>
+                    </div>
+                    <button class="btn-neon" onclick="handleAuth('/auth/register', 'r')">Crear Perfil</button>
+                    <p class="toggle-text">¿Ya eres miembro? <b onclick="toggleForms()">Entrar</b></p>
+                </div>
             </div>
         </div>
+
+        <div class="reasons-header">
+            <h2>Más razones para elegirnos</h2>
+        </div>
+
+        <div class="reasons-grid">
+            <div class="reason-item card reason-card">
+                <div class="icon-overlay">📺</div>
+                <h3>Disfruta en tu TV</h3>
+                <p>Compatible con Smart TV, PlayStation, Xbox, Chromecast, Apple TV y mucho más.</p>
+            </div>
+
+            <div class="reason-item card reason-card">
+                <div class="icon-overlay">📥</div>
+                <h3>Descarga y ve</h3>
+                <p>Guarda tus películas y series favoritas para verlas sin conexión, donde quieras.</p>
+            </div>
+
+            <div class="reason-item card reason-card">
+                <div class="icon-overlay">📱</div>
+                <h3>Donde quieras</h3>
+                <p>Transmite contenido ilimitado en tu teléfono, tablet, laptop y televisor.</p>
+            </div>
+
+            <div class="reason-item card reason-card">
+                <div class="icon-overlay">👶</div>
+                <h3>Perfiles Niños</h3>
+                <p>Un espacio seguro dedicado a los más pequeños, con sus personajes favoritos.</p>
+            </div>
+        </div>
+
     </main>
 
-    <section class="section-reasons">
-        <h2>Razones para elegirnos</h2>
-        <div class="reasons-grid">
-            <div class="reason-item">
-                <h3>Experiencia 4K</h3>
-                <p>Sumérgete en la máxima resolución disponible con tecnología HDR10+.</p>
-                <div class="icon-box">📺</div>
-            </div>
-            <div class="reason-item">
-                <h3>Sin Conexión</h3>
-                <p>Descarga tus películas favoritas en tu smartphone y míralas donde sea.</p>
-                <div class="icon-box">📥</div>
-            </div>
-            <div class="reason-item">
-                <h3>Multi-Perfil</h3>
-                <p>Hasta 5 perfiles personalizados para que cada miembro tenga su historial.</p>
-                <div class="icon-box">👥</div>
-            </div>
-            <div class="reason-item">
-                <h3>Control Parental</h3>
-                <p>Espacios seguros para niños con contenido filtrado por edad.</p>
-                <div class="icon-box">🛡️</div>
-            </div>
-        </div>
-    </section>
-
     <script>
-        const loader = document.getElementById('top-loader');
-        const status = document.getElementById('status-msg');
+        // --- DINÁMICA DE ESTRELLAS ---
+        const starfield = document.getElementById('starfield');
+        let stars = "";
+        for(let i=0; i<700; i++) {
+            stars += `${Math.random()*2000}px ${Math.random()*2000}px #FFF, `;
+        }
+        starfield.style.boxShadow = stars.slice(0, -2);
 
-        function toggleView() {
-            document.getElementById('login-container').classList.toggle('hidden');
-            document.getElementById('reg-container').classList.toggle('hidden');
-            status.innerText = "";
+        // --- LÓGICA DE INTERFAZ ---
+        const loader = document.getElementById('loader-line');
+        const statusBox = document.getElementById('status-box');
+
+        function toggleForms() {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('reg-form').classList.toggle('hidden');
+            statusBox.style.opacity = 0;
         }
 
-        async function auth(url, prefix) {
-            loader.style.width = "40%";
+        function showStatus(text, isError) {
+            statusBox.innerText = text;
+            statusBox.style.background = isError ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.2)";
+            statusBox.style.color = isError ? "#f87171" : "#4ade80";
+            statusBox.style.opacity = 1;
+        }
+
+        async function handleAuth(endpoint, prefix) {
+            // Animación de carga
+            loader.style.width = "30%";
+            
             const email = document.getElementById(`${prefix}-email`).value;
             const password = document.getElementById(`${prefix}-pass`).value;
             const nombre = prefix === 'r' ? document.getElementById('r-name').value : null;
 
+            if(!email || !password) {
+                showStatus("Completa todos los campos", true);
+                loader.style.width = "0%";
+                return;
+            }
+
             try {
-                const res = await fetch(url, {
+                loader.style.width = "60%";
+                const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, email, password })
                 });
-                
+
+                const data = await response.json();
                 loader.style.width = "100%";
-                const data = await res.json();
-                
-                if(res.ok) {
-                    status.style.color = "#4ade80";
-                    status.innerText = "¡Éxito! Redirigiendo...";
-                    if(url.includes('login')) {
+
+                if (response.ok) {
+                    showStatus(data.message, false);
+                    if (endpoint.includes('login')) {
+                        localStorage.setItem('user_name', data.nombre);
                         setTimeout(() => {
-                            alert("¡Bienvenido " + data.nombre + "! Ya estás dentro.");
-                        }, 1000);
+                            alert(`🚀 ¡Explosión de entretenimiento! Bienvenido ${data.nombre}`);
+                            // Aquí podrías redirigir a /dashboard
+                        }, 800);
                     } else {
-                        setTimeout(toggleView, 1500);
+                        setTimeout(toggleForms, 1500);
                     }
                 } else {
-                    status.style.color = "#f87171";
-                    status.innerText = data.error || "Error de acceso";
+                    showStatus(data.error, true);
                 }
-            } catch (e) {
-                status.innerText = "Error de red";
+            } catch (err) {
+                showStatus("Error de conexión con el satélite", true);
             } finally {
                 setTimeout(() => loader.style.width = "0%", 1000);
             }
         }
+
+        // Efecto Parallax suave en la tarjeta
+        document.addEventListener('mousemove', (e) => {
+            const card = document.querySelector('.auth-card');
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
     </script>
 </body>
 </html>
