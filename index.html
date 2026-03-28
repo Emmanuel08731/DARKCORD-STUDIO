@@ -3,159 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARKCORD STUDIO | ELITE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>Ecnhaca | Streaming Premium</title>
     <style>
-        :root { --p: #5865F2; --bg: #000000; --c: #111111; --t: #ffffff; --td: #888888; --b: rgba(255,255,255,0.05); }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
-        body { background:var(--bg); color:var(--t); overflow-x:hidden; }
-        .glow { position:fixed; top:0; left:50%; width:100%; height:400px; background:radial-gradient(circle at center, rgba(88,101,242,0.1), transparent 70%); transform:translateX(-50%); z-index:-1; }
+        :root {
+            --blue: #00a8ff;
+            --dark: #060d17;
+            --card: #101a2d;
+            --text: #ffffff;
+        }
 
-        nav { position:fixed; top:0; width:100%; height:80px; background:rgba(0,0,0,0.8); backdrop-filter:blur(20px); display:flex; justify-content:space-between; align-items:center; padding:0 8%; z-index:1000; border-bottom:1px solid var(--b); }
-        .logo { font-family:'Syncopate'; font-size:0.8rem; letter-spacing:5px; color:var(--p); font-weight:800; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-        .btn-p { background:var(--p); color:white; border:none; padding:12px 25px; border-radius:12px; font-weight:800; cursor:pointer; transition:0.3s; }
-        .btn-p:hover { transform:scale(1.05); box-shadow: 0 0 20px rgba(88,101,242,0.3); }
+        /* Animación de entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .hero { padding:180px 5% 60px; text-align:center; }
-        .hero h1 { font-size:4.5rem; letter-spacing:-4px; line-height:1; margin-bottom:15px; }
-        .hero span { color:var(--p); }
+        .animated { animation: fadeIn 0.8s ease forwards; }
 
-        .grid { padding:20px 8%; display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:25px; }
-        .card { background:var(--c); padding:40px; border-radius:30px; border:1px solid var(--b); transition:0.4s; }
-        .card:hover { border-color:var(--p); transform:translateY(-5px); }
-        .price { font-size:2.5rem; font-weight:800; color:var(--p); margin:15px 0; }
+        /* --- PANTALLA DE LOGIN --- */
+        #auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(rgba(6, 13, 23, 0.8), rgba(6, 13, 23, 0.8)), 
+                        url('https://source.unsplash.com/random/1920x1080?movie');
+            background-size: cover;
+        }
 
-        .modal { position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-c { background:#0a0a0a; width:90%; max-width:400px; padding:40px; border-radius:30px; border:1px solid var(--b); text-align:center; }
-        input { width:100%; padding:15px; margin-bottom:10px; border-radius:12px; background:#151515; border:1px solid var(--b); color:white; }
-        input:focus { border-color:var(--p); outline:none; }
+        .auth-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 15px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(0, 168, 255, 0.2);
+        }
 
-        .profile-area { position:relative; display:none; align-items:center; gap:10px; cursor:pointer; }
-        .drop { position:absolute; top:60px; right:0; width:220px; background:#111; border-radius:15px; border:1px solid var(--b); display:none; flex-direction:column; padding:10px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
-        .drop.active { display:flex; }
-        .drop-b { padding:12px; border-radius:8px; text-align:left; background:none; border:none; color:var(--td); cursor:pointer; font-weight:600; }
-        .drop-b:hover { background:var(--p); color:white; }
+        h1 { color: var(--blue); letter-spacing: 3px; margin-bottom: 5px; }
+        input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border-radius: 5px; border: none; background: #1d2a41; color: white;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%; padding: 12px; background: var(--blue);
+            color: var(--dark); border: none; border-radius: 5px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { background: #00d2ff; transform: scale(1.02); }
+
+        /* --- MENÚ PRINCIPAL (PANTALLA POST-LOGIN) --- */
+        #main-menu { display: none; padding: 20px; }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 5%; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--blue);
+        }
+
+        .profile-icon {
+            width: 45px; height: 45px; background: var(--blue);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; cursor: pointer; font-weight: bold; color: var(--dark);
+        }
+
+        /* Dropdown de cuenta */
+        #account-dropdown {
+            display: none; position: absolute; right: 5%; top: 75px;
+            background: var(--card); padding: 20px; border-radius: 10px;
+            border: 1px solid var(--blue); z-index: 100;
+        }
+
+        /* PAQUETES */
+        .packages-container {
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 50px;
+        }
+        .package-card {
+            background: var(--card); padding: 30px; border-radius: 15px;
+            width: 250px; text-align: center; border: 1px solid #1d2a41;
+            transition: 0.4s;
+        }
+        .package-card:hover { border-color: var(--blue); transform: translateY(-10px); }
+        .price { font-size: 2rem; color: var(--blue); margin: 15px 0; }
+
+        .hidden { display: none; }
+        #status-msg { margin-bottom: 15px; font-weight: bold; color: #00ff88; }
     </style>
 </head>
 <body>
 
-    <div class="glow"></div>
-    <nav>
-        <div class="logo">DARKCORD STUDIO</div>
-        <div id="nav-auth"><button class="btn-p" onclick="openM('auth-m')">ACCEDER</button></div>
-        <div class="profile-area" id="nav-user" onclick="toggleD()">
-            <span id="user-display" style="font-weight:800; font-size:0.8rem;">USUARIO</span>
-            <div style="width:35px; height:35px; background:var(--p); border-radius:10px;"></div>
-            <div class="drop" id="user-drop">
-                <button class="drop-b" id="staff-btn" style="display:none;" onclick="openM('admin-m')">STAFF PANEL</button>
-                <button class="drop-b" onclick="location.reload()" style="color:#ff4d4d;">LOGOUT</button>
+    <div id="auth-screen">
+        <div class="auth-card animated">
+            <h1>ECNHACA</h1>
+            <div id="status-msg"></div>
+
+            <div id="login-form">
+                <input type="email" id="l-email" placeholder="Email">
+                <input type="password" id="l-pass" placeholder="Contraseña">
+                <button onclick="auth('/auth/login', 'l')">INICIAR SESIÓN</button>
+                <p onclick="toggle()" style="cursor:pointer; font-size: 0.8rem;">¿No tienes cuenta? Crear una</p>
             </div>
-        </div>
-    </nav>
 
-    <header class="hero">
-        <h1>DARK <span>STUDIO</span> STORE</h1>
-        <p style="color:var(--td); margin-top:10px;">Plataforma élite de activos digitales.</p>
-    </header>
-
-    <div class="grid" id="main-grid"></div>
-
-    <div class="modal" id="auth-m">
-        <div class="modal-c">
-            <h2 id="modal-t" style="margin-bottom:20px;">Welcome</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn-p" style="width:100%; margin-top:10px;" onclick="handleAuth()">CONTINUAR</button>
-            <p style="margin-top:20px; font-size:0.8rem; color:var(--td);">
-                <span id="switch-msg">¿No tienes cuenta?</span> 
-                <a href="#" onclick="switchAuth()" style="color:var(--p); text-decoration:none; font-weight:800;">Haz clic aquí</a>
-            </p>
+            <div id="reg-form" class="hidden">
+                <input type="text" id="r-name" placeholder="Tu nombre">
+                <input type="email" id="r-email" placeholder="Email">
+                <input type="password" id="r-pass" placeholder="Contraseña">
+                <button onclick="auth('/auth/register', 'r')">REGISTRARME</button>
+                <p onclick="toggle()" style="cursor:pointer; font-size: 0.8rem;">Ya tengo cuenta. Entrar</p>
+            </div>
         </div>
     </div>
 
-    <div class="modal" id="admin-m">
-        <div class="modal-c">
-            <h2>Add Stock</h2>
-            <input type="text" id="p-name" placeholder="Nombre">
-            <input type="number" id="p-price" placeholder="Precio">
-            <button class="btn-p" style="width:100%;" onclick="addStock()">PUBLICAR</button>
-            <button onclick="closeM('admin-m')" style="margin-top:15px; background:none; border:none; color:var(--td); cursor:pointer;">Cerrar</button>
+    <div id="main-menu">
+        <nav>
+            <h2>ECNHACA</h2>
+            <div class="profile-icon" onclick="toggleAccount()">👤</div>
+        </nav>
+
+        <div id="account-dropdown" class="animated">
+            <h3 id="user-display-name">Usuario</h3>
+            <p style="font-size: 0.8rem; color: #8892b0;">Cuenta Estándar</p>
+            <hr border="0" style="border-top: 1px solid #1d2a41;">
+            <button onclick="location.reload()" style="background:transparent; color:white; border: 1px solid red;">Cerrar Sesión</button>
+        </div>
+
+        <div class="packages-container">
+            <div class="package-card animated">
+                <h3>Básico</h3>
+                <div class="price">$5.99</div>
+                <p>1 Pantalla • HD</p>
+                <button>Elegir</button>
+            </div>
+            <div class="package-card animated" style="border-color: var(--blue);">
+                <h3>Premium</h3>
+                <div class="price">$9.99</div>
+                <p>4 Pantallas • 4K + HDR</p>
+                <button>Elegir</button>
+            </div>
+            <div class="package-card animated">
+                <h3>Familiar</h3>
+                <div class="price">$14.99</div>
+                <p>6 Pantallas • 4K + Niños</p>
+                <button>Elegir</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let isLogin = true;
-        window.onload = loadItems;
+        const status = document.getElementById('status-msg');
 
-        async function loadItems() {
-            try {
-                const res = await fetch('/api/stock');
-                const data = await res.json();
-                const grid = document.getElementById('main-grid');
-                grid.innerHTML = data.length ? data.map(p => `
-                    <div class="card">
-                        <h3>${p.nombre}</h3>
-                        <div class="price">${p.precio} R$</div>
-                        <button class="btn-p" style="width:100%; background:#222;">ADQUIRIR</button>
-                    </div>
-                `).join('') : '<p style="grid-column:1/-1; text-align:center; opacity:0.3;">SIN STOCK</p>';
-            } catch(e) { console.error("Error cargando stock"); }
+        function toggle() {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('reg-form').classList.toggle('hidden');
+            status.textContent = "";
         }
 
-        function switchAuth() {
-            isLogin = !isLogin;
-            document.getElementById('modal-t').innerText = isLogin ? 'Welcome' : 'Register';
-            document.getElementById('switch-msg').innerText = isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?';
+        function toggleAccount() {
+            const drop = document.getElementById('account-dropdown');
+            drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
         }
 
-        async function handleAuth() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('pass').value;
-            const route = isLogin ? '/api/login' : '/api/register';
+        async function auth(url, p) {
+            const body = {
+                email: document.getElementById(`${p}-email`).value,
+                password: document.getElementById(`${p}-pass`).value
+            };
+            if(p === 'r') body.nombre = document.getElementById('r-name').value;
 
-            try {
-                const res = await fetch(route, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    if (!isLogin) {
-                        alert("¡Cuenta creada! Inicia sesión.");
-                        switchAuth();
-                    } else {
-                        // LOGIN EXITOSO
-                        document.getElementById('nav-auth').style.display = 'none';
-                        document.getElementById('nav-user').style.display = 'flex';
-                        document.getElementById('user-display').innerText = email.split('@')[0].toUpperCase();
-                        if (email === 'admin@emmanuel.com') document.getElementById('staff-btn').style.display = 'block';
-                        closeM('auth-m');
-                    }
-                } else {
-                    alert(data.error || "Error en los datos");
-                }
-            } catch (e) {
-                alert("Servidor no responde. Intenta de nuevo en 10 segundos.");
-            }
-        }
-
-        async function addStock() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            await fetch('/api/stock', {
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ name, price })
+                body: JSON.stringify(body)
             });
-            location.reload();
-        }
+            const data = await res.json();
 
-        function openM(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeM(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleD() { document.getElementById('user-drop').classList.toggle('active'); }
+            if(res.ok) {
+                status.textContent = data.message;
+                status.style.color = "#00ff88";
+                
+                if(url.includes('login')) {
+                    setTimeout(() => {
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('main-menu').style.display = 'block';
+                        document.getElementById('user-display-name').textContent = data.nombre;
+                    }, 1000);
+                } else {
+                    setTimeout(toggle, 1500);
+                }
+            } else {
+                status.textContent = data.error;
+                status.style.color = "#ff4444";
+            }
+        }
     </script>
 </body>
 </html>
