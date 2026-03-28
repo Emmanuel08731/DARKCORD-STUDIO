@@ -1,79 +1,48 @@
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cors');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 
-// --- CONFIGURACIÓN DE SEGURIDAD Y DATOS ---
+// --- CONFIGURACIÓN BÁSICA ---
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname)); // Lee el index.html desde donde esté el server.js
 
-// SIRVE TU HTML Y ARCHIVOS DESDE LA RAÍZ
-// Importante para que Render encuentre el index.html
-app.use(express.static(__dirname));
-
-// --- CONEXIÓN A LA BASE DE DATOS (POSTGRESQL) ---
+// --- CONEXIÓN ÚNICA A LA BASE DE DATOS ---
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Requerido para conexiones seguras en Render
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
-// Verificar la salud de la base de datos al iniciar
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('❌ ERROR DE CONEXIÓN A POSTGRES:', err.stack);
-  } else {
-    console.log('✅ CONEXIÓN A POSTGRES: EXITOSA');
-    release();
-  }
+// Prueba rápida de conexión
+pool.query('SELECT NOW()', (err) => {
+  if (err) console.error('❌ Error Database:', err.message);
+  else console.log('✅ Base de Datos Conectada');
 });
 
-// --- RUTAS DE LA API ---
+// --- RUTAS ---
 
-// 1. Obtener lista de usuarios (Para el buscador del Panel Admin)
+// Obtener usuarios para el Panel Admin
 app.get('/api/users', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, email FROM usuarios ORDER BY id DESC');
+        const result = await pool.query('SELECT email FROM usuarios');
         res.json(result.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error al obtener usuarios' });
+        res.status(500).send(err.message);
     }
 });
 
-// 2. Registrar nuevo usuario (Desde tu formulario)
-app.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const query = 'INSERT INTO usuarios (email, password) VALUES ($1, $2) RETURNING id, email';
-        const values = [email, password];
-        const result = await pool.query(query, values);
-        res.status(201).json({ message: 'Usuario registrado correctamente', user: result.rows[0] });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'El correo ya existe o hubo un fallo en el servidor' });
-    }
-});
-
-// 3. Ruta principal: Carga el HTML de Emmanuel Store
+// Cargar la web principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// --- CONFIGURACIÓN DEL PUERTO (SOLUCIÓN PARA RENDER) ---
-// Render asigna un puerto dinámico. Si no hay uno, usamos el 3000 local.
+// --- EL PUERTO SE ADAPTA SOLO ---
+// No lo toques, esto permite que funcione en tu PC (3000) y en Render (10000) automáticamente
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`
-    *****************************************
-    🚀 DARKCORD STUDIO ESTÁ ONLINE
-    🔗 URL: http://localhost:${PORT}
-    📡 ESCUCHANDO EN PUERTO: ${PORT}
-    *****************************************
-    `);
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor en línea en el puerto ${PORT}`);
 });
