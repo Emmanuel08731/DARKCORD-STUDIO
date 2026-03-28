@@ -14,44 +14,61 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Auto-creación de tablas
+// Inicialización de tablas robusta
 const initDB = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS productos (id SERIAL PRIMARY KEY, nombre TEXT NOT NULL, precio DECIMAL NOT NULL);
         `);
-    } catch (err) { console.error('Error DB:', err.message); }
+        console.log('✅ DATABASE: TABLAS LISTAS');
+    } catch (err) { console.error('❌ DATABASE ERROR:', err.message); }
 };
 initDB();
 
+// API: Obtener Productos
 app.get('/api/stock', async (req, res) => {
-    const result = await pool.query('SELECT * FROM productos ORDER BY id DESC');
-    res.json(result.rows);
+    try {
+        const result = await pool.query('SELECT * FROM productos ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) { res.status(500).json([]); }
 });
 
+// API: Guardar Producto
 app.post('/api/stock', async (req, res) => {
     const { name, price } = req.body;
-    await pool.query('INSERT INTO productos (nombre, precio) VALUES ($1, $2)', [name, price]);
-    res.status(201).send();
+    try {
+        await pool.query('INSERT INTO productos (nombre, precio) VALUES ($1, $2)', [name, price]);
+        res.status(201).send({success: true});
+    } catch (err) { res.status(500).send({error: err.message}); }
 });
 
+// API: Registro
 app.post('/api/register', async (req, res) => {
     const { email, password } = req.body;
     try {
         await pool.query('INSERT INTO usuarios (email, password) VALUES ($1, $2)', [email, password]);
-        res.status(201).send();
-    } catch (err) { res.status(500).send(); }
+        res.status(201).send({success: true});
+    } catch (err) { 
+        console.log("Error registro:", err.message);
+        res.status(500).json({error: "El usuario ya existe"}); 
+    }
 });
 
+// API: Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
-    const result = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email, password]);
-    if(result.rows.length > 0) res.json({ success: true });
-    else res.status(401).send();
+    try {
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email, password]);
+        if(result.rows.length > 0) {
+            res.json({ success: true, user: { email: result.rows[0].email } });
+        } else {
+            res.status(401).json({ error: "Credenciales inválidas" });
+        }
+    } catch (err) { res.status(500).json({ error: "Error de conexión con DB" }); }
 });
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DARKCORD READY`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DARKCORD SERVER RUNNING ON PORT ${PORT}`));
