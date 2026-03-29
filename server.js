@@ -8,106 +8,82 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 10000;
 
-// --- CONFIGURACIÓN DE BASE DE DATOS ---
-// El bloque SSL es vital para que Render no rechace la conexión
+// --- NÚCLEO DE CONEXIÓN POSTGRESQL (RENDER VIRGINIA) ---
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    connectionString: "postgresql://base_de_datos_hht8_user:kVJE1b7XsR9UyCi7IWkFhs3gWyM95cP4@dpg-d73ut99r0fns73c0b790-a.virginia-postgres.render.com/base_de_datos_hht8",
+    ssl: { rejectUnauthorized: false }
 });
 
-// Verificar conexión e inicializar tabla
-const iniciarDB = async () => {
+// Inicialización de esquema de seguridad
+const setupDatabase = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
-                nombre TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
+                nombre VARCHAR(100) NOT NULL,
+                email VARCHAR(150) UNIQUE NOT NULL,
                 password TEXT NOT NULL,
-                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                plan_actual VARCHAR(50) DEFAULT 'Premium Web 4K',
+                token_acceso TEXT,
+                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log("✅ [DB] Tabla de usuarios lista y conectada.");
+        console.log("💎 [SISTEMA] Base de datos Ecnhaca sincronizada.");
     } catch (err) {
-        console.error("❌ [DB] Error al conectar:", err.message);
+        console.error("❌ [ERROR] Fallo en la matriz de datos:", err.message);
     }
 };
-iniciarDB();
+setupDatabase();
 
-// --- MIDDLEWARES ---
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- RUTAS DE AUTENTICACIÓN ---
+// --- RUTAS DE ACCESO ---
 
-// 1. REGISTRO
 app.post('/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
-    
-    if (!nombre || !email || !password) {
-        return res.status(400).json({ error: "Faltan datos obligatorios" });
-    }
+    if (!nombre || !email || !password) return res.status(400).json({ error: "Campos incompletos" });
 
     try {
-        const emailLimpio = email.toLowerCase().trim();
-        const hashedPassword = await bcrypt.hash(password, 10);
-
+        const passwordSegura = await bcrypt.hash(password, 12);
         await pool.query(
             'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3)',
-            [nombre.trim(), emailLimpio, hashedPassword]
+            [nombre.trim(), email.toLowerCase().trim(), passwordSegura]
         );
-
-        console.log(`👤 Nuevo usuario: ${emailLimpio}`);
-        res.status(201).json({ message: "¡Cuenta creada con éxito!" });
+        res.status(201).json({ message: "¡Cuenta creada! Ya puedes iniciar sección." });
     } catch (err) {
-        if (err.code === '23505') {
-            return res.status(400).json({ error: "Este correo ya está registrado." });
-        }
-        console.error("Error en registro:", err);
-        res.status(500).json({ error: "Error interno en el servidor." });
+        if (err.code === '23505') return res.status(400).json({ error: "Este correo ya está en nuestra base de datos." });
+        res.status(500).json({ error: "Error interno del servidor." });
     }
 });
 
-// 2. LOGIN
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
-
     try {
-        const emailLimpio = email.toLowerCase().trim();
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [emailLimpio]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: "El usuario no existe." });
+        const query = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
+        
+        if (query.rows.length === 0) {
+            return res.status(404).json({ error: "Para iniciar sección debes tener una cuenta creada primero." });
         }
 
-        const usuario = result.rows[0];
-        const esValida = await bcrypt.compare(password, usuario.password);
+        const user = query.rows[0];
+        const match = await bcrypt.compare(password, user.password);
 
-        if (!esValida) {
-            return res.status(401).json({ error: "Contraseña incorrecta." });
-        }
+        if (!match) return res.status(401).json({ error: "Contraseña incorrecta." });
 
-        console.log(`🔓 Login exitoso: ${emailLimpio}`);
         res.json({ 
-            message: "¡Bienvenido!", 
-            nombre: usuario.nombre 
+            nombre: user.nombre, 
+            plan: user.plan_actual,
+            status: "Autorizado" 
         });
-
     } catch (err) {
-        console.error("Error en login:", err);
-        res.status(500).json({ error: "Error en el servidor de autenticación." });
+        res.status(500).json({ error: "Error en el satélite de autenticación." });
     }
 });
 
-// --- SERVIR EL FRONTEND ---
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-// --- LANZAMIENTO ---
 app.listen(port, () => {
-    console.log(`🚀 Servidor de Ecnhaca encendido en el puerto ${port}`);
+    console.log(`🚀 Ecnhaca Web 4K operando en puerto ${port}`);
 });
