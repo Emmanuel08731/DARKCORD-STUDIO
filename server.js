@@ -45,5 +45,14 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
+app.get('/admin/cuentas', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT nombre, email FROM usuarios');
+        client.release();
+        res.json(result.rows);
+    } catch (e) { res.status(500).send("Error"); }
+});
+
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.listen(port, () => console.log('ECHACA PLATINUM ENGINE ONLINE'));
+app.listen(port, () => console.log('ECHACA CORE v22.0 RESTORED'));
