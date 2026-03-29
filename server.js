@@ -46,4 +46,4 @@ app.post('/auth/login', async (req, res) => {
 });
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.listen(port, () => console.log('>>> ECHACA CORE v19.0 ONLINE'));
+app.listen(port, () => console.log('ECHACA PLATINUM ENGINE ONLINE'));
