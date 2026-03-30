@@ -3,60 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHACA | OS v60.0 Premium</title>
+    <title>ECHACA OS v80.0 | Premium Identity</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
-           ECHACA MASTER CORE v60.0
+           ECHACA MASTER ARCHITECTURE v80.0
            DESARROLLADOR: EMMANUEL
-           ESTILO: APPLE PRO BEYOND (700 RENGLONES)
+           ESTILO: APPLE PRO ELITE (700 RENGLONES)
            ================================================================
         */
 
         :root {
             --e-blue: #007aff;
-            --e-bg: #f5f5f7;
-            --e-card: rgba(255, 255, 255, 0.8);
+            --e-bg: #fbfbfd;
+            --e-card: rgba(255, 255, 255, 0.72);
             --e-text: #1d1d1f;
             --e-border: rgba(0, 0, 0, 0.08);
-            --e-glass: blur(30px) saturate(210%);
-            --e-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-            --e-radius: 28px;
+            --e-glass: blur(35px) saturate(190%);
+            --e-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+            --e-radius: 26px;
             --e-red: #ff3b30;
             --e-green: #34c759;
-            --bezier: cubic-bezier(0.2, 1, 0.2, 1);
+            --bezier: cubic-bezier(0.28, 0.11, 0.32, 1);
             --speed: 0.6s;
         }
 
         /* --- MOTOR DE ANIMACIONES --- */
-        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes glow { 0% { box-shadow: 0 0 5px rgba(0, 122, 255, 0.2); } 50% { box-shadow: 0 0 25px rgba(0, 122, 255, 0.5); } 100% { box-shadow: 0 0 5px rgba(0, 122, 255, 0.2); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes float { 0% { transform: translate(0,0); } 50% { transform: translate(-15px, 20px); } 100% { transform: translate(0,0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(0,122,255,0.1); } 50% { box-shadow: 0 0 30px rgba(0,122,255,0.4); } 100% { box-shadow: 0 0 10px rgba(0,122,255,0.1); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        /* --- BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; letter-spacing: -0.022em; }
-        body { font-family: 'Inter', sans-serif; background: var(--e-bg); color: var(--e-text); overflow-x: hidden; min-height: 100vh; }
-
-        /* --- FONDO DE PARTÍCULAS ECHACA --- */
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        .blob { 
-            position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,122,255,0.08) 0%, transparent 70%); 
-            border-radius: 50%; filter: blur(60px); animation: float 15s infinite ease-in-out; 
+        /* --- ESTRUCTURA BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; letter-spacing: -0.02em; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--e-bg); 
+            color: var(--e-text); 
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
         }
-        .blob-1 { top: -100px; left: -100px; }
-        .blob-2 { bottom: -100px; right: -100px; animation-delay: -5s; }
 
-        /* --- TOAST (NOTIFICACIONES) --- */
+        /* --- FONDO ECHACA PREMIUM --- */
+        .aura-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 10% 10%, rgba(0,122,255,0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(0,198,255,0.05) 0%, transparent 40%);
+        }
+        .blur-blob {
+            position: absolute; width: 600px; height: 600px; background: rgba(0, 122, 255, 0.04);
+            filter: blur(100px); border-radius: 50%; animation: float 20s infinite ease-in-out;
+        }
+
+        /* --- NOTIFICACIONES (TOAST) --- */
         #toast {
             position: fixed; top: 35px; left: 50%; transform: translateX(-50%) translateY(-200%);
-            padding: 18px 40px; background: rgba(0, 0, 0, 0.85); color: #fff;
-            border-radius: 60px; font-weight: 700; font-size: 15px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 99999;
+            padding: 18px 45px; background: rgba(0, 0, 0, 0.88); color: #fff;
+            border-radius: 50px; font-weight: 700; font-size: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25); z-index: 100000;
             transition: transform var(--speed) var(--bezier); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         #toast.active { transform: translateX(-50%) translateY(0); }
 
@@ -66,242 +76,243 @@
             background: rgba(255, 255, 255, 0.65); backdrop-filter: var(--e-glass);
             border-bottom: 1px solid var(--e-border);
             display: none; align-items: center; justify-content: space-between;
-            padding: 0 6%; z-index: 10000; animation: slideUp 0.8s var(--bezier);
+            padding: 0 6%; z-index: 5000; animation: fadeIn 0.8s var(--bezier);
         }
-        .logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; cursor: pointer; color: #000; }
-        .logo span { color: var(--e-blue); }
+        .logo-echaca { font-size: 28px; font-weight: 900; letter-spacing: -2px; cursor: pointer; color: #000; }
+        .logo-echaca span { color: var(--e-blue); }
 
-        .search-wrap { position: relative; width: 400px; }
-        .search-in {
+        .search-container { position: relative; width: 420px; }
+        .search-input {
             width: 100%; padding: 14px 20px 14px 50px; border-radius: 20px;
             background: rgba(0, 0, 0, 0.05); border: 2px solid transparent;
             font-size: 15px; font-weight: 600; transition: var(--speed) var(--bezier);
         }
-        .search-in:focus { background: white; border-color: var(--e-blue); box-shadow: var(--e-shadow); outline: none; width: 450px; }
-        .search-ico { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); opacity: 0.4; }
+        .search-input:focus { background: white; border-color: var(--e-blue); outline: none; width: 460px; box-shadow: var(--e-shadow); }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); opacity: 0.4; stroke-width: 3; }
 
-        /* --- VISTAS --- */
-        .container {
+        /* --- CONTENEDORES DE VISTA --- */
+        .view {
             max-width: 1200px; margin: 0 auto; padding: 140px 30px 100px;
-            display: none; opacity: 0; transition: all var(--speed) var(--bezier);
+            display: none; opacity: 0; transform: translateY(30px) scale(0.98);
+            transition: all var(--speed) var(--bezier);
         }
-        .container.active { display: block; opacity: 1; animation: slideUp 0.8s var(--bezier); }
+        .view.active { display: block; opacity: 1; transform: translateY(0) scale(1); }
 
-        /* --- TARJETAS APPLE PREMIUM --- */
+        /* --- TARJETAS APPLE STYLE --- */
         .card {
             background: var(--e-card); border-radius: var(--e-radius);
-            padding: 60px; border: 1px solid var(--e-border);
+            padding: 55px; border: 1px solid var(--e-border);
             box-shadow: var(--e-shadow); backdrop-filter: blur(25px);
-            position: relative; transition: var(--speed) var(--bezier);
+            position: relative; transition: 0.4s var(--bezier);
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 30px 70px rgba(0,0,0,0.12); }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px rgba(0,0,0,0.1); }
 
-        /* --- BOTONES --- */
+        /* --- BOTONES PREMIUM --- */
         .btn {
-            padding: 18px 36px; border-radius: 22px; font-size: 16px; font-weight: 800;
+            padding: 18px 38px; border-radius: 22px; font-size: 16px; font-weight: 800;
             cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 12px;
-            transition: all 0.3s var(--bezier); position: relative; overflow: hidden;
+            transition: all 0.3s var(--bezier);
         }
-        .btn-p { background: var(--e-blue); color: #fff; }
-        .btn-p:hover { transform: scale(1.03); filter: brightness(1.1); animation: glow 2s infinite; }
-        .btn-s { background: rgba(0, 0, 0, 0.04); color: var(--e-text); }
-        .btn-s:hover { background: rgba(0, 0, 0, 0.08); }
-        .btn-f { background: var(--e-red); color: #fff; }
+        .btn-main { background: #000; color: #fff; }
+        .btn-main:hover { transform: scale(1.04); background: var(--e-blue); animation: pulseGlow 2s infinite; }
+        .btn-sec { background: rgba(0, 0, 0, 0.05); color: var(--e-text); }
+        .btn-sec:hover { background: rgba(0, 0, 0, 0.1); }
+        .btn-unfollow { background: rgba(255, 59, 48, 0.1); color: var(--e-red); }
 
-        /* --- FORMULARIOS --- */
-        .input-box { margin-bottom: 25px; }
-        .input-label { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #86868b; margin-left: 15px; margin-bottom: 10px; display: block; }
-        .input-f {
-            width: 100%; padding: 22px; border-radius: 20px; background: #f2f2f7;
+        /* --- INPUTS --- */
+        .f-group { margin-bottom: 30px; }
+        .f-label { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #86868b; margin-left: 18px; margin-bottom: 12px; display: block; }
+        .f-input {
+            width: 100%; padding: 22px; border-radius: 22px; background: #f2f2f7;
             border: 3px solid transparent; font-size: 17px; font-weight: 600;
             transition: var(--speed) var(--bezier);
         }
-        .input-f:focus { background: white; border-color: var(--e-blue); outline: none; }
+        .f-input:focus { background: white; border-color: var(--e-blue); outline: none; }
 
-        /* --- PERFIL --- */
-        .prof-grid { display: grid; grid-template-columns: 420px 1fr; gap: 40px; }
-        .av-big {
-            width: 180px; height: 180px; background: linear-gradient(135deg, #007aff, #5ac8fa);
-            border-radius: 60px; display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 85px; font-weight: 900; margin: 0 auto 35px;
-            box-shadow: 0 30px 60px rgba(0, 122, 255, 0.3); animation: pulse 4s infinite ease-in-out;
+        /* --- PERFIL GRID --- */
+        .profile-grid { display: grid; grid-template-columns: 420px 1fr; gap: 45px; }
+        .avatar-box {
+            width: 170px; height: 170px; background: linear-gradient(135deg, #000, #333);
+            border-radius: 55px; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 80px; font-weight: 900; margin: 0 auto 35px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
         }
-        .stat-btn {
-            background: white; padding: 25px; border-radius: 22px; text-align: center;
-            border: 1px solid var(--e-border); transition: 0.3s; cursor: pointer;
+        .stat-card {
+            background: #fff; padding: 30px; border-radius: 24px; text-align: center;
+            border: 1px solid var(--e-border); transition: 0.4s;
         }
-        .stat-btn:hover { border-color: var(--e-blue); transform: translateY(-5px); }
-        .stat-val { font-size: 34px; font-weight: 900; color: var(--e-blue); display: block; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--e-blue); }
+        .stat-val { font-size: 38px; font-weight: 900; color: #000; display: block; }
         .stat-lab { font-size: 12px; font-weight: 800; color: #86868b; text-transform: uppercase; }
 
-        /* --- RADAR GRID --- */
-        .r-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 35px; }
-        .u-card {
+        /* --- LISTADO DE DIRECTORIO --- */
+        .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 35px; }
+        .user-card {
             background: #fff; padding: 45px; border-radius: 32px; border: 1px solid var(--e-border);
-            transition: var(--speed) var(--bezier); cursor: pointer; position: relative;
+            transition: var(--speed) var(--bezier); cursor: pointer; text-align: center;
         }
-        .u-card:hover { transform: translateY(-15px); border-color: var(--e-blue); box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
+        .user-card:hover { transform: translateY(-12px); border-color: var(--e-blue); box-shadow: var(--e-shadow); }
 
-        /* --- ADMIN --- */
+        /* --- ADMIN PANEL --- */
         .audit-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 25px 35px; background: #fff; border-radius: 22px; margin-bottom: 15px;
+            padding: 30px 40px; background: #fff; border-radius: 24px; margin-bottom: 18px;
             border: 1px solid var(--e-border); transition: 0.3s;
         }
         .audit-item:hover { border-color: var(--e-red); }
 
-        footer { padding: 120px 0; text-align: center; opacity: 0.3; font-weight: 900; font-size: 14px; letter-spacing: 3px; }
+        footer { padding: 140px 0; text-align: center; opacity: 0.3; font-weight: 900; font-size: 14px; letter-spacing: 4px; }
 
-        /* ESPACIADORES TÉCNICOS */
-        .spacer { height: 100px; }
-        .hr-line { height: 2px; background: var(--e-border); margin: 50px 0; border-radius: 10px; }
+        /* ESPACIADORES */
+        .sp-xl { height: 130px; }
+        .hr-line { height: 2px; background: var(--e-border); margin: 55px 0; border-radius: 10px; }
 
     </style>
 </head>
 <body>
 
-    <div class="particles">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+    <div class="aura-bg">
+        <div class="blur-blob" style="top: -100px; left: -100px;"></div>
+        <div class="blur-blob" style="bottom: -100px; right: -100px; animation-delay: -5s;"></div>
     </div>
 
-    <div id="toast">ECHACA CORE</div>
+    <div id="toast">ECHACA OS</div>
 
-    <header id="top-nav">
-        <div class="logo" onclick="navTo('home')">ECHACA<span>.</span></div>
-        <div class="search-wrap">
-            <svg class="search-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" class="search-in" placeholder="Escanear red ECHACA..." onkeyup="radarRun(event)">
+    <header id="main-nav">
+        <div class="logo-echaca" onclick="goView('home')">ECHACA<span>.</span></div>
+        <div class="search-container">
+            <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" placeholder="Explorar identidades..." onkeyup="runDirectory(event)">
         </div>
-        <button class="btn btn-s" onclick="location.reload()">Salir</button>
+        <button class="btn btn-sec" style="padding: 12px 25px;" onclick="location.reload()">Cerrar</button>
     </header>
 
-    <main id="view-auth" class="container active">
-        <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+    <main id="view-auth" class="view active">
+        <div class="card" style="max-width: 520px; margin: 0 auto; text-align: center;">
             <div style="margin-bottom: 50px;">
-                <h1 style="font-size: 70px; font-weight: 900; letter-spacing: -4px; line-height: 0.9;">ECHACA</h1>
-                <p id="a-msg" style="color: #86868b; font-weight: 600; margin-top: 15px; font-size: 18px;">Autenticación de terminal requerida.</p>
+                <h1 style="font-size: 75px; font-weight: 900; letter-spacing: -4px; line-height: 0.9;">ECHACA</h1>
+                <p id="a-msg" style="color: #86868b; font-weight: 600; margin-top: 15px; font-size: 19px;">Ingresa a tu cuenta de identidad.</p>
             </div>
 
             <div id="reg-fields" style="display: none;">
-                <div class="input-box">
-                    <span class="input-label">Identidad Real</span>
-                    <input type="text" id="r-name" class="input-f" placeholder="Emmanuel RQ">
+                <div class="f-group">
+                    <span class="f-label">¿Cuál es tu nombre?</span>
+                    <input type="text" id="r-name" class="f-input" placeholder="Nombre completo">
                 </div>
             </div>
 
-            <div class="input-box">
-                <span class="input-label">Echaca Email</span>
-                <input type="email" id="a-email" class="input-f" placeholder="admin@echaca.com">
+            <div class="f-group">
+                <span class="f-label">ID de Correo</span>
+                <input type="email" id="a-email" class="f-input" placeholder="correo@echaca.com">
             </div>
 
-            <div class="input-box">
-                <span class="input-label">Clave Maestra</span>
-                <input type="password" id="a-pass" class="input-f" placeholder="••••••••">
+            <div class="f-group">
+                <span class="f-label">Clave Maestra</span>
+                <input type="password" id="a-pass" class="f-input" placeholder="••••••••">
             </div>
 
-            <button class="btn btn-p" style="width: 100%; justify-content: center; margin-top: 25px;" onclick="authFlow()">
-                <span id="a-btn-txt">Acceder al Sistema</span>
+            <button class="btn btn-main" style="width: 100%; justify-content: center; margin-top: 25px;" onclick="doAuth()">
+                <span id="a-btn-txt">Acceder</span>
             </button>
 
             <div class="hr-line"></div>
 
             <p style="font-size: 15px; font-weight: 800;">
-                <span id="a-ask">¿Sin credenciales?</span>
-                <span onclick="toggleMode()" id="a-swap" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crear ID.</span>
+                <span id="a-ask">¿No tienes cuenta?</span>
+                <span onclick="swapMode()" id="a-swap" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crea una ahora.</span>
             </p>
         </div>
     </main>
 
-    <main id="view-home" class="container">
-        <div class="prof-grid">
+    <main id="view-home" class="view">
+        <div class="profile-grid">
             <aside class="card" style="text-align: center;">
-                <div id="u-av" class="av-big">E</div>
-                <h1 id="u-n" style="font-size: 50px; font-weight: 900; letter-spacing: -2px;">Emmanuel</h1>
+                <div id="u-av" class="avatar-box">E</div>
+                <h1 id="u-n" style="font-size: 50px; font-weight: 900; letter-spacing: -2.5px;">Emmanuel</h1>
                 <p id="u-e" style="color: #86868b; font-size: 20px; font-weight: 600; margin-bottom: 45px;">admin@echaca.com</p>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="stat-btn"><b class="stat-val" id="s-f">10k</b><span class="stat-lab">Seguidores</span></div>
-                    <div class="stat-btn"><b class="stat-val" id="s-s">500</b><span class="stat-lab">Siguiendo</span></div>
+                    <div class="stat-card"><b class="stat-val" id="s-fol">0</b><span class="stat-lab">Seguidores</span></div>
+                    <div class="stat-card"><b class="stat-val" id="s-sig">0</b><span class="stat-lab">Siguiendo</span></div>
                 </div>
 
-                <button id="adm-gate" class="btn btn-s" style="width: 100%; margin-top: 40px; justify-content: center; display: none;" onclick="openAudit()">
-                    Control de Auditoría
+                <button id="adm-gate" class="btn btn-sec" style="width: 100%; margin-top: 40px; justify-content: center; display: none;" onclick="openAudit()">
+                    Control Maestro
                 </button>
             </aside>
 
             <section>
                 <div class="card" style="margin-bottom: 35px;">
-                    <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 25px;">Estado Global</h2>
-                    <div style="padding: 30px; background: #fff; border-radius: 25px; border-left: 8px solid var(--e-blue); box-shadow: var(--e-shadow);">
-                        <p style="font-weight: 800; font-size: 18px;">ECHACA OS v60.0 OPERATIVO</p>
-                        <p style="color: #86868b; margin-top: 8px; font-weight: 600;">Bienvenido de nuevo, Emmanuel. Los nodos están sincronizados.</p>
+                    <h2 style="font-size: 34px; font-weight: 900; margin-bottom: 25px;">Estado del Sistema</h2>
+                    <div style="padding: 35px; background: #fff; border-radius: 25px; border-left: 8px solid var(--e-blue); box-shadow: var(--e-shadow);">
+                        <p style="font-weight: 800; font-size: 20px;">VERSIÓN v80.0 OPERATIVA</p>
+                        <p style="color: #86868b; margin-top: 8px; font-weight: 600; font-size: 17px;">Bienvenido, Emmanuel. Todas las identidades están sincronizadas.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 25px;">Últimas Sincronizaciones</h2>
-                    <p style="color: #86868b; font-weight: 600;">No hay brechas de seguridad detectadas.</p>
+                    <h2 style="font-size: 34px; font-weight: 900; margin-bottom: 25px;">Seguridad de Red</h2>
+                    <p style="color: #86868b; font-weight: 600;">No se detectan accesos no autorizados en tu cuenta.</p>
                 </div>
             </section>
         </div>
     </main>
 
-    <main id="view-radar" class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px;">
+    <main id="view-directory" class="view">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 65px;">
             <div>
-                <h1 id="r-title" style="font-size: 60px; font-weight: 900; letter-spacing: -3px;">Radar</h1>
-                <p style="color: #86868b; font-size: 22px; font-weight: 600;">Localizando identidades verificadas...</p>
+                <h1 id="d-title" style="font-size: 65px; font-weight: 900; letter-spacing: -4px;">Directorio</h1>
+                <p style="color: #86868b; font-size: 24px; font-weight: 600;">Explorando la red de identidades ECHACA.</p>
             </div>
-            <button class="btn btn-s" onclick="navTo('home')">Cerrar</button>
+            <button class="btn btn-sec" onclick="goView('home')">Regresar</button>
         </div>
-        <div id="r-list" class="r-grid"></div>
+        <div id="d-list" class="directory-grid"></div>
     </main>
 
-    <main id="view-id" class="container">
-        <button class="btn btn-s" style="margin-bottom: 45px;" onclick="navTo('radar')">← Volver al Radar</button>
+    <main id="view-id" class="view">
+        <button class="btn btn-sec" style="margin-bottom: 45px;" onclick="goView('directory')">← Volver al Directorio</button>
         <div class="card">
             <div style="display: flex; align-items: center; gap: 60px;">
-                <div id="x-av" class="av-big" style="width: 160px; height: 160px; font-size: 70px; margin: 0;">U</div>
+                <div id="x-av" class="avatar-box" style="width: 150px; height: 150px; font-size: 65px; margin: 0;">U</div>
                 <div style="flex: 1;">
-                    <h1 id="x-n" style="font-size: 55px; font-weight: 900; letter-spacing: -3px;">Usuario</h1>
-                    <p id="x-e" style="color: #86868b; font-size: 22px; margin-bottom: 35px;"></p>
-                    <div style="display: flex; gap: 20px;">
-                        <button id="f-btn" class="btn btn-p" onclick="doFollow()">Seguir</button>
-                        <button class="btn btn-s">Enviar Mensaje</button>
+                    <h1 id="x-n" style="font-size: 60px; font-weight: 900; letter-spacing: -3px;">Usuario</h1>
+                    <p id="x-e" style="color: #86868b; font-size: 22px; margin-bottom: 35px; font-weight: 600;"></p>
+                    <div style="display: flex; gap: 22px;">
+                        <button id="f-btn" class="btn btn-main" onclick="handleFollow()">Seguir</button>
+                        <button class="btn btn-sec">Enviar Ping</button>
                     </div>
                 </div>
             </div>
             <div class="hr-line"></div>
-            <p style="text-align: center; color: #86868b; font-weight: 900; font-size: 14px; letter-spacing: 4px;">VERIFICACIÓN ECHACA ACTIVA</p>
+            <p style="text-align: center; color: #86868b; font-weight: 900; font-size: 14px; letter-spacing: 5px;">IDENTIDAD ECHACA VERIFICADA</p>
         </div>
     </main>
 
-    <main id="view-admin" class="container">
+    <main id="view-admin" class="view">
         <div class="card">
-            <h1 style="font-size: 45px; font-weight: 900; margin-bottom: 40px;">Base de Datos de Nodos</h1>
-            <div id="audit-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+            <h1 style="font-size: 45px; font-weight: 900; margin-bottom: 45px;">Base de Datos de Identidades</h1>
+            <div id="audit-list" style="display: flex; flex-direction: column; gap: 20px;"></div>
         </div>
     </main>
 
-    <footer>ECHACA v60.0 • EMMANUEL RQ • 2026</footer>
+    <footer>ECHACA OS v80.0 • EMMANUEL • 2026</footer>
 
     <script>
         /* ================================================================
-           ECHACA LOGIC MOTOR v60.0
+           ECHACA CORE ENGINE v80.0
            ================================================================
         */
 
-        let ME = null;
+        let USER = null;
         let TARGET = null;
-        let isRegister = false;
+        let isRegMode = false;
 
         // --- NAVEGACIÓN PRO ---
-        function navTo(id) {
-            const views = document.querySelectorAll('.container');
+        function goView(id) {
+            const views = document.querySelectorAll('.view');
             views.forEach(v => {
                 v.style.opacity = '0';
-                v.style.transform = 'translateY(30px) scale(0.98)';
-                setTimeout(() => v.classList.remove('active'), 400);
+                v.style.transform = 'translateY(30px) scale(0.97)';
+                setTimeout(() => v.classList.remove('active'), 350);
             });
             setTimeout(() => {
                 const target = document.getElementById('view-' + id);
@@ -310,34 +321,34 @@
                     target.style.opacity = '1';
                     target.style.transform = 'translateY(0) scale(1)';
                 }, 50);
-            }, 450);
+            }, 400);
         }
 
-        // --- AUTH LOGIC ---
-        function toggleMode() {
-            isRegister = !isRegister;
-            document.getElementById('reg-fields').style.display = isRegister ? 'block' : 'none';
-            document.getElementById('a-msg').innerText = isRegister ? 'Registra tu identidad en el núcleo.' : 'Autenticación de terminal requerida.';
-            document.getElementById('a-btn-txt').innerText = isRegister ? 'Crear mi ECHACA ID' : 'Acceder al Sistema';
-            document.getElementById('a-ask').innerText = isRegister ? '¿Ya estás registrado?' : '¿Sin credenciales?';
-            document.getElementById('a-swap').innerText = isRegister ? 'Loguear.' : 'Crear ID.';
+        // --- AUTH FLOW ---
+        function swapMode() {
+            isRegMode = !isRegMode;
+            document.getElementById('reg-fields').style.display = isRegMode ? 'block' : 'none';
+            document.getElementById('a-msg').innerText = isRegMode ? 'Crea una nueva identidad en la red.' : 'Ingresa a tu cuenta de identidad.';
+            document.getElementById('a-btn-txt').innerText = isRegMode ? 'Crear mi ECHACA ID' : 'Acceder';
+            document.getElementById('a-ask').innerText = isRegMode ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta?';
+            document.getElementById('a-swap').innerText = isRegMode ? 'Ingresa aquí.' : 'Crea una ahora.';
         }
 
-        async function authFlow() {
+        async function doAuth() {
             const email = document.getElementById('a-email').value;
             const pass = document.getElementById('a-pass').value;
             const name = document.getElementById('r-name').value;
 
-            if(!email || !pass) return notify("CAMPOS OBLIGATORIOS");
+            if(!email || !pass) return notify("DATOS INCOMPLETOS");
 
             // BYPASS EMMANUEL
             if(email === "emma2013rq@gmail.com") {
-                notify(isRegister ? "CUENTA CREADA" : "SESIÓN INICIADA");
-                setTimeout(() => sessionOn({ id: 0, nombre: "Emmanuel", email, isAdmin: true }), 1000);
+                notify(isRegMode ? "CUENTA CREADA" : "SESIÓN INICIADA");
+                setTimeout(() => startSession({ id: 0, nombre: "Emmanuel", email, isAdmin: true, followers: [] }), 1000);
                 return;
             }
 
-            const path = isRegister ? '/auth/register' : '/auth/login';
+            const path = isRegMode ? '/auth/register' : '/auth/login';
             try {
                 const res = await fetch(path, {
                     method: 'POST',
@@ -346,44 +357,45 @@
                 });
                 const data = await res.json();
                 if(res.ok) {
-                    notify(isRegister ? "CUENTA CREADA" : "SESIÓN INICIADA");
-                    if(isRegister) toggleMode();
-                    else sessionOn(data);
-                } else { notify("ERROR DE ACCESO"); }
-            } catch(e) { notify("FALLA DE RED"); }
+                    notify(isRegMode ? "CUENTA CREADA" : "SESIÓN INICIADA");
+                    if(isRegMode) swapMode();
+                    else startSession(data.user);
+                } else { notify("ACCESO DENEGADO"); }
+            } catch(e) { notify("FALLA EN LA RED"); }
         }
 
-        function sessionOn(u) {
-            ME = u;
-            document.getElementById('top-nav').style.display = 'flex';
+        function startSession(u) {
+            USER = u;
+            document.getElementById('main-nav').style.display = 'flex';
             document.getElementById('u-n').innerText = u.nombre;
             document.getElementById('u-e').innerText = u.email;
             document.getElementById('u-av').innerText = u.nombre[0].toUpperCase();
+            document.getElementById('s-fol').innerText = (u.followers || []).length;
             if(u.isAdmin) document.getElementById('adm-gate').style.display = 'flex';
-            navTo('home');
+            goView('home');
         }
 
-        // --- RADAR ---
-        async function radarRun(e) {
+        // --- DIRECTORIO ---
+        async function runDirectory(e) {
             if(e.key === 'Enter') {
                 const q = e.target.value;
                 const res = await fetch(`/api/users/search?q=${q}`);
                 const data = await res.json();
-                const list = document.getElementById('r-list');
+                const list = document.getElementById('d-list');
                 list.innerHTML = '';
-                document.getElementById('r-title').innerText = `Radar: ${q}`;
+                document.getElementById('d-title').innerText = `Directorio: ${q}`;
 
                 data.forEach(u => {
-                    if(u.id === ME.id) return;
+                    if(u.id === USER.id) return;
                     list.innerHTML += `
-                        <div class="u-card" onclick="viewId(${u.id})">
-                            <div style="width:60px; height:60px; background:#000; color:#fff; border-radius:20px; display:grid; place-items:center; margin-bottom:25px; font-weight:900; font-size:24px;">${u.nombre[0]}</div>
-                            <h3 style="font-size:28px; font-weight:900;">${u.nombre}</h3>
-                            <p style="color:#86868b; font-weight:700; font-size:16px;">${u.email}</p>
-                            <div style="margin-top:30px; color:var(--e-blue); font-weight:900; font-size:14px;">ESCANEAR PERFIL →</div>
+                        <div class="user-card" onclick="viewId(${u.id})">
+                            <div style="width:70px; height:70px; background:#000; color:#fff; border-radius:22px; display:grid; place-items:center; margin:0 auto 25px; font-weight:900; font-size:28px;">${u.nombre[0]}</div>
+                            <h3 style="font-size:30px; font-weight:900;">${u.nombre}</h3>
+                            <p style="color:#86868b; font-weight:700; font-size:18px; margin-bottom:25px;">${u.email}</p>
+                            <div style="color:var(--e-blue); font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:2px;">Ver Identidad →</div>
                         </div>`;
                 });
-                navTo('radar');
+                goView('directory');
             }
         }
 
@@ -395,33 +407,33 @@
             document.getElementById('x-n').innerText = TARGET.nombre;
             document.getElementById('x-e').innerText = TARGET.email;
             document.getElementById('x-av').innerText = TARGET.nombre[0].toUpperCase();
-            updateFollowBtn();
-            navTo('id');
+            updateBtn();
+            goView('id');
         }
 
-        function updateFollowBtn() {
-            const btn = document.getElementById('f-btn');
-            const fls = JSON.parse(localStorage.getItem('ech_f') || '[]');
+        function updateBtn() {
+            const b = document.getElementById('f-btn');
+            const fls = JSON.parse(localStorage.getItem('ech_fls') || '[]');
             if(fls.includes(TARGET.id)) {
-                btn.innerText = "Dejar de Seguir";
-                btn.className = "btn btn-f";
+                b.innerText = "Dejar de Seguir";
+                b.className = "btn btn-unfollow";
             } else {
-                btn.innerText = "Seguir";
-                btn.className = "btn btn-p";
+                b.innerText = "Seguir";
+                b.className = "btn btn-main";
             }
         }
 
-        function doFollow() {
-            let fls = JSON.parse(localStorage.getItem('ech_f') || '[]');
+        function handleFollow() {
+            let fls = JSON.parse(localStorage.getItem('ech_fls') || '[]');
             if(fls.includes(TARGET.id)) {
                 fls = fls.filter(i => i !== TARGET.id);
-                notify(`IDENTIDAD ${TARGET.nombre} REMOVIDA`);
+                notify(`DESCONECTADO DE ${TARGET.nombre.toUpperCase()}`);
             } else {
                 fls.push(TARGET.id);
-                notify(`CONECTADO CON ${TARGET.nombre}`);
+                notify(`CONECTADO CON ${TARGET.nombre.toUpperCase()}`);
             }
-            localStorage.setItem('ech_f', JSON.stringify(fls));
-            updateFollowBtn();
+            localStorage.setItem('ech_fls', JSON.stringify(fls));
+            updateBtn();
         }
 
         // --- ADMIN ---
@@ -434,19 +446,19 @@
                 list.innerHTML += `
                     <div class="audit-item">
                         <div>
-                            <p style="font-weight:900; font-size:20px;">${u.nombre}</p>
-                            <p style="font-size:14px; color:#86868b; font-weight:700;">${u.email}</p>
+                            <p style="font-weight:900; font-size:22px;">${u.nombre}</p>
+                            <p style="font-size:15px; color:#86868b; font-weight:700;">${u.email}</p>
                         </div>
-                        <button class="btn btn-s" style="color:var(--e-red); padding:12px 25px; font-size:13px;" onclick="purgeNode(${u.id})">PURGAR</button>
+                        <button class="btn btn-sec" style="color:var(--e-red); padding:12px 25px; font-size:13px;" onclick="purgeNode(${u.id})">ELIMINAR</button>
                     </div>`;
             });
-            navTo('admin');
+            goView('admin');
         }
 
         async function purgeNode(id) {
-            if(!confirm("¿CONFIRMAR ELIMINACIÓN DE NODO?")) return;
+            if(!confirm("¿CONFIRMAR ELIMINACIÓN PERMANENTE?")) return;
             await fetch(`/api/admin/delete/${id}`, { method: 'DELETE' });
-            notify("NODO PURGADO");
+            notify("IDENTIDAD ELIMINADA");
             openAudit();
         }
 
@@ -456,9 +468,6 @@
             t.classList.add('active');
             setTimeout(() => t.classList.remove('active'), 3500);
         }
-
-        // INICIO AUTOMÁTICO DE PARTÍCULAS
-        console.log("ECHACA OS CARGADO CORRECTAMENTE");
     </script>
 </body>
 </html>
