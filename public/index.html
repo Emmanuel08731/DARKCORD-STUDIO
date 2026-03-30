@@ -3,427 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHACA | Sistema Elite</title>
+    <title>ECHACA | Sistema v90.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
-           ECHACA SYSTEM ARCHITECTURE v80.0
+           ECHACA SYSTEM ARCHITECTURE v90.0
            AUTOR: EMMANUEL
-           ESTILO: APPLE GLOSSY / PURE WHITE
-           REGLA: 700 RENGLONES EXACTOS
+           ESTILO: APPLE ELITE / GLOSSY WHITE
+           REGLA: 700 RENGLONES / LÓGICA DE SEGUIDORES REAL
            ================================================================
         */
 
         :root {
             --e-blue: #007aff;
-            --e-bg: #fbfbfd;
-            --e-card: rgba(255, 255, 255, 0.7);
+            --e-bg: #f5f5f7;
+            --e-card: rgba(255, 255, 255, 0.75);
             --e-text: #1d1d1f;
-            --e-border: rgba(0, 0, 0, 0.1);
+            --e-border: rgba(0, 0, 0, 0.08);
             --e-glass: blur(25px) saturate(180%);
-            --e-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
-            --e-radius: 24px;
+            --e-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+            --e-radius: 22px;
             --e-red: #ff3b30;
-            --speed: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            --speed: 0.5s cubic-bezier(0.2, 1, 0.2, 1);
         }
 
-        /* --- MOTOR DE ANIMACIÓN --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes bgMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* --- ANIMACIONES --- */
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         /* --- BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; letter-spacing: -0.02em; }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: var(--e-bg); 
-            color: var(--e-text); 
-            overflow-x: hidden; 
-            min-height: 100vh;
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--e-bg); color: var(--e-text); overflow-x: hidden; min-height: 100vh; }
 
-        /* --- DECORACIÓN DE FONDO --- */
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: linear-gradient(-45deg, #f5f5f7, #ffffff, #eef2f3, #ffffff);
-            background-size: 400% 400%; animation: bgMove 15s infinite ease;
-        }
-
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(60px);
-            background: rgba(0, 122, 255, 0.07); animation: float 10s infinite ease-in-out;
-        }
-
-        /* --- NOTIFICACIONES (TOAST) --- */
+        /* --- TOAST --- */
         #toast {
             position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-200%);
-            padding: 16px 40px; background: rgba(0, 0, 0, 0.85); color: #fff;
-            border-radius: 50px; font-weight: 700; font-size: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); z-index: 99999;
+            padding: 18px 45px; background: rgba(0, 0, 0, 0.9); color: #fff;
+            border-radius: 60px; font-weight: 700; font-size: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); z-index: 99999;
             transition: transform var(--speed); backdrop-filter: blur(10px);
         }
         #toast.active { transform: translateX(-50%) translateY(0); }
 
-        /* --- BARRA SUPERIOR --- */
+        /* --- NAVBAR --- */
         nav {
-            position: fixed; top: 0; width: 100%; height: 80px;
+            position: fixed; top: 0; width: 100%; height: 85px;
             background: rgba(255, 255, 255, 0.7); backdrop-filter: var(--e-glass);
             border-bottom: 1px solid var(--e-border);
             display: none; align-items: center; justify-content: space-between;
-            padding: 0 8%; z-index: 10000; animation: fadeIn 0.8s var(--speed);
+            padding: 0 8%; z-index: 10000; animation: slideIn 0.8s var(--speed);
         }
-        .logo { font-size: 26px; font-weight: 900; letter-spacing: -1.5px; cursor: pointer; }
+        .logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; cursor: pointer; }
         .logo span { color: var(--e-blue); }
 
-        .search-box { position: relative; width: 400px; }
-        .search-input {
-            width: 100%; padding: 12px 20px 12px 50px; border-radius: 16px;
-            background: rgba(0, 0, 0, 0.05); border: 2px solid transparent;
-            font-size: 15px; font-weight: 600; transition: var(--speed);
+        .search-container { position: relative; width: 420px; }
+        .search-bar {
+            width: 100%; padding: 14px 20px 14px 50px; border-radius: 18px;
+            background: rgba(0, 0, 0, 0.05); border: 2.5px solid transparent;
+            font-size: 16px; font-weight: 600; transition: var(--speed);
         }
-        .search-input:focus { background: #fff; border-color: var(--e-blue); outline: none; box-shadow: var(--e-shadow); }
-        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
+        .search-bar:focus { background: #fff; border-color: var(--e-blue); outline: none; box-shadow: var(--e-shadow); }
+        .search-ico { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
 
-        /* --- CONTENEDORES DE VISTA --- */
-        .container {
-            max-width: 1100px; margin: 0 auto; padding: 130px 25px 80px;
+        /* --- VISTAS --- */
+        .view {
+            max-width: 1100px; margin: 0 auto; padding: 140px 25px 80px;
             display: none; opacity: 0; transition: all var(--speed);
         }
-        .container.active { display: block; opacity: 1; animation: fadeIn 0.8s var(--speed); }
+        .view.active { display: block; opacity: 1; animation: slideIn 0.8s var(--speed); }
 
         /* --- TARJETAS --- */
         .card {
             background: var(--e-card); border-radius: var(--e-radius);
-            padding: 50px; border: 1px solid var(--e-border);
-            box-shadow: var(--e-shadow); backdrop-filter: blur(20px);
-            transition: var(--speed);
+            padding: 55px; border: 1px solid var(--e-border);
+            box-shadow: var(--e-shadow); backdrop-filter: blur(25px);
+            transition: var(--speed); position: relative;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 25px 60px rgba(0,0,0,0.08); }
 
         /* --- BOTONES --- */
         .btn {
-            padding: 16px 32px; border-radius: 18px; font-size: 16px; font-weight: 800;
-            cursor: pointer; border: none; transition: 0.3s;
-            display: inline-flex; align-items: center; gap: 10px;
+            padding: 18px 36px; border-radius: 20px; font-size: 16px; font-weight: 800;
+            cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 12px;
+            transition: all 0.3s var(--speed);
         }
         .btn-p { background: #000; color: #fff; }
-        .btn-p:hover { background: var(--e-blue); transform: scale(1.02); }
-        .btn-s { background: rgba(0, 0, 0, 0.04); color: var(--e-text); }
-        .btn-s:hover { background: rgba(0, 0, 0, 0.08); }
+        .btn-p:hover { background: var(--e-blue); transform: scale(1.05); }
+        .btn-s { background: rgba(0, 0, 0, 0.05); color: var(--e-text); }
+        .btn-f { background: var(--e-red); color: #fff; }
 
         /* --- INPUTS --- */
-        .group { margin-bottom: 25px; }
-        .label { font-size: 12px; font-weight: 800; color: #86868b; margin-left: 15px; margin-bottom: 8px; display: block; text-transform: uppercase; }
-        .field {
+        .field-box { margin-bottom: 25px; }
+        .field-label { font-size: 12px; font-weight: 800; color: #86868b; margin-left: 15px; margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .input-field {
             width: 100%; padding: 20px; border-radius: 18px; background: #f2f2f7;
-            border: 2px solid transparent; font-size: 16px; font-weight: 600;
+            border: 2px solid transparent; font-size: 17px; font-weight: 600;
             transition: var(--speed);
         }
-        .field:focus { background: #fff; border-color: var(--e-blue); outline: none; }
+        .input-field:focus { background: white; border-color: var(--e-blue); outline: none; }
 
         /* --- PERFIL --- */
-        .profile-grid { display: grid; grid-template-columns: 400px 1fr; gap: 40px; }
-        .avatar {
-            width: 160px; height: 160px; background: #000;
-            border-radius: 50px; display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 70px; font-weight: 900; margin: 0 auto 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        .profile-wrap { display: grid; grid-template-columns: 420px 1fr; gap: 40px; }
+        .avatar-big {
+            width: 170px; height: 170px; background: #000;
+            border-radius: 55px; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 80px; font-weight: 900; margin: 0 auto 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); animation: pulse 5s infinite;
         }
-        .stats { display: flex; gap: 15px; justify-content: center; }
-        .s-card { background: #fff; padding: 20px; border-radius: 20px; flex: 1; border: 1px solid var(--e-border); }
-        .s-val { font-size: 30px; font-weight: 900; display: block; }
-        .s-lab { font-size: 11px; font-weight: 800; color: #86868b; text-transform: uppercase; }
+        .stats-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .stat-card {
+            background: #fff; padding: 25px; border-radius: 22px; text-align: center;
+            border: 1px solid var(--e-border); transition: 0.4s;
+        }
+        .stat-num { font-size: 36px; font-weight: 900; color: #000; display: block; }
+        .stat-txt { font-size: 11px; font-weight: 800; color: #86868b; text-transform: uppercase; }
 
-        /* --- LISTAS --- */
-        .user-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .u-item {
-            background: #fff; padding: 40px; border-radius: 28px; border: 1px solid var(--e-border);
+        /* --- DIRECTORIO --- */
+        .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .user-card {
+            background: #fff; padding: 45px; border-radius: 30px; border: 1.5px solid var(--e-border);
             text-align: center; transition: var(--speed); cursor: pointer;
         }
-        .u-item:hover { border-color: var(--e-blue); transform: translateY(-10px); box-shadow: var(--e-shadow); }
+        .user-card:hover { border-color: var(--e-blue); transform: translateY(-15px); box-shadow: 0 35px 70px rgba(0,0,0,0.1); }
+        .mini-av { width: 70px; height: 70px; background: #f2f2f7; border-radius: 22px; margin: 0 auto 25px; display: grid; place-items: center; font-size: 30px; font-weight: 900; }
 
-        /* --- ADMIN --- */
-        .row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 25px; background: #fff; border-radius: 20px; margin-bottom: 15px;
-            border: 1px solid var(--e-border);
-        }
+        footer { padding: 120px 0; text-align: center; opacity: 0.3; font-weight: 900; font-size: 14px; letter-spacing: 4px; }
 
-        footer { padding: 100px 0; text-align: center; opacity: 0.3; font-weight: 900; font-size: 13px; letter-spacing: 4px; }
-
-        /* ESPACIADORES PARA MANTENER ESTRUCTURA */
-        .v-space { height: 100px; }
-        .h-line { height: 1px; background: var(--e-border); margin: 40px 0; }
+        /* ESPACIADORES */
+        .spacer { height: 60px; }
+        .hr { height: 1px; background: var(--e-border); margin: 45px 0; }
 
     </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
-    <div class="orb" style="width:500px; height:500px; top:-100px; left:-100px;"></div>
-    <div class="orb" style="width:400px; height:400px; bottom:-50px; right:-50px; animation-delay:-5s;"></div>
-
     <div id="toast">ECHACA</div>
 
-    <nav id="navbar">
-        <div class="logo" onclick="goTo('home')">ECHACA<span>.</span></div>
-        <div class="search-box">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" class="search-input" placeholder="Buscar en el Directorio..." onkeyup="searchHandler(event)">
+    <nav id="top-nav">
+        <div class="logo" onclick="nav('home')">ECHACA<span>.</span></div>
+        <div class="search-container">
+            <svg class="search-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" class="search-bar" placeholder="Buscar usuarios..." onkeyup="searchUsers(event)">
         </div>
-        <button class="btn btn-s" style="padding: 10px 20px;" onclick="location.reload()">Cerrar</button>
+        <button class="btn btn-s" onclick="location.reload()">Salir</button>
     </nav>
 
-    <main id="view-auth" class="container active">
-        <div class="card" style="max-width: 480px; margin: 0 auto; text-align: center;">
+    <main id="view-auth" class="view active">
+        <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
             <div style="margin-bottom: 50px;">
-                <h1 style="font-size: 65px; font-weight: 900; letter-spacing: -4px; line-height: 1;">ECHACA</h1>
-                <p id="auth-sub" style="color: #86868b; font-weight: 600; margin-top: 15px;">Bienvenido al Sistema</p>
+                <h1 style="font-size: 70px; font-weight: 900; letter-spacing: -4px; line-height: 0.9;">ECHACA</h1>
+                <p id="a-sub" style="color: #86868b; font-weight: 600; margin-top: 15px;">Sistema de Identidad</p>
             </div>
 
-            <div id="reg-fields" style="display: none;">
-                <div class="group">
-                    <span class="label">Nombre</span>
-                    <input type="text" id="in-n" class="field" placeholder="Emmanuel">
+            <div id="reg-box" style="display: none;">
+                <div class="field-box">
+                    <span class="field-label">Nombre Completo</span>
+                    <input type="text" id="in-n" class="input-field" placeholder="Tu nombre">
                 </div>
             </div>
 
-            <div class="group">
-                <span class="label">Correo Electrónico</span>
-                <input type="email" id="in-e" class="field" placeholder="ejemplo@echaca.com">
+            <div class="field-box">
+                <span class="field-label">Correo</span>
+                <input type="email" id="in-e" class="input-field" placeholder="ejemplo@echaca.com">
             </div>
 
-            <div class="group">
-                <span class="label">Contraseña</span>
-                <input type="password" id="in-p" class="field" placeholder="••••••••">
+            <div class="field-box">
+                <span class="field-label">Contraseña</span>
+                <input type="password" id="in-p" class="input-field" placeholder="••••••••">
             </div>
 
-            <button class="btn btn-p" style="width: 100%; justify-content: center; margin-top: 20px;" onclick="doAuth()">
-                <span id="btn-txt">Entrar al Sistema</span>
+            <button class="btn btn-p" style="width: 100%; justify-content: center; margin-top: 25px;" onclick="handleLogin()">
+                <span id="a-btn">Entrar al Sistema</span>
             </button>
 
-            <div class="h-line"></div>
+            <div class="hr"></div>
 
             <p style="font-size: 15px; font-weight: 800;">
-                <span id="auth-q">¿No tienes cuenta?</span>
-                <span onclick="toggleMode()" id="auth-act" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crear cuenta.</span>
+                <span id="a-ask">¿No tienes cuenta?</span>
+                <span onclick="swapMode()" id="a-swap" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crear cuenta.</span>
             </p>
         </div>
     </main>
 
-    <main id="view-home" class="container">
-        <div class="profile-grid">
+    <main id="view-home" class="view">
+        <div class="profile-wrap">
             <aside class="card" style="text-align: center;">
-                <div id="my-av" class="avatar">E</div>
-                <h1 id="my-n" style="font-size: 45px; font-weight: 900; letter-spacing: -2px;">Emmanuel</h1>
-                <p id="my-e" style="color: #86868b; font-size: 18px; font-weight: 600; margin-bottom: 40px;">admin@echaca.com</p>
+                <div id="u-av" class="avatar-big">E</div>
+                <h1 id="u-n" style="font-size: 50px; font-weight: 900; letter-spacing: -2.5px;">Emmanuel</h1>
+                <p id="u-e" style="color: #86868b; font-size: 20px; font-weight: 600; margin-bottom: 45px;">admin@echaca.com</p>
                 
-                <div class="stats">
-                    <div class="s-card"><b class="s-val" id="count-f">0</b><span class="s-lab">Seguidores</span></div>
-                    <div class="s-card"><b class="s-val" id="count-s">0</b><span class="s-lab">Siguiendo</span></div>
+                <div class="stats-wrap">
+                    <div class="stat-card"><b class="stat-num" id="my-f">0</b><span class="stat-txt">Seguidores</span></div>
+                    <div class="stat-card"><b class="stat-num" id="my-s">0</b><span class="stat-txt">Siguiendo</span></div>
                 </div>
 
-                <button id="adm-btn" class="btn btn-s" style="width: 100%; margin-top: 35px; justify-content: center; display: none;" onclick="openAdmin()">
+                <button id="adm-trigger" class="btn btn-s" style="width: 100%; margin-top: 40px; justify-content: center; display: none;" onclick="showAdmin()">
                     Panel de Control
                 </button>
             </aside>
 
             <section>
-                <div class="card" style="margin-bottom: 30px;">
-                    <h2 style="font-size: 30px; font-weight: 900; margin-bottom: 20px;">Estado</h2>
-                    <div style="padding: 25px; background: #fff; border-radius: 20px; border-left: 6px solid var(--e-blue);">
-                        <p style="font-weight: 800;">SISTEMA OPERATIVO</p>
-                        <p style="font-size: 15px; color: #86868b; margin-top: 5px;">Tu sesión en ECHACA está protegida y activa.</p>
+                <div class="card" style="margin-bottom: 35px;">
+                    <h2 style="font-size: 34px; font-weight: 900; margin-bottom: 25px;">Estado Global</h2>
+                    <div style="padding: 30px; background: #fff; border-radius: 25px; border-left: 8px solid var(--e-blue);">
+                        <p style="font-weight: 800;">SISTEMA OPERATIVO v90.0</p>
+                        <p style="color: #86868b; margin-top: 5px; font-weight: 600;">Bienvenido, Emmanuel. Todas las funciones están activas.</p>
                     </div>
-                </div>
-                <div class="card">
-                    <h2 style="font-size: 30px; font-weight: 900; margin-bottom: 20px;">Seguridad</h2>
-                    <p style="color: #86868b; font-weight: 600;">No hay alertas pendientes.</p>
                 </div>
             </section>
         </div>
     </main>
 
-    <main id="view-dir" class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px;">
+    <main id="view-dir" class="view">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px;">
             <div>
-                <h1 id="dir-h" style="font-size: 55px; font-weight: 900; letter-spacing: -3px;">Directorio</h1>
-                <p style="color: #86868b; font-size: 20px; font-weight: 600;">Listado de usuarios en ECHACA</p>
+                <h1 id="dir-title" style="font-size: 60px; font-weight: 900; letter-spacing: -3.5px;">Directorio</h1>
+                <p style="color: #86868b; font-size: 22px; font-weight: 600;">Resultados de búsqueda</p>
             </div>
-            <button class="btn btn-s" onclick="goTo('home')">Volver</button>
+            <button class="btn btn-s" onclick="nav('home')">Volver</button>
         </div>
-        <div id="dir-res" class="user-list"></div>
+        <div id="dir-list" class="directory-grid"></div>
     </main>
 
-    <main id="view-id" class="container">
-        <button class="btn btn-s" style="margin-bottom: 40px;" onclick="goTo('dir')">← Volver</button>
+    <main id="view-id" class="view">
+        <button class="btn btn-s" style="margin-bottom: 45px;" onclick="nav('dir')">← Regresar</button>
         <div class="card">
-            <div style="display: flex; align-items: center; gap: 60px;">
-                <div id="ext-av" class="avatar" style="width: 150px; height: 150px; font-size: 70px; margin: 0;">U</div>
+            <div style="display: flex; align-items: center; gap: 70px;">
+                <div id="x-av" class="avatar-big" style="width: 160px; height: 160px; font-size: 75px; margin: 0;">U</div>
                 <div style="flex: 1;">
-                    <h1 id="ext-n" style="font-size: 55px; font-weight: 900; letter-spacing: -3px;">Usuario</h1>
-                    <p id="ext-e" style="color: #86868b; font-size: 20px; margin-bottom: 35px;"></p>
+                    <h1 id="x-n" style="font-size: 60px; font-weight: 900; letter-spacing: -3.5px;">Usuario</h1>
+                    <p id="x-e" style="color: #86868b; font-size: 24px; margin-bottom: 40px; font-weight: 600;"></p>
+                    
+                    <div style="display: flex; gap: 30px; margin-bottom: 40px;">
+                        <div><b id="x-f" style="font-size: 30px; font-weight: 900;">0</b><p class="stat-txt">Seguidores</p></div>
+                        <div><b id="x-s" style="font-size: 30px; font-weight: 900;">0</b><p class="stat-txt">Siguiendo</p></div>
+                    </div>
+
                     <div style="display: flex; gap: 20px;">
-                        <button id="f-btn" class="btn btn-p" onclick="handleFollow()">Seguir</button>
-                        <button class="btn btn-s">Mensaje</button>
+                        <button id="f-btn" class="btn btn-p" onclick="syncFollow()">Seguir</button>
+                        <button class="btn btn-s">Enviar Mensaje</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <main id="view-admin" class="container">
+    <main id="view-admin" class="view">
         <div class="card">
-            <h1 style="font-size: 40px; font-weight: 900; margin-bottom: 40px;">Administración</h1>
-            <div id="adm-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
+            <h1 style="font-size: 45px; font-weight: 900; margin-bottom: 45px;">Gestión de Usuarios</h1>
+            <div id="adm-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
         </div>
     </main>
 
-    <footer>ECHACA v80.0 • EMMANUEL • 2026</footer>
+    <footer>ECHACA v90.0 • EMMANUEL • 2026</footer>
 
     <script>
         /* ================================================================
-           ECHACA LOGIC MOTOR v80.0
+           ECHACA MASTER ENGINE v90.0
            ================================================================
         */
 
-        let USER = null;
+        let ME = null;
         let TARGET = null;
-        let isReg = false;
+        let isRegMode = false;
 
-        function goTo(id) {
-            document.querySelectorAll('.container').forEach(c => {
-                c.style.opacity = '0';
-                c.style.transform = 'translateY(20px)';
-                setTimeout(() => c.classList.remove('active'), 300);
+        function nav(id) {
+            const views = document.querySelectorAll('.view');
+            views.forEach(v => {
+                v.style.opacity = '0';
+                v.style.transform = 'translateY(25px)';
+                setTimeout(() => v.classList.remove('active'), 400);
             });
             setTimeout(() => {
-                const el = document.getElementById('view-' + id);
-                el.classList.add('active');
+                const target = document.getElementById('view-' + id);
+                target.classList.add('active');
                 setTimeout(() => {
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, 50);
-            }, 350);
+                    target.style.opacity = '1';
+                    target.style.transform = 'translateY(0)';
+                }, 100);
+            }, 450);
         }
 
-        function toggleMode() {
-            isReg = !isReg;
-            document.getElementById('reg-fields').style.display = isReg ? 'block' : 'none';
-            document.getElementById('auth-sub').innerText = isReg ? 'Crea tu cuenta' : 'Bienvenido al Sistema';
-            document.getElementById('btn-txt').innerText = isReg ? 'Crear cuenta' : 'Entrar al Sistema';
-            document.getElementById('auth-q').innerText = isReg ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
-            document.getElementById('auth-act').innerText = isReg ? 'Entrar.' : 'Crear cuenta.';
+        function swapMode() {
+            isRegMode = !isRegMode;
+            document.getElementById('reg-box').style.display = isRegMode ? 'block' : 'none';
+            document.getElementById('a-sub').innerText = isRegMode ? 'Crea tu cuenta' : 'Sistema de Identidad';
+            document.getElementById('a-btn').innerText = isRegMode ? 'Crear cuenta' : 'Entrar al Sistema';
+            document.getElementById('a-ask').innerText = isRegMode ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+            document.getElementById('a-swap').innerText = isRegMode ? 'Entrar.' : 'Crear cuenta.';
         }
 
-        async function doAuth() {
+        async function handleLogin() {
             const e = document.getElementById('in-e').value;
             const p = document.getElementById('in-p').value;
             const n = document.getElementById('in-n').value;
 
-            if(!e || !p) return toast("CAMPOS VACÍOS");
+            if(!e || !p) return notify("CAMPOS VACÍOS");
 
+            // CORRECCIÓN SEGURIDAD ADMIN
             if(e === "emma2013rq@gmail.com") {
-                toast(isReg ? "CUENTA CREADA" : "SESIÓN INICIADA");
-                setTimeout(() => init({ id: 0, nombre: "Emmanuel", email: e, isAdmin: true, followers: [] }), 1000);
+                if(p !== "emma06e") return notify("ERROR DE ACCESO");
+                notify(isRegMode ? "CUENTA CREADA" : "SESIÓN INICIADA");
+                setTimeout(() => startSession({ id: 0, nombre: "Emmanuel", email: e, isAdmin: true, followers: [], following: [] }), 1000);
                 return;
             }
 
-            const path = isReg ? '/auth/register' : '/auth/login';
+            const path = isRegMode ? '/auth/register' : '/auth/login';
             try {
-                const r = await fetch(path, {
+                const res = await fetch(path, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ nombre: n, email: e, password: p })
                 });
-                const data = await r.json();
-                if(r.ok) {
-                    toast(isReg ? "CUENTA CREADA" : "SESIÓN INICIADA");
-                    if(isReg) toggleMode(); else init(data.user);
-                } else { toast("ERROR"); }
-            } catch(err) { toast("ERROR DE RED"); }
+                const data = await res.json();
+                if(res.ok) {
+                    notify(isRegMode ? "CUENTA CREADA" : "SESIÓN INICIADA");
+                    if(isRegMode) swapMode(); else startSession(data.user);
+                } else { notify("ERROR DE DATOS"); }
+            } catch(err) { notify("ERROR DE RED"); }
         }
 
-        function init(u) {
-            USER = u;
-            document.getElementById('navbar').style.display = 'flex';
-            document.getElementById('my-n').innerText = u.nombre;
-            document.getElementById('my-e').innerText = u.email;
-            document.getElementById('my-av').innerText = u.nombre[0].toUpperCase();
-            document.getElementById('count-f').innerText = u.followers ? u.followers.length : "0";
-            if(u.isAdmin) document.getElementById('adm-btn').style.display = 'flex';
-            goTo('home');
+        function startSession(u) {
+            ME = u;
+            // Aseguramos que existan los arrays de seguimiento
+            if(!ME.followers) ME.followers = [];
+            if(!ME.following) ME.following = [];
+
+            document.getElementById('top-nav').style.display = 'flex';
+            document.getElementById('u-n').innerText = u.nombre;
+            document.getElementById('u-e').innerText = u.email;
+            document.getElementById('u-av').innerText = u.nombre[0].toUpperCase();
+            
+            updateMyStats();
+            
+            if(u.isAdmin) document.getElementById('adm-trigger').style.display = 'flex';
+            nav('home');
         }
 
-        async function searchHandler(e) {
+        function updateMyStats() {
+            document.getElementById('my-f').innerText = ME.followers.length;
+            document.getElementById('my-s').innerText = ME.following.length;
+        }
+
+        async function searchUsers(e) {
             if(e.key === 'Enter') {
                 const q = e.target.value;
-                const r = await fetch(`/api/users/search?q=${q}`);
-                const data = await r.json();
-                const list = document.getElementById('dir-res');
+                const res = await fetch(`/api/users/search?q=${q}`);
+                const data = await res.json();
+                const list = document.getElementById('dir-list');
                 list.innerHTML = '';
-                document.getElementById('dir-h').innerText = `Resultados: ${q}`;
+                document.getElementById('dir-title').innerText = `Búsqueda: ${q}`;
+
                 data.forEach(u => {
-                    if(u.id === USER.id) return;
+                    if(u.id === ME.id) return;
                     list.innerHTML += `
-                        <div class="u-item" onclick="viewId(${u.id})">
-                            <div style="width:60px; height:60px; background:#000; color:#fff; border-radius:20px; display:grid; place-items:center; margin:0 auto 20px; font-weight:900; font-size:24px;">${u.nombre[0]}</div>
-                            <h3 style="font-size:24px; font-weight:900;">${u.nombre}</h3>
+                        <div class="user-card" onclick="openProfile(${u.id})">
+                            <div class="mini-av">${u.nombre[0]}</div>
+                            <h3 style="font-size:26px; font-weight:900;">${u.nombre}</h3>
                             <p style="color:#86868b; font-weight:700;">${u.email}</p>
+                            <div style="margin-top:25px; color:var(--e-blue); font-weight:900; font-size:14px;">PERFIL →</div>
                         </div>`;
                 });
-                goTo('dir');
+                nav('dir');
             }
         }
 
-        async function viewId(id) {
-            const r = await fetch('/api/admin/database');
-            const all = await r.json();
+        async function openProfile(id) {
+            const res = await fetch('/api/admin/database');
+            const all = await res.json();
             TARGET = all.find(u => u.id === id);
-            document.getElementById('ext-n').innerText = TARGET.nombre;
-            document.getElementById('ext-e').innerText = TARGET.email;
-            document.getElementById('ext-av').innerText = TARGET.nombre[0].toUpperCase();
-            updateF();
-            goTo('id');
+            
+            // Aseguramos arrays
+            if(!TARGET.followers) TARGET.followers = [];
+            if(!TARGET.following) TARGET.following = [];
+
+            document.getElementById('x-n').innerText = TARGET.nombre;
+            document.getElementById('x-e').innerText = TARGET.email;
+            document.getElementById('x-av').innerText = TARGET.nombre[0].toUpperCase();
+            
+            refreshTargetStats();
+            nav('id');
         }
 
-        function updateF() {
-            const b = document.getElementById('f-btn');
-            const s = JSON.parse(localStorage.getItem('f_ech') || '[]');
-            if(s.includes(TARGET.id)) { b.innerText = "Siguiendo"; b.style.opacity = "0.5"; }
-            else { b.innerText = "Seguir"; b.style.opacity = "1"; }
+        function refreshTargetStats() {
+            document.getElementById('x-f').innerText = TARGET.followers.length;
+            document.getElementById('x-s').innerText = TARGET.following.length;
+            
+            const btn = document.getElementById('f-btn');
+            if(ME.following.includes(TARGET.id)) {
+                btn.innerText = "Dejar de Seguir";
+                btn.className = "btn btn-f";
+            } else {
+                btn.innerText = "Seguir";
+                btn.className = "btn btn-p";
+            }
         }
 
-        function handleFollow() {
-            let s = JSON.parse(localStorage.getItem('f_ech') || '[]');
-            if(s.includes(TARGET.id)) { s = s.filter(i => i !== TARGET.id); toast("ELIMINADO"); }
-            else { s.push(TARGET.id); toast("SIGUIENDO"); }
-            localStorage.setItem('f_ech', JSON.stringify(s));
-            updateF();
+        // LÓGICA DE ESPEJO: Sigue y se te agrega
+        async function syncFollow() {
+            try {
+                const res = await fetch('/api/users/follow', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ myId: ME.id, targetId: TARGET.id })
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    // Actualizamos localmente para el "Espejo"
+                    if(ME.following.includes(TARGET.id)) {
+                        ME.following = ME.following.filter(id => id !== TARGET.id);
+                        TARGET.followers = TARGET.followers.filter(id => id !== ME.id);
+                        notify("CONEXIÓN CERRADA");
+                    } else {
+                        ME.following.push(TARGET.id);
+                        TARGET.followers.push(ME.id);
+                        notify("SIGUIENDO");
+                    }
+                    updateMyStats();
+                    refreshTargetStats();
+                }
+            } catch(e) { notify("ERROR DE CONEXIÓN"); }
         }
 
-        async function openAdmin() {
-            const r = await fetch('/api/admin/database');
-            const data = await r.json();
+        async function showAdmin() {
+            const res = await fetch('/api/admin/database');
+            const data = await res.json();
             const list = document.getElementById('adm-list');
             list.innerHTML = '';
             data.forEach(u => {
-                list.innerHTML += `<div class="row"><div><b>${u.nombre}</b><br><small>${u.email}</small></div><button class="btn btn-s" style="color:red" onclick="purge(${u.id})">BORRAR</button></div>`;
+                list.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:25px; background:#fff; border-radius:20px; border:1px solid var(--e-border);">
+                        <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
+                        <button class="btn btn-s" style="color:var(--e-red)" onclick="deleteId(${u.id})">BORRAR</button>
+                    </div>`;
             });
-            goTo('admin');
+            nav('admin');
         }
 
-        async function purge(id) {
-            if(!confirm("¿BORRAR?")) return;
+        async function deleteId(id) {
+            if(id === 0) return notify("NO PUEDES BORRAR AL ADMIN");
+            if(!confirm("¿CONFIRMAR?")) return;
             await fetch(`/api/admin/delete/${id}`, { method: 'DELETE' });
-            toast("BORRADO");
-            openAdmin();
+            notify("ELIMINADO");
+            showAdmin();
         }
 
-        function toast(m) {
+        function notify(m) {
             const t = document.getElementById('toast');
             t.innerText = m;
             t.classList.add('active');
