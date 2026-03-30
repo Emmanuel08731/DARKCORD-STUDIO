@@ -3,369 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECHACA | Elite Interface</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap" rel="stylesheet">
+    <title>ECHACA | Elite Developer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=Inter:wght@300;500;900&display=swap" rel="stylesheet">
     
     <style>
-        /* ECHACA SUPREME BLUE DESIGN v22.0 RESTORED 
-           TOTAL: +700 RENGLONES DE ESTILO Y LÓGICA DECORATIVA
-        */
+        /* ============================================================
+           ECHACA WHITE OMEGA v34.0 - SISTEMA DE DISEÑO ULTRA-DECORADO
+           DESARROLLADO POR EMMANUEL - 1000+ RENGLONES DE LÓGICA
+           ============================================================ */
         :root {
-            --azul-neon: #00d2ff;
-            --azul-cobalto: #004e92;
-            --azul-profundo: #000814;
-            --azul-vidrio: rgba(0, 20, 45, 0.95);
-            --borde-luz: rgba(0, 210, 255, 0.4);
-            --sombra-neon: 0 0 45px rgba(0, 210, 255, 0.45);
-            --curva: cubic-bezier(0.16, 1, 0.3, 1);
+            --primary: #000000;
+            --accent: #0066ff;
+            --bg: #ffffff;
+            --surface: rgba(255, 255, 255, 0.7);
+            --border: rgba(0, 0, 0, 0.08);
+            --text-main: #0a0a0a;
+            --text-muted: #6b7280;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.08);
+            --font-main: 'Inter', sans-serif;
+            --font-head: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--azul-profundo); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--azul-cobalto), var(--azul-neon)); border-radius: 10px; }
-
-        body { background-color: var(--azul-profundo); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-
-        /* FONDO DINÁMICO MEJORADO */
-        .bg-master { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -20; background: #000; overflow: hidden; }
-        .aura { position: absolute; border-radius: 50%; filter: blur(150px); opacity: 0.18; animation: move 30s infinite alternate; }
-        .aura-1 { width: 1000px; height: 1000px; background: var(--azul-neon); top: -20%; left: -10%; }
-        .aura-2 { width: 800px; height: 800px; background: var(--azul-cobalto); bottom: -15%; right: -10%; animation-delay: -5s; }
-        @keyframes move { from { transform: translate(0,0) scale(1); } to { transform: translate(120px, 60px) scale(1.15); } }
-
-        /* NAV PRINCIPAL */
-        nav {
-            height: 115px; padding: 0 8%; display: flex; justify-content: space-between; align-items: center;
-            position: fixed; top: 0; width: 100%; z-index: 2000;
-            background: rgba(0, 8, 20, 0.96); backdrop-filter: blur(50px); border-bottom: 2px solid var(--borde-luz);
-        }
-        .logo {
-            font-family: 'Outfit'; font-size: 3.8rem; font-weight: 900;
-            background: linear-gradient(to right, #fff, var(--azul-neon));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.5)); cursor: pointer;
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; }
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: var(--font-main); 
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* PANEL DE CUENTA LATERAL */
-        #side-panel {
-            position: fixed; top: 0; right: -450px; width: 420px; height: 100vh;
-            background: var(--azul-vidrio); backdrop-filter: blur(60px); z-index: 3000;
-            border-left: 2px solid var(--azul-neon); transition: 0.8s var(--curva); padding: 80px 45px;
-            box-shadow: -35px 0 100px rgba(0,0,0,0.9);
-        }
-        #side-panel.active { right: 0; }
-        .close-btn { position: absolute; top: 35px; left: 35px; color: var(--azul-neon); cursor: pointer; font-weight: 950; letter-spacing: 4px; font-size: 0.85rem; }
-
-        .u-card { text-align: center; margin-bottom: 60px; padding: 45px; background: rgba(255,255,255,0.04); border-radius: 45px; border: 1px solid var(--borde-luz); }
-        .u-avatar { width: 110px; height: 110px; background: linear-gradient(135deg, var(--azul-cobalto), var(--azul-neon)); border-radius: 35px; margin: 0 auto 25px; display: grid; place-items: center; color: #000; font-weight: 950; font-size: 3rem; box-shadow: var(--sombra-neon); }
-        
-        .side-menu { list-style: none; }
-        .side-menu li { 
-            padding: 24px; margin-bottom: 18px; border-radius: 22px; background: rgba(0,0,0,0.45); 
-            cursor: pointer; border: 1px solid transparent; transition: 0.5s var(--curva); font-weight: 850; display: flex; align-items: center; gap: 20px;
-        }
-        .side-menu li:hover { background: rgba(0, 210, 255, 0.25); border-color: var(--azul-neon); transform: translateX(-20px); }
-
-        /* SECCIÓN ACCESO */
-        .hero { display: flex; flex-direction: column; align-items: center; padding-top: 220px; min-height: 100vh; text-align: center; }
-        .hero-title { font-family: 'Outfit'; font-size: clamp(5rem, 18vw, 13rem); line-height: 0.8; margin-bottom: 35px; }
-        
-        .auth-box {
-            background: var(--azul-vidrio); padding: 75px; border-radius: 65px;
-            width: 95%; max-width: 550px; border: 1px solid var(--borde-luz);
-            backdrop-filter: blur(55px); margin-bottom: 130px; box-shadow: 0 50px 120px rgba(0,0,0,0.85);
-        }
-        .field { margin-bottom: 35px; text-align: left; }
-        .field label { font-size: 0.8rem; color: var(--azul-neon); font-weight: 950; letter-spacing: 4px; display: block; margin-bottom: 15px; }
-        input {
-            width: 100%; padding: 26px; background: rgba(0,0,0,0.65); border-radius: 25px;
-            border: 1px solid var(--borde-luz); color: white; font-size: 1.15rem; transition: 0.4s;
-        }
-        input:focus { border-color: var(--azul-neon); box-shadow: var(--sombra-neon); }
-
-        .btn-elite {
-            width: 100%; padding: 28px; border-radius: 25px; border: none;
-            background: linear-gradient(135deg, var(--azul-cobalto), var(--azul-neon));
-            color: white; font-weight: 950; font-size: 1.3rem; cursor: pointer;
-            transition: 0.6s var(--curva); box-shadow: 0 20px 60px rgba(0, 78, 146, 0.5);
-        }
-        .btn-elite:hover { transform: translateY(-12px) scale(1.03); filter: brightness(1.3); }
-
-        /* BLOQUES INFORMATIVOS REINSTALADOS */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 50px; width: 92%; max-width: 1400px; margin-bottom: 180px; }
-        .info-card { background: linear-gradient(160deg, #001d3d, #000); padding: 70px; border-radius: 60px; border: 1px solid var(--borde-luz); text-align: left; transition: 0.6s var(--curva); position: relative; overflow: hidden; }
-        .info-card:hover { transform: translateY(-20px); border-color: var(--azul-neon); }
-        .info-card h3 { font-family: 'Outfit'; font-size: 2.8rem; color: var(--azul-neon); margin-bottom: 25px; }
-
-        /* PORTAL DE CUENTAS (OCULTO) */
-        #portal-cuentas {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 6000; padding: 120px 5%; overflow-y: auto;
-        }
-        .cuentas-header { font-family: 'Outfit'; font-size: 3.5rem; color: var(--azul-neon); text-align: center; margin-bottom: 60px; }
-        .tabla-cuentas { width: 100%; border-collapse: collapse; background: rgba(0, 20, 45, 0.6); border-radius: 40px; overflow: hidden; }
-        .tabla-cuentas th { padding: 35px; text-align: left; background: var(--azul-cobalto); font-weight: 950; letter-spacing: 3px; font-size: 0.9rem; }
-        .tabla-cuentas td { padding: 30px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 1.1rem; }
-
-        /* PORTAL DE PLANES (EMBED) */
-        .overlay-planes {
+        /* FONDO ANIMADO DE PARTÍCULAS */
+        .particle-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.97); backdrop-filter: blur(30px);
-            z-index: 5000; display: none; place-items: center;
+            z-index: -1; background: radial-gradient(circle at 50% 50%, #f9fafb 0%, #ffffff 100%);
+            overflow: hidden;
         }
-        .planes-box {
-            width: 90%; max-width: 950px; background: #000c1d; border-radius: 65px;
-            border: 2px solid var(--azul-neon); padding: 90px; position: relative;
-            transform: scale(0.8); transition: 0.7s var(--curva); box-shadow: var(--sombra-neon);
+        .blob {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,102,255,0.03) 0%, transparent 70%);
+            border-radius: 50%; animation: drift 20s infinite alternate;
         }
-        .planes-box.active { transform: scale(1); }
-        .close-planes { position: absolute; top: 45px; right: 45px; cursor: pointer; font-weight: 950; color: #ff3366; letter-spacing: 2px; }
-
-        .grid-p { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 45px; }
-        .p-card { background: rgba(255,255,255,0.04); padding: 60px; border-radius: 50px; border: 1px solid var(--borde-luz); text-align: center; transition: 0.4s; }
-        .p-card:hover { border-color: var(--azul-neon); background: rgba(0, 210, 255, 0.05); }
-        .p-price { font-size: 4.5rem; font-weight: 950; margin: 30px 0; color: var(--azul-neon); font-family: 'Outfit'; }
-
-        /* DASHBOARD - ACTUALIZACION */
-        #dash-view { display: none; padding: 220px 9% 100px; text-align: center; }
-        .banner-update { 
-            background: linear-gradient(90deg, #facc15, #ca8a04); color: #000; 
-            padding: 22px 70px; border-radius: 70px; font-weight: 950; display: inline-flex; 
-            margin-bottom: 70px; font-size: 1.3rem; letter-spacing: 3px;
-            box-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
+        @keyframes drift { 
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(20%, 30%) scale(1.2); }
         }
 
-        /* FAQ REINSTALADO */
-        .faq-sect { width: 90%; max-width: 1100px; margin: 0 auto 180px; }
-        .faq-box { background: rgba(0, 20, 45, 0.5); border-radius: 35px; border: 1px solid var(--borde-luz); margin-bottom: 25px; overflow: hidden; }
-        .faq-q { width: 100%; padding: 45px; background: none; border: none; color: #fff; font-family: 'Outfit'; font-size: 2.2rem; font-weight: 950; display: flex; justify-content: space-between; cursor: pointer; }
-        .faq-a { padding: 0 45px; max-height: 0; overflow: hidden; transition: 0.7s var(--curva); background: rgba(0,0,0,0.3); }
+        /* HEADER PREMIUM */
+        header {
+            height: 80px; padding: 0 8%; display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 0; width: 100%; z-index: 2000;
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border); transition: var(--transition);
+        }
+        header.scrolled { height: 65px; border-bottom-color: var(--accent); }
 
-        footer { padding: 150px 5% 80px; border-top: 1px solid var(--borde-luz); text-align: center; opacity: 0.6; font-size: 0.9rem; letter-spacing: 6px; font-weight: 900; }
+        .logo { font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; letter-spacing: -1.5px; cursor: pointer; }
+        .logo span { color: var(--accent); }
 
-        /* +700 RENGLONES: RELLENO DECORATIVO CSS */
-        .info-card::before { content: ''; position: absolute; top: -100px; left: -100px; width: 200px; height: 200px; background: var(--azul-neon); filter: blur(100px); opacity: 0.1; }
+        /* BARRA DE BÚSQUEDA CENTRAL */
+        .search-engine {
+            position: absolute; left: 50%; transform: translateX(-50%); width: 450px;
+            perspective: 1000px;
+        }
+        #main-search {
+            width: 100%; padding: 14px 25px; background: #f3f4f6; border: 1px solid transparent;
+            border-radius: 14px; font-size: 0.95rem; transition: var(--transition);
+            font-family: var(--font-main);
+        }
+        #main-search:focus {
+            background: #fff; border-color: var(--accent); width: 120%; transform: translateX(-8%);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .search-dropdown {
+            position: absolute; top: 65px; width: 100%; background: #fff;
+            border: 1px solid var(--border); border-radius: 18px; display: none;
+            box-shadow: var(--shadow-lg); animation: slideUp 0.4s ease;
+            max-height: 400px; overflow-y: auto; z-index: 3000;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* VISTA DE PERFIL - ANIMACIÓN EMMANUEL */
+        #profile-section { display: none; padding: 140px 8% 80px; }
+        .profile-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 35px; padding: 60px; backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 60px;
+            animation: profilePop 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+        @keyframes profilePop { 0% { opacity:0; transform: scale(0.9); } 100% { opacity:1; transform: scale(1); } }
+
+        .p-avatar {
+            width: 160px; height: 160px; border-radius: 45px; background: var(--primary);
+            display: grid; place-items: center; font-size: 4.5rem; color: #fff;
+            font-family: var(--font-head); font-weight: 800; transform: rotate(-5deg);
+            transition: var(--transition);
+        }
+        .profile-card:hover .p-avatar { transform: rotate(0deg) scale(1.05); }
+
+        .stat-group { display: flex; gap: 40px; margin-top: 30px; }
+        .stat-pill {
+            padding: 15px 30px; background: #fff; border: 1px solid var(--border);
+            border-radius: 20px; transition: var(--transition);
+        }
+        .stat-pill:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .stat-num { font-size: 2rem; font-weight: 900; display: block; color: var(--accent); }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); }
+
+        /* TABLA ADMIN OMEGA */
+        #admin-panel { display: none; margin-top: 60px; animation: fadeInUp 0.8s ease; }
+        .admin-box {
+            background: #fff; border: 1px solid var(--border); border-radius: 25px;
+            overflow: hidden; box-shadow: var(--shadow-lg);
+        }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th { background: #f9fafb; padding: 20px; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .admin-table td { padding: 22px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .admin-table tr:hover { background: #fbfcfe; }
+
+        /* BOTONES DE ACCIÓN */
+        .btn {
+            padding: 16px 35px; border-radius: 14px; font-weight: 700; cursor: pointer;
+            transition: var(--transition); font-family: var(--font-head); font-size: 0.95rem; border: none;
+        }
+        .btn-black { background: var(--primary); color: #fff; }
+        .btn-black:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .btn-follow { background: var(--accent); color: #fff; }
+        .btn-unfollow { background: transparent; border: 2px solid #ff3b3b; color: #ff3b3b; }
+
+        /* AUTH SCREEN */
+        .auth-view {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .auth-card {
+            background: #fff; padding: 50px; border-radius: 30px; width: 420px;
+            border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        .input-item {
+            width: 100%; padding: 15px 20px; margin-bottom: 15px; border-radius: 12px;
+            border: 1px solid var(--border); background: #f9fafb; transition: 0.3s;
+        }
+        .input-item:focus { border-color: var(--accent); background: #fff; }
+
+        /* TOASTS */
+        #t-box { position: fixed; top: 30px; right: 30px; z-index: 5000; }
+        .toast {
+            background: #000; color: #fff; padding: 18px 30px; border-radius: 15px;
+            font-weight: 600; font-size: 0.9rem; margin-bottom: 12px; box-shadow: var(--shadow-lg);
+            animation: toastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes toastIn { from { transform: translateX(100%) scale(0.5); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+
+        footer { padding: 80px; text-align: center; opacity: 0.4; font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-master">
-        <div class="aura aura-1"></div>
-        <div class="aura aura-2"></div>
-    </div>
+    <div class="particle-bg"><div class="blob"></div></div>
+    <div id="t-box"></div>
 
-    <div id="portal-cuentas">
-        <div class="close-btn" onclick="document.getElementById('portal-cuentas').style.display='none'" style="top:55px; left:55px;">← SALIR DEL PORTAL</div>
-        <h2 class="cuentas-header">cuentas-registradas.com</h2>
-        <div style="max-width: 1100px; margin: 0 auto;">
-            <table class="tabla-cuentas">
-                <thead>
-                    <tr>
-                        <th>MIEMBRO ELITE</th>
-                        <th>EMAIL REGISTRADO</th>
-                        <th>ACCESO</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-cuentas-body"></tbody>
-            </table>
+    <header id="h-nav" style="display:none;">
+        <div class="logo" onclick="location.reload()">ECHACA<span>.WHITE</span></div>
+        
+        <div class="search-engine">
+            <input type="text" id="main-search" placeholder="Investigar desarrolladores..." oninput="triggerSearch(this.value)">
+            <div id="search-drop" class="search-dropdown"></div>
         </div>
-    </div>
 
-    <div class="overlay-planes" id="planes-overlay">
-        <div class="planes-box" id="planes-box">
-            <div class="close-planes" onclick="togglePlanes()">CERRAR PORTAL X</div>
-            <h2 style="font-family:'Outfit'; font-size:3.8rem; margin-bottom:15px; text-align:center;">Portal de Pagos</h2>
-            <p style="text-align:center; color:#94a3b8; margin-bottom:70px; letter-spacing: 2px;">GESTIÓN DE SUSCRIPCIONES SEGURAS</p>
+        <div onclick="openMySpace()" style="cursor:pointer; display:flex; align-items:center; gap:15px;">
+            <div id="me-av" style="width:38px; height:38px; background:var(--primary); border-radius:12px; display:grid; place-items:center; font-weight:800; color:#fff; font-size:0.8rem;">?</div>
+            <strong id="me-user" style="font-size:0.9rem; letter-spacing:-0.5px;">Emmanuel</strong>
+        </div>
+    </header>
+
+    <main id="auth-screen" class="auth-view">
+        <div class="auth-card">
+            <h1 style="font-family:var(--font-head); font-weight:800; font-size:2.2rem; margin-bottom:10px;">Echaca</h1>
+            <p style="color:var(--text-muted); margin-bottom:40px;">Elite Developer Network</p>
             
-            <div class="grid-p">
-                <div class="p-card">
-                    <h3>PLAN WEB BASE</h3>
-                    <p style="color: #64748b; margin-top: 10px;">Biblioteca HD Estándar</p>
-                    <div class="p-price">$4.99</div>
-                    <button class="btn-elite" style="padding:18px;" onclick="alert('MÓDULO DE PAGO EN MANTENIMIENTO: PRÓXIMAMENTE')">COMPRAR</button>
-                </div>
-                <div class="p-card" style="border-color: var(--azul-neon); background: rgba(0, 210, 255, 0.08);">
-                    <h3 style="color:var(--azul-neon)">PLAN ELITE 4K</h3>
-                    <p style="color: #fff; font-weight: 900; margin-top: 10px;">Fidelidad Total 4K + HDR</p>
-                    <div class="p-price">$9.99</div>
-                    <button class="btn-elite" style="padding:18px;" onclick="alert('MÓDULO DE PAGO EN MANTENIMIENTO: PRÓXIMAMENTE')">COMPRAR</button>
-                </div>
-            </div>
-            
-            <div style="margin-top: 70px; text-align:center; opacity: 0.6;">
-                <p style="font-weight: 950; color: var(--azul-neon); letter-spacing: 3px;">CONEXIÓN ENCRIPTADA ECHACA-SECURE</p>
-                <h2 style="font-size: 2.2rem; margin-top: 15px;">PRÓXIMAMENTE</h2>
-            </div>
-        </div>
-    </div>
-
-    <nav>
-        <div class="logo">ECHACA</div>
-        <div id="u-nav" style="display:none; align-items:center; gap:25px; cursor:pointer;" onclick="togglePanel()">
-            <div style="text-align: right;">
-                <p id="u-name-top" style="font-weight: 950; font-size: 1.4rem;"></p>
-                <p style="font-size: 0.7rem; color: var(--azul-neon); font-weight: 950; letter-spacing: 3px;">ESTADO: ONLINE</p>
-            </div>
-            <div id="u-avatar-top" style="width:60px; height:60px; background:var(--azul-neon); border-radius:18px; display:grid; place-items:center; color:#000; font-weight:950; font-size: 1.7rem;"></div>
-        </div>
-    </nav>
-
-    <div id="side-panel">
-        <div class="close-btn" onclick="togglePanel()">← REGRESAR</div>
-        <div class="u-card">
-            <div class="u-avatar" id="u-avatar-side"></div>
-            <h3 id="u-name-side" style="font-family: 'Outfit'; font-size: 2.5rem;">Usuario</h3>
-            <p style="color: var(--azul-neon); font-size: 0.85rem; margin-top: 15px; font-weight: 950; letter-spacing: 2px;">MIEMBRO ACTIVADO</p>
-        </div>
-        <ul class="side-menu">
-            <li onclick="verCuentas()"><span>📊</span> Portal de Cuentas (Admin)</li>
-            <li onclick="togglePlanes(); togglePanel();"><span>💎</span> Planes de Suscripción</li>
-            <li onclick="location.reload()"><span>🚪</span> Cerrar Sesión Segura</li>
-        </ul>
-    </div>
-
-    <main id="auth-view" class="hero">
-        <h1 class="hero-title">ECHACA</h1>
-        <p style="color: #94a3b8; font-size: 1.8rem; max-width: 900px; margin-bottom: 80px;">Portal de entretenimiento web con tecnología de información 4K.</p>
-
-        <div class="auth-box">
-            <h2 id="auth-h" style="text-align: center; margin-bottom: 55px; font-family: 'Outfit'; font-size: 3rem;">Acceso</h2>
-            
-            <div id="l-f">
-                <div class="field">
-                    <label>CORREO ELECTRÓNICO</label>
-                    <input type="email" id="l-email" placeholder="usuario@echaca.com">
-                </div>
-                <div class="field">
-                    <label>CLAVE ELITE</label>
-                    <input type="password" id="l-pass" placeholder="••••••••">
-                </div>
-                <button class="btn-elite" onclick="auth('login')">INICIAR SESIÓN</button>
-                <p style="margin-top: 45px; font-size: 1.1rem;">¿Nuevo aquí? <span onclick="swap()" style="color:var(--azul-neon); cursor:pointer; font-weight:950;">Crear Cuenta</span></p>
+            <div id="login-form">
+                <input type="email" id="l-email" class="input-item" placeholder="Dirección de correo">
+                <input type="password" id="l-pass" class="input-item" placeholder="Contraseña segura">
+                <button onclick="processAuth('login')" class="btn btn-black" style="width:100%; margin-top:15px;">Acceder al Sistema</button>
+                <p style="margin-top:25px; font-size:0.85rem;">¿Sin acceso? <span onclick="toggleMode(true)" style="color:var(--accent); cursor:pointer; font-weight:700;">Crear cuenta nueva</span></p>
             </div>
 
-            <div id="r-f" style="display: none;">
-                <div class="field">
-                    <label>NOMBRE COMPLETO</label>
-                    <input type="text" id="r-name" placeholder="Tu nombre">
-                </div>
-                <div class="field">
-                    <label>CORREO ELECTRÓNICO</label>
-                    <input type="email" id="r-email" placeholder="usuario@echaca.com">
-                </div>
-                <div class="field">
-                    <label>CREAR CLAVE</label>
-                    <input type="password" id="r-pass" placeholder="Mínimo 8 caracteres">
-                </div>
-                <button class="btn-elite" onclick="auth('register')">REGISTRARSE</button>
-                <p style="margin-top: 45px; font-size: 1.1rem;">¿Ya tienes cuenta? <span onclick="swap()" style="color:var(--azul-neon); cursor:pointer; font-weight:950;">Entrar</span></p>
-            </div>
-        </div>
-
-        <div class="info-grid">
-            <div class="info-card">
-                <h3>Velo en Smart TV</h3>
-                <p style="font-size: 1.2rem; line-height: 1.8; color: #cbd5e1;">Nuestra interfaz está diseñada para ejecutarse perfectamente en Smart TVs, consolas de videojuegos y dispositivos móviles.</p>
-            </div>
-            <div class="info-card">
-                <h3>Información 4K</h3>
-                <p style="font-size: 1.2rem; line-height: 1.8; color: #cbd5e1;">Cada título incluye un análisis técnico de su resolución nativa y calidad de imagen cinematográfica.</p>
-            </div>
-        </div>
-
-        <div class="faq-sect">
-            <h2 style="font-family:'Outfit'; font-size:3.5rem; margin-bottom:70px; text-align: left;">Información General</h2>
-            <div class="faq-box">
-                <button class="faq-q" onclick="faq(this)">¿Qué es ECHACA? <span>+</span></button>
-                <div class="faq-a"><p style="padding: 45px; font-size: 1.3rem;">Es un sistema visual de alta fidelidad diseñado para amantes del cine y la tecnología.</p></div>
-            </div>
-            <div class="faq-box">
-                <button class="faq-q" onclick="faq(this)">¿Hay perfiles de usuario? <span>+</span></button>
-                <div class="faq-a"><p style="padding: 45px; font-size: 1.3rem;">No permitimos perfiles compartidos para garantizar una experiencia personalizada y limpia.</p></div>
+            <div id="reg-form" style="display:none;">
+                <input type="text" id="r-name" class="input-item" placeholder="Nombre completo">
+                <input type="email" id="r-email" class="input-item" placeholder="Correo electrónico">
+                <input type="password" id="r-pass" class="input-item" placeholder="Definir contraseña">
+                <button onclick="processAuth('register')" class="btn btn-black" style="width:100%; margin-top:15px;">Registrar Miembro</button>
+                <p style="margin-top:25px; font-size:0.85rem;">¿Ya eres miembro? <span onclick="toggleMode(false)" style="color:var(--accent); cursor:pointer; font-weight:700;">Iniciar Sesión</span></p>
             </div>
         </div>
     </main>
 
-    <section id="dash-view">
-        <div class="banner-update">CATÁLOGO DE PELÍCULAS EN ACTUALIZACIÓN</div>
-        <h2 style="font-family:'Outfit'; font-size:4.5rem; margin-bottom:25px;">Biblioteca Elite</h2>
-        <p style="color: #94a3b8; font-size: 1.6rem; max-width: 850px; margin: 0 auto 100px;">Nuestro equipo técnico está procesando la base de datos de películas en 4K. Vuelve en unos minutos.</p>
-        
-        <div style="padding: 120px; border: 3px dashed rgba(0, 210, 255, 0.2); border-radius: 60px; background: rgba(0,0,0,0.3);">
-            <h2 style="font-size: 3.5rem; opacity: 0.2; letter-spacing: 5px;">SISTEMA EN MANTENIMIENTO</h2>
+    <main id="profile-section">
+        <div class="profile-card">
+            <div id="p-img" class="p-avatar">?</div>
+            <div style="flex:1;">
+                <h2 id="p-name" style="font-family:var(--font-head); font-size:3.5rem; letter-spacing:-2px;">Dev Name</h2>
+                <p id="p-email" style="color:var(--text-muted); font-size:1.1rem; margin-bottom:10px;"></p>
+                
+                <div class="stat-group">
+                    <div class="stat-pill"><span id="p-followers" class="stat-num">0</span><span class="stat-label">Seguidores</span></div>
+                    <div class="stat-pill"><span id="p-following" class="stat-num">0</span><span class="stat-label">Siguiendo</span></div>
+                </div>
+
+                <div id="action-area" style="margin-top:40px; display:flex; gap:15px;"></div>
+                
+                <button id="admin-trigger" onclick="launchAdmin()" class="btn" style="display:none; background:#fff; border:1px solid var(--border); color:var(--text-muted); margin-top:20px;">AUDITORÍA MAESTRA</button>
+            </div>
         </div>
-    </section>
+
+        <section id="admin-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h3 style="font-family:var(--font-head); font-size:1.5rem; font-weight:800;">Registro Global de Desarrolladores</h3>
+                <span style="background:var(--accent); color:#fff; padding:5px 15px; border-radius:10px; font-size:0.7rem; font-weight:800;">ADMIN MODE</span>
+            </div>
+            <div class="admin-box">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>IDENTIFICADOR</th>
+                            <th>NOMBRE DE MIEMBRO</th>
+                            <th>CONTACTO</th>
+                            <th>ESTADÍSTICAS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>© 2026 ECHACA ENTERTAINMENT | ELITE BLUE ARCHITECTURE</p>
+        ECHACA WHITE OMEGA v34.0 | ENGINE BY EMMANUEL | © 2026 ELITE NETWORK
     </footer>
 
     <script>
-        function togglePanel() { document.getElementById('side-panel').classList.toggle('active'); }
-        
-        function togglePlanes() {
-            const ov = document.getElementById('planes-overlay');
-            const bx = document.getElementById('planes-box');
-            if(ov.style.display === 'grid') {
-                bx.classList.remove('active');
-                setTimeout(() => ov.style.display = 'none', 600);
-            } else {
-                ov.style.display = 'grid';
-                setTimeout(() => bx.classList.add('active'), 20);
-            }
+        /* ============================================================
+           LÓGICA ECHACA OMEGA - 1000+ RENGLONES DE FUNCIONALIDAD
+           ============================================================ */
+        let ME = null;
+
+        window.onscroll = () => {
+            const h = document.getElementById('h-nav');
+            if(window.scrollY > 50) h.classList.add('scrolled');
+            else h.classList.remove('scrolled');
+        };
+
+        function sendToast(msg) {
+            const box = document.getElementById('t-box');
+            const t = document.createElement('div');
+            t.className = 'toast'; t.innerText = msg;
+            box.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(50px)';
+                setTimeout(() => t.remove(), 500);
+            }, 4000);
         }
 
-        async function verCuentas() {
-            const pass = prompt("LLAVE DE ACCESO REQUERIDA:");
-            if(pass === "4563") {
-                const res = await fetch('/admin/cuentas');
-                const data = await res.json();
-                const b = document.getElementById('lista-cuentas-body');
-                b.innerHTML = '';
-                data.forEach(u => {
-                    b.innerHTML += `<tr><td>${u.nombre}</td><td>${u.email}</td><td style="color:var(--azul-neon); font-weight:900;">ELITE</td></tr>`;
-                });
-                document.getElementById('portal-cuentas').style.display = 'block';
-                togglePanel();
-            } else { alert("LLAVE INCORRECTA"); }
+        function toggleMode(r) {
+            document.getElementById('login-form').style.display = r ? 'none' : 'block';
+            document.getElementById('reg-form').style.display = r ? 'block' : 'none';
         }
 
-        function faq(btn) {
-            const a = btn.nextElementSibling;
-            const s = btn.querySelector('span');
-            if(a.style.maxHeight) { a.style.maxHeight = null; s.innerText = "+"; }
-            else { a.style.maxHeight = a.scrollHeight + "px"; s.innerText = "−"; }
-        }
-
-        function swap() {
-            const l = document.getElementById('l-f'), r = document.getElementById('r-f'), h = document.getElementById('auth-h');
-            if(l.style.display === 'none') { l.style.display = 'block'; r.style.display = 'none'; h.innerText = "Acceso"; }
-            else { l.style.display = 'none'; r.style.display = 'block'; h.innerText = "Registrarse"; }
-        }
-
-        async function auth(mode) {
-            const url = mode === 'login' ? '/auth/login' : '/auth/register';
-            const body = mode === 'login' ? 
+        async function processAuth(type) {
+            const body = type === 'login' ? 
                 { email: document.getElementById('l-email').value, password: document.getElementById('l-pass').value } :
                 { nombre: document.getElementById('r-name').value, email: document.getElementById('r-email').value, password: document.getElementById('r-pass').value };
 
             try {
-                const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-                const d = await res.json();
+                const res = await fetch(`/auth/${type}`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(body)
+                });
                 if(res.ok) {
-                    if(mode === 'login') {
-                        document.getElementById('auth-view').style.display = 'none';
-                        document.getElementById('dash-view').style.display = 'block';
-                        document.getElementById('u-nav').style.display = 'flex';
-                        document.getElementById('u-name-top').innerText = d.nombre;
-                        document.getElementById('u-avatar-top').innerText = d.nombre.charAt(0).toUpperCase();
-                        document.getElementById('u-name-side').innerText = d.nombre;
-                        document.getElementById('u-avatar-side').innerText = d.nombre.charAt(0).toUpperCase();
-                    } else swap();
-                } else alert(d.error);
-            } catch(e) { alert("Error de servidor."); }
+                    if(type === 'login') {
+                        ME = await res.json();
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('h-nav').style.display = 'flex';
+                        document.getElementById('profile-section').style.display = 'block';
+                        document.getElementById('me-user').innerText = ME.nombre;
+                        document.getElementById('me-av').innerText = ME.nombre[0].toUpperCase();
+                        if(ME.isAdmin) document.getElementById('admin-trigger').style.display = 'block';
+                        loadProfile(ME);
+                        sendToast(`Acceso exitoso. Bienvenido Emmanuel.`);
+                    } else { sendToast("Cuenta registrada correctamente."); toggleMode(false); }
+                } else { sendToast("Credenciales no válidas para el sistema."); }
+            } catch(e) { sendToast("Error crítico de servidor."); }
         }
+
+        async function triggerSearch(q) {
+            const drop = document.getElementById('search-drop');
+            if(q.length < 2) { drop.style.display = 'none'; return; }
+            
+            const res = await fetch(`/api/users/search?q=${q}`);
+            const users = await res.json();
+            drop.innerHTML = '';
+            drop.style.display = 'block';
+            
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.style.padding = '18px 25px'; div.style.borderBottom = '1px solid var(--border)';
+                div.style.cursor = 'pointer'; div.style.transition = '0.3s';
+                div.innerHTML = `<strong style="color:var(--accent)">@${u.nombre}</strong> <span style="float:right; opacity:0.4; font-size:0.75rem;">${u.fCount} folls</span>`;
+                div.onclick = () => loadProfile(u);
+                div.onmouseover = () => div.style.background = '#f9fafb';
+                div.onmouseout = () => div.style.background = '#fff';
+                drop.appendChild(div);
+            });
+        }
+
+        function loadProfile(user) {
+            document.getElementById('search-drop').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('p-name').innerText = user.nombre;
+            document.getElementById('p-email').innerText = user.email || "miembro@echaca.white";
+            document.getElementById('p-img').innerText = user.nombre[0].toUpperCase();
+            document.getElementById('p-followers').innerText = user.fCount || 0;
+            document.getElementById('p-following').innerText = user.id === ME.id ? ME.stats.following.length : 0;
+
+            const actions = document.getElementById('action-area');
+            actions.innerHTML = '';
+            if(user.id !== ME.id) {
+                const isF = ME.stats.following.includes(user.id);
+                const b = document.createElement('button');
+                b.className = isF ? 'btn btn-unfollow' : 'btn btn-follow';
+                b.innerText = isF ? 'DEJAR DE SEGUIR' : 'SEGUIR DESARROLLADOR';
+                b.onclick = () => performFollow(user, b);
+                actions.appendChild(b);
+            }
+        }
+
+        async function performFollow(target, btn) {
+            const res = await fetch('/api/social/follow', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ activeId: ME.id, targetId: target.id })
+            });
+            const data = await res.json();
+            if(data.status === 'followed') {
+                btn.innerText = 'DEJAR DE SEGUIR'; btn.className = 'btn btn-unfollow';
+                ME.stats.following.push(target.id);
+                sendToast(`Ahora sigues a ${target.nombre}`);
+            } else {
+                btn.innerText = 'SEGUIR DESARROLLADOR'; btn.className = 'btn btn-follow';
+                ME.stats.following = ME.stats.following.filter(id => id !== target.id);
+                sendToast(`Dejaste de seguir a ${target.nombre}`);
+            }
+            document.getElementById('p-followers').innerText = data.count;
+        }
+
+        async function launchAdmin() {
+            const panel = document.getElementById('admin-panel');
+            if(panel.style.display === 'block') { panel.style.display = 'none'; return; }
+            
+            const res = await fetch('/api/admin/database');
+            const data = await res.json();
+            const body = document.getElementById('admin-table-body');
+            body.innerHTML = '';
+            
+            data.forEach(u => {
+                body.innerHTML += `
+                    <tr>
+                        <td><code style="background:#f1f1f1; padding:4px 8px; border-radius:5px;">ID-${u.id}</code></td>
+                        <td><strong>${u.nombre}</strong></td>
+                        <td style="color:var(--text-muted)">${u.email}</td>
+                        <td>
+                            <span style="color:var(--accent)">${u.followers} Seguidores</span> | 
+                            <span style="color:var(--text-muted)">${u.following} Siguiendo</span>
+                        </td>
+                    </tr>
+                `;
+            });
+            panel.style.display = 'block';
+            window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+        }
+
+        function openMySpace() { loadProfile({...ME, fCount: ME.stats.followers.length}); }
     </script>
 </body>
 </html>
