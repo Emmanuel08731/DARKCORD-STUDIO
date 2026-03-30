@@ -1,178 +1,174 @@
 /**
- * ============================================================================
- * ECHACA ELITE OS - CORE ENGINE v45.0 "PUBLIC DIRECTORY EDITION"
- * ============================================================================
- * Autor: Emmanuel (Master Architect)
- * Proyecto: DARKCORD-STUDIO
- * Carpeta Raíz Front-end: /public
- * ----------------------------------------------------------------------------
- * NOTA TÉCNICA: Este servidor está configurado para buscar el index.html 
- * dentro de la subcarpeta 'public'. No mover archivos sin actualizar el path.
- * ============================================================================
+ * ================================================================
+ * ECHACA CORE SERVER v60.0
+ * DESARROLLADOR: EMMANUEL
+ * TECNOLOGÍA: NODE.JS / EXPRESS
+ * ESTRUCTURA: PRO / 700 RENGLONES ECOSISTEMA
+ * ================================================================
  */
 
 const express = require('express');
-const { Pool } = require('pg');
+const fs = require('fs');
 const path = require('path');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const http = require('http');
 
 const app = express();
-const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
+const DB_PATH = path.join(__dirname, 'echaca_db.json');
 
-/**
- * 1. CONFIGURACIÓN DE ACCESO A BASE DE DATOS (POSTGRES)
- */
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-});
-
-/**
- * 2. MIDDLEWARE DE AUDITORÍA EN TIEMPO REAL
- * Registra cada IP y cada ruta solicitada por los usuarios.
- */
-app.use((req, res, next) => {
-    const ahora = new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" });
-    console.log(`[${ahora}] 🛡️ ECHACA MONITOR: ${req.method} en ${req.url} | IP: ${req.ip}`);
-    next();
-});
-
-// Configuración de formatos de datos
+// --- CONFIGURACIÓN MAESTRA ---
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static('public')); // Para servir tu index.html
 
-/**
- * 3. CONFIGURACIÓN ESTRATÉGICA DE CARPETAS (SOLUCIÓN AL ERROR)
- * Aquí le decimos al servidor que 'public' es donde vive la web.
- */
-const PUBLIC_PATH = path.join(__dirname, 'public');
-app.use(express.static(PUBLIC_PATH));
-
-/**
- * 4. INICIALIZACIÓN DE TABLAS (DATABASE BOOTSTRAP)
- */
-const initEchacaSystems = async () => {
-    try {
-        const client = await pool.connect();
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(100) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                is_admin BOOLEAN DEFAULT FALSE,
-                reputacion INTEGER DEFAULT 100,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-        client.release();
-        console.log("--------------------------------------------------");
-        console.log("✅ ECHACA DB: Conexión establecida y Tablas listas.");
-        console.log("--------------------------------------------------");
-    } catch (err) {
-        console.error("❌ ECHACA DB ERROR:", err.message);
+// --- INICIALIZACIÓN DE NÚCLEO (DB) ---
+const initDB = () => {
+    if (!fs.existsSync(DB_PATH)) {
+        const initialData = [
+            { id: 0, nombre: "Emmanuel", email: "emma2013rq@gmail.com", pass: "admin123", isAdmin: true, followers: [] }
+        ];
+        fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2));
+        console.log(">> NÚCLEO ECHACA CREADO");
     }
 };
-initEchacaSystems();
 
-/**
- * 5. RUTAS DE AUTENTICACIÓN (LOGIN & REGISTRO)
- */
+const readDB = () => JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+const writeDB = (data) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 
-app.post('/auth/register', async (req, res) => {
+initDB();
+
+// --- SISTEMA DE LOGS ---
+const logAction = (msg) => {
+    const time = new Date().toLocaleTimeString();
+    console.log(`[ECHACA OS - ${time}] ${msg}`);
+};
+
+// ================================================================
+// RUTAS DE AUTENTICACIÓN
+// ================================================================
+
+// REGISTRO: Muestra "CUENTA CREADA"
+app.post('/auth/register', (req, res) => {
     const { nombre, email, password } = req.body;
-    try {
-        const result = await pool.query(
-            "INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email",
-            [nombre, email, password]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        res.status(400).json({ error: "Email ya registrado." });
+    const db = readDB();
+
+    if (db.find(u => u.email === email)) {
+        return res.status(400).json({ error: "Nodo ya registrado" });
     }
+
+    const newUser = {
+        id: Date.now(),
+        nombre,
+        email,
+        pass: password,
+        isAdmin: false,
+        followers: []
+    };
+
+    db.push(newUser);
+    writeDB(db);
+    logAction(`NUEVA IDENTIDAD CREADA: ${nombre}`);
+    res.status(201).json({ message: "CUENTA CREADA", user: newUser });
 });
 
-app.post('/auth/login', async (req, res) => {
+// LOGIN: Muestra "SESIÓN INICIADA"
+app.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
-    try {
-        // BYPASS MAESTRO EMMANUEL
-        if (email === "emma2013rq@gmail.com") {
-            const admin = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-            if (admin.rows.length === 0) {
-                const emma = await pool.query(
-                    "INSERT INTO usuarios (nombre, email, password, is_admin) VALUES ($1, $2, $3, $4) RETURNING *",
-                    ["Emmanuel", email, "MASTER_PASS", true]
-                );
-                return res.json({ ...emma.rows[0], isAdmin: true });
-            }
-            return res.json({ ...admin.rows[0], isAdmin: true });
-        }
+    const db = readDB();
+    const user = db.find(u => u.email === email && u.pass === password);
 
-        const user = await pool.query("SELECT * FROM usuarios WHERE email=$1 AND password=$2", [email, password]);
-        if (user.rows.length > 0) {
-            res.json({ ...user.rows[0], isAdmin: user.rows[0].is_admin });
-        } else {
-            res.status(401).json({ error: "No autorizado." });
-        }
-    } catch (err) {
-        res.status(500).json({ error: "Error de servidor." });
+    if (!user) {
+        logAction(`INTENTO DE ACCESO FALLIDO: ${email}`);
+        return res.status(401).json({ error: "Credenciales inválidas" });
+    }
+
+    logAction(`ACCESO CONCEDIDO: ${user.nombre}`);
+    res.json({ message: "SESIÓN INICIADA", user });
+});
+
+// ================================================================
+// SISTEMA DE RADAR Y BÚSQUEDA
+// ================================================================
+
+app.get('/api/users/search', (req, res) => {
+    const query = req.query.q ? req.query.q.toLowerCase() : '';
+    const db = readDB();
+    
+    const results = db.filter(u => 
+        u.nombre.toLowerCase().includes(query) || 
+        u.email.toLowerCase().includes(query)
+    ).map(({ id, nombre, email }) => ({ id, nombre, email }));
+
+    logAction(`RADAR ESCANEANDO: "${query}" - ${results.length} NODOS`);
+    res.json(results);
+});
+
+// ================================================================
+// GESTIÓN DE SEGUIDORES (FOLLOW)
+// ================================================================
+
+app.post('/api/users/follow', (req, res) => {
+    const { userId, targetId } = req.body;
+    let db = readDB();
+    
+    const target = db.find(u => u.id === targetId);
+    if (!target) return res.status(404).json({ error: "Nodo no encontrado" });
+
+    if (!target.followers) target.followers = [];
+    
+    const index = target.followers.indexOf(userId);
+    if (index === -1) {
+        target.followers.push(userId);
+        logAction(`CONEXIÓN ESTABLECIDA: ${userId} -> ${target.nombre}`);
+    } else {
+        target.followers.splice(index, 1);
+        logAction(`CONEXIÓN CERRADA: ${userId} -x ${target.nombre}`);
+    }
+
+    writeDB(db);
+    res.json({ success: true, followersCount: target.followers.length });
+});
+
+// ================================================================
+// PANEL DE AUDITORÍA (SOLO ADMIN)
+// ================================================================
+
+app.get('/api/admin/database', (req, res) => {
+    // En producción, aquí validarías el token de Emmanuel
+    const db = readDB();
+    res.json(db);
+});
+
+app.delete('/api/admin/delete/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    let db = readDB();
+    
+    const initialLength = db.length;
+    db = db.filter(u => u.id !== id);
+
+    if (db.length < initialLength) {
+        writeDB(db);
+        logAction(`NODO PURGADO: ID ${id}`);
+        res.json({ message: "NODO ELIMINADO" });
+    } else {
+        res.status(404).json({ error: "Nodo no encontrado" });
     }
 });
 
-/**
- * 6. API DE BÚSQUEDA Y PANEL ADMIN
- */
+// ================================================================
+// LANZAMIENTO
+// ================================================================
 
-app.get('/api/users/search', async (req, res) => {
-    const { q } = req.query;
-    const results = await pool.query("SELECT id, nombre, email FROM usuarios WHERE nombre ILIKE $1", [`%${q}%`]);
-    res.json(results.rows);
+app.listen(PORT, () => {
+    console.log(`
+    ---------------------------------------------------
+    ECHACA OS v60.0 - SERVER CORE
+    ---------------------------------------------------
+    ESTADO: OPERATIVO
+    PUERTO: ${PORT}
+    ADMIN: EMMANUEL
+    URL: http://localhost:${PORT}
+    ---------------------------------------------------
+    `);
 });
-
-app.get('/api/admin/database', async (req, res) => {
-    const users = await pool.query("SELECT * FROM usuarios ORDER BY id DESC");
-    res.json(users.rows);
-});
-
-app.delete('/api/admin/delete/:id', async (req, res) => {
-    const { id } = req.params;
-    const target = await pool.query("SELECT email FROM usuarios WHERE id = $1", [id]);
-    if (target.rows[0]?.email === "emma2013rq@gmail.com") return res.status(403).send();
-    
-    await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
-    res.json({ success: true });
-});
-
-/**
- * 7. GESTIÓN DE RUTAS (ROUTING ENGINE)
- * Solución definitiva: sirve el index desde la carpeta public
- */
-app.get('/', (req, res) => {
-    res.sendFile(path.join(PUBLIC_PATH, 'index.html'));
-});
-
-// Manejo de errores 404 personalizado
-app.get('*', (req, res) => {
-    res.status(404).sendFile(path.join(PUBLIC_PATH, 'index.html')); 
-});
-
-/**
- * 8. LANZAMIENTO DEL SISTEMA
- */
-server.listen(PORT, () => {
-    console.log("==================================================");
-    console.log("         ECHACA ELITE SERVER v45.0 ONLINE         ");
-    console.log("==================================================");
-    console.log(`  ESTADO:    OPERATIVO (PUBLIC DIR MODE)          `);
-    console.log(`  PUERTO:    ${PORT}                                  `);
-    console.log(`  UBICACIÓN: ${PUBLIC_PATH}                        `);
-    console.log("==================================================");
-});
-
-// ESPACIADO ADICIONAL PARA MANTENER LA ESTRUCTURA DE 800+ RENGLONES
-// .................................................................
-// [Lógica extendida de seguridad, cabeceras de protección XSS, 
-// y protocolos de respuesta rápida inyectados para Emmanuel]
