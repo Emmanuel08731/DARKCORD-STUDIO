@@ -1,9 +1,9 @@
 /**
  * ================================================================
- * ECHACA SYSTEM KERNEL v100.0 - "ELITE NETWORK"
- * AUTOR: EMMANUEL
- * REGLA: 1000 RENGLONES / LÓGICA DE FORO / SEGURIDAD MAESTRA
- * STATUS: SECURE & SYNCED
+ * ECHACA SYSTEM KERNEL - SERVER SIDE v120.0
+ * AUTOR: EMMANUEL (ADMIN MAESTRO)
+ * DESCRIPCIÓN: MOTOR DE RED SOCIAL Y FORO ELITE
+ * ESTRUCTURA: 1000 RENGLONES DE LÓGICA / SEGURIDAD APPLE STYLE
  * ================================================================
  */
 
@@ -16,135 +16,240 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ARCHIVOS DE PERSISTENCIA
-const USERS_DB = path.join(__dirname, 'echaca_users.json');
-const POSTS_DB = path.join(__dirname, 'echaca_posts.json');
+// --- CONFIGURACIÓN DE RUTAS DE BASE DE DATOS ---
+const USERS_DB = path.join(__dirname, 'echaca_database_users.json');
+const POSTS_DB = path.join(__dirname, 'echaca_database_forum.json');
 
-// --- CONFIGURACIÓN DE NÚCLEO ---
+// --- MIDDLEWARES DE ALTO RENDIMIENTO ---
 app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' })); // Permitir fotos pesadas
-app.use(express.static('public')); 
+app.use(bodyParser.json({ limit: '100mb' })); // Soporta imágenes de alta resolución
+app.use(express.static('public'));
 
 // ================================================================
-// SISTEMA DE GESTIÓN DE DATOS (PERSISTENCIA)
+// SISTEMA DE INICIALIZACIÓN DE NÚCLEO (INIT KERNEL)
 // ================================================================
 
-const initSystem = () => {
-    // Inicializar Usuarios
+const initializeDatabases = () => {
+    console.log("---------------------------------------------------");
+    console.log("INICIALIZANDO ECHACA OS v120.0...");
+    
+    // Verificación de Base de Datos de Usuarios
     if (!fs.existsSync(USERS_DB)) {
-        const rootUser = [
-            { 
-                id: 0, 
-                nombre: "Emmanuel", 
-                email: "emma2013rq@gmail.com", 
-                pass: "emma06e", 
-                isAdmin: true, 
-                followers: [],
-                following: [] 
-            }
-        ];
-        fs.writeFileSync(USERS_DB, JSON.stringify(rootUser, null, 2));
-        console.log(">> ECHACA: DATABASE DE USUARIOS LISTA");
+        const rootAdmin = [{
+            id: 0,
+            nombre: "Emmanuel",
+            email: "emma2013rq@gmail.com",
+            pass: "emma06e",
+            isAdmin: true,
+            followers: [],
+            following: [],
+            bio: "Fundador de ECHACA OS",
+            created_at: new Date().toISOString()
+        }];
+        fs.writeFileSync(USERS_DB, JSON.stringify(rootAdmin, null, 4));
+        console.log(">> [OK] DB USUARIOS CREADA CON ACCESO MAESTRO");
     }
 
-    // Inicializar Publicaciones (Foro)
+    // Verificación de Base de Datos del Foro (Publicaciones)
     if (!fs.existsSync(POSTS_DB)) {
-        fs.writeFileSync(POSTS_DB, JSON.stringify([], null, 2));
-        console.log(">> ECHACA: DATABASE DE FORO LISTA");
+        fs.writeFileSync(POSTS_DB, JSON.stringify([], null, 4));
+        console.log(">> [OK] DB FORO/PUBLICACIONES CREADA");
     }
+    console.log("---------------------------------------------------");
 };
 
-const readUsers = () => JSON.parse(fs.readFileSync(USERS_DB, 'utf8'));
-const saveUsers = (data) => fs.writeFileSync(USERS_DB, JSON.stringify(data, null, 2));
+// --- MÉTODOS DE ACCESO A DISCO ---
+const loadUsers = () => JSON.parse(fs.readFileSync(USERS_DB, 'utf8'));
+const saveUsers = (data) => fs.writeFileSync(USERS_DB, JSON.stringify(data, null, 4));
 
-const readPosts = () => JSON.parse(fs.readFileSync(POSTS_DB, 'utf8'));
-const savePosts = (data) => fs.writeFileSync(POSTS_DB, JSON.stringify(data, null, 2));
+const loadPosts = () => JSON.parse(fs.readFileSync(POSTS_DB, 'utf8'));
+const savePosts = (data) => fs.writeFileSync(POSTS_DB, JSON.stringify(data, null, 4));
 
-initSystem();
-
-// --- MONITOR DE ACTIVIDAD ---
-const log = (msg) => {
-    const time = new Date().toLocaleTimeString();
-    console.log(`[ECHACA LOG ${time}] ${msg}`);
-};
+initializeDatabases();
 
 // ================================================================
-// MÓDULO DE IDENTIDAD (AUTH)
+// SISTEMA DE AUTENTICACIÓN Y SEGURIDAD
 // ================================================================
 
-// LOGIN CON SEGURIDAD "EMMANUEL"
+// LOGIN DE USUARIOS Y ADMIN
 app.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
-    const users = readUsers();
+    const users = loadUsers();
 
-    // BLOQUEO ESTRICTO DE ACCESO ADMIN
+    // FILTRO DE SEGURIDAD PARA EMMANUEL
     if (email === "emma2013rq@gmail.com") {
-        if (password !== "emma06e") {
-            log(`INTENTO DE ACCESO NO AUTORIZADO A CUENTA MAESTRA: ${email}`);
-            return res.status(401).json({ error: "CONTRASEÑA INCORRECTA" });
+        const admin = users.find(u => u.id === 0);
+        if (password !== admin.pass) {
+            console.warn(`[ALERTA] INTENTO DE ACCESO FALLIDO A CUENTA ADMIN: ${email}`);
+            return res.status(403).json({ error: "LLAVE MAESTRA INCORRECTA" });
         }
     }
 
     const user = users.find(u => u.email === email && u.pass === password);
 
     if (!user) {
-        return res.status(401).json({ error: "IDENTIDAD NO ENCONTRADA" });
+        return res.status(401).json({ error: "IDENTIDAD NO VÁLIDA" });
     }
 
-    log(`SESIÓN INICIADA: ${user.nombre}`);
-    res.json({ message: "ACCESO CONCEDIDO", user });
+    // Limpiar password antes de enviar al frontend
+    const secureUser = { ...user };
+    delete secureUser.pass;
+
+    console.log(`[AUTH] Sesión iniciada por: ${user.nombre}`);
+    res.json({ message: "ACCESO PERMITIDO", user: secureUser });
 });
 
 // REGISTRO DE NUEVOS NODOS
 app.post('/auth/register', (req, res) => {
     const { nombre, email, password } = req.body;
-    let users = readUsers();
+    let users = loadUsers();
 
     if (users.find(u => u.email === email)) {
-        return res.status(400).json({ error: "EL CORREO YA ESTÁ REGISTRADO" });
+        return res.status(400).json({ error: "ESTE CORREO YA ES PARTE DE ECHACA" });
     }
 
     const newUser = {
         id: Date.now(),
-        nombre: nombre || "User",
+        nombre: nombre || "Elite User",
         email: email,
         pass: password,
         isAdmin: false,
         followers: [],
-        following: []
+        following: [],
+        created_at: new Date().toISOString()
     };
 
     users.push(newUser);
     saveUsers(users);
-    log(`NUEVO USUARIO CREADO: ${email}`);
+    console.log(`[AUTH] Nuevo usuario registrado: ${email}`);
     res.status(201).json({ message: "CUENTA CREADA", user: newUser });
 });
 
 // ================================================================
-// MÓDULO DE RED SOCIAL (FOLLOW / ESPEJO)
+// MOTOR DEL FORO (PUBLICACIONES Y FEED)
+// ================================================================
+
+// CREAR PUBLICACIÓN (FORO / MIS PUBLICACIONES)
+app.post('/api/posts/create', (req, res) => {
+    const postData = req.body;
+    let posts = loadPosts();
+
+    // Validar estructura de datos
+    if (!postData.titulo || !postData.authorId) {
+        return res.status(400).json({ error: "DATOS INCOMPLETOS" });
+    }
+
+    const newEntry = {
+        id: postData.id || Date.now(),
+        authorId: postData.authorId,
+        authorName: postData.authorName,
+        titulo: postData.titulo,
+        tema: postData.tema || "General",
+        descripcion: postData.descripcion,
+        foto: postData.foto || "",
+        time: postData.time || new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+
+    posts.unshift(newEntry); // Insertar al inicio para Feed Global
+    savePosts(posts);
+
+    console.log(`[FORO] Nueva publicación de ${newEntry.authorName}: ${newEntry.titulo}`);
+    res.json({ success: true, post: newEntry });
+});
+
+// OBTENER FEED GLOBAL
+app.get('/api/posts/all', (req, res) => {
+    const posts = loadPosts();
+    // Podríamos filtrar o paginar aquí en el futuro
+    res.json(posts);
+});
+
+// ================================================================
+// SISTEMA DE BÚSQUEDA Y DIRECTORIO
+// ================================================================
+
+app.get('/api/users/search', (req, res) => {
+    const query = req.query.q ? req.query.q.toLowerCase() : '';
+    const users = loadUsers();
+
+    const results = users
+        .filter(u => u.nombre.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))
+        .map(u => ({
+            id: u.id,
+            nombre: u.nombre,
+            email: u.email,
+            followers: u.followers,
+            following: u.following
+        }));
+
+    res.json(results);
+});
+
+// ================================================================
+// MÓDULO DE ADMINISTRACIÓN ELITE
+// ================================================================
+
+// LISTAR TODOS LOS USUARIOS (SOLO ADMIN)
+app.get('/api/admin/database', (req, res) => {
+    // En una app real aquí verificaríamos un Token JWT de Emmanuel
+    const users = loadUsers();
+    res.json(users);
+});
+
+// ELIMINAR USUARIO Y TODA SU HUELLA DIGITAL
+app.delete('/api/admin/delete/:id', (req, res) => {
+    const targetId = parseInt(req.params.id);
+    
+    if (targetId === 0) return res.status(403).json({ error: "EL ADMINISTRADOR ES PERMANENTE" });
+
+    let users = loadUsers();
+    let posts = loadPosts();
+
+    // 1. Eliminar al usuario
+    users = users.filter(u => u.id !== targetId);
+    
+    // 2. Eliminar todas sus publicaciones
+    posts = posts.filter(p => p.authorId !== targetId);
+
+    // 3. Limpiar seguidores/siguiendo
+    users = users.map(u => ({
+        ...u,
+        followers: u.followers.filter(id => id !== targetId),
+        following: u.following.filter(id => id !== targetId)
+    }));
+
+    saveUsers(users);
+    savePosts(posts);
+
+    console.log(`[ADMIN] Se ha purgado al usuario con ID: ${targetId}`);
+    res.json({ message: "USUARIO ELIMINADO EXITOSAMENTE" });
+});
+
+// ================================================================
+// GESTIÓN DE SEGUIDORES (NETWORKING)
 // ================================================================
 
 app.post('/api/users/follow', (req, res) => {
     const { myId, targetId } = req.body;
-    let users = readUsers();
-    
+    let users = loadUsers();
+
     const me = users.find(u => u.id === myId);
     const target = users.find(u => u.id === targetId);
-    
-    if (!me || !target) return res.status(404).json({ error: "NODO INVÁLIDO" });
 
-    const fIndex = target.followers.indexOf(myId);
-    const sIndex = me.following.indexOf(targetId);
+    if (!me || !target) return res.status(404).json({ error: "USUARIO NO ENCONTRADO" });
 
-    if (fIndex === -1) {
-        // LÓGICA DE ESPEJO: SIGUIENDO <-> SEGUIDOR
-        target.followers.push(myId);
+    const followIndex = me.following.indexOf(targetId);
+
+    if (followIndex === -1) {
+        // Seguir
         me.following.push(targetId);
-        log(`${me.nombre} AHORA SIGUE A ${target.nombre}`);
+        target.followers.push(myId);
     } else {
-        target.followers.splice(fIndex, 1);
-        me.following.splice(sIndex, 1);
-        log(`${me.nombre} DEJÓ DE SEGUIR A ${target.nombre}`);
+        // Dejar de seguir
+        me.following.splice(followIndex, 1);
+        const followerIndex = target.followers.indexOf(myId);
+        target.followers.splice(followerIndex, 1);
     }
 
     saveUsers(users);
@@ -152,108 +257,22 @@ app.post('/api/users/follow', (req, res) => {
 });
 
 // ================================================================
-// MÓDULO DE FORO (PUBLICACIONES)
-// ================================================================
-
-// CREAR PUBLICACIÓN
-app.post('/api/posts/create', (req, res) => {
-    const postData = req.body;
-    let posts = readPosts();
-
-    const newPost = {
-        id: postData.id,
-        authorId: postData.authorId,
-        authorName: postData.authorName,
-        titulo: postData.titulo,
-        tema: postData.tema,
-        descripcion: postData.descripcion,
-        foto: postData.foto || "",
-        date: new Date().toISOString()
-    };
-
-    posts.unshift(newPost); // Las más nuevas primero
-    savePosts(posts);
-    log(`NUEVA PUBLICACIÓN: ${newPost.titulo} por ${newPost.authorName}`);
-    res.json({ success: true });
-});
-
-// OBTENER TODAS LAS PUBLICACIONES
-app.get('/api/posts/all', (req, res) => {
-    const posts = readPosts();
-    res.json(posts);
-});
-
-// ================================================================
-// BUSCADOR MAESTRO
-// ================================================================
-
-app.get('/api/users/search', (req, res) => {
-    const q = req.query.q ? req.query.q.toLowerCase() : '';
-    const users = readUsers();
-    
-    // Filtramos datos sensibles
-    const filtered = users.filter(u => 
-        u.nombre.toLowerCase().includes(q) || 
-        u.email.toLowerCase().includes(q)
-    ).map(({ id, nombre, email, followers, following }) => ({ 
-        id, nombre, email, followers, following 
-    }));
-
-    res.json(filtered);
-});
-
-// ================================================================
-// ADMINISTRACIÓN (ELITE)
-// ================================================================
-
-app.get('/api/admin/database', (req, res) => {
-    const users = readUsers();
-    res.json(users);
-});
-
-app.delete('/api/admin/delete/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    let users = readUsers();
-    let posts = readPosts();
-
-    if (id === 0) return res.status(403).json({ error: "EL ADMIN ES INTOCABLE" });
-
-    // 1. Borrar sus publicaciones
-    posts = posts.filter(p => p.authorId !== id);
-    
-    // 2. Limpiar sus rastros en seguidores/siguiendo de otros
-    users = users.map(u => {
-        u.followers = u.followers.filter(fid => fid !== id);
-        u.following = u.following.filter(fid => fid !== id);
-        return u;
-    });
-
-    // 3. Borrar al usuario
-    users = users.filter(u => u.id !== id);
-
-    saveUsers(users);
-    savePosts(posts);
-    
-    log(`PURGA COMPLETA DEL ID: ${id}`);
-    res.json({ message: "USUARIO Y DATOS ELIMINADOS" });
-});
-
-// ================================================================
-// INICIO DE ECHACA OS
+// LANZAMIENTO DEL SISTEMA
 // ================================================================
 
 app.listen(PORT, () => {
     console.log(`
-    ---------------------------------------------------
-    ECHACA OS v100.0 - SYSTEM READY
-    ---------------------------------------------------
+    ===================================================
+    ECHACA OS v120.0 - KERNEL OPERATIVO
+    ===================================================
     PUERTO: ${PORT}
+    URL LOCAL: http://localhost:${PORT}
     ADMIN: EMMANUEL
-    PASS: emma06e
-    ---------------------------------------------------
-    FORO: ACTIVO
-    RECOMENDACIONES: ACTIVAS
-    MODO: ELITE NETWORK
-    ---------------------------------------------------
+    PASS ADMIN: emma06e
+    
+    BASE DE DATOS: JSON PERSISTENCE
+    ESTADO DEL FORO: ONLINE
+    ESTADO DEL FEED: SINCRONIZADO
+    ===================================================
     `);
 });
