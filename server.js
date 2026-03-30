@@ -1,174 +1,187 @@
 /**
  * ================================================================
- * ECHACA CORE SERVER v60.0
+ * ECHACA CORE SERVER v80.0
  * DESARROLLADOR: EMMANUEL
- * TECNOLOGÍA: NODE.JS / EXPRESS
- * ESTRUCTURA: PRO / 700 RENGLONES ECOSISTEMA
+ * REGLAS: 700 RENGLONES ECOSISTEMA / SIN "CREDENCIALES"
  * ================================================================
  */
 
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_PATH = path.join(__dirname, 'echaca_db.json');
+const DB_FILE = path.join(__dirname, 'echaca_database.json');
 
-// --- CONFIGURACIÓN MAESTRA ---
+// --- CONFIGURACIÓN ELITE ---
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static('public')); // Para servir tu index.html
+app.use(express.json());
+app.use(express.static('public')); // Sirve tu index.html premium
 
-// --- INICIALIZACIÓN DE NÚCLEO (DB) ---
-const initDB = () => {
-    if (!fs.existsSync(DB_PATH)) {
-        const initialData = [
-            { id: 0, nombre: "Emmanuel", email: "emma2013rq@gmail.com", pass: "admin123", isAdmin: true, followers: [] }
+// --- MOTOR DE PERSISTENCIA ---
+const initDatabase = () => {
+    if (!fs.existsSync(DB_FILE)) {
+        // Emmanuel es el único que existe al iniciar, con 0 conexiones.
+        const root = [
+            { 
+                id: 8731, 
+                nombre: "Emmanuel", 
+                email: "emma2013rq@gmail.com", 
+                pass: "admin123", 
+                isAdmin: true, 
+                followers: [] 
+            }
         ];
-        fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2));
-        console.log(">> NÚCLEO ECHACA CREADO");
+        fs.writeFileSync(DB_FILE, JSON.stringify(root, null, 2));
+        console.log(">> NÚCLEO ECHACA SINCRONIZADO");
     }
 };
 
-const readDB = () => JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-const writeDB = (data) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+const getData = () => JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+const saveData = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-initDB();
+initDatabase();
 
-// --- SISTEMA DE LOGS ---
-const logAction = (msg) => {
-    const time = new Date().toLocaleTimeString();
-    console.log(`[ECHACA OS - ${time}] ${msg}`);
-};
+// --- MIDDLEWARE DE LOGS (ESTILO APPLE) ---
+app.use((req, res, next) => {
+    const now = new Date().toLocaleTimeString();
+    console.log(`[ECHACA OS] ${now} | Solicitud: ${req.method} ${req.path}`);
+    next();
+});
 
 // ================================================================
-// RUTAS DE AUTENTICACIÓN
+// SISTEMA DE ACCESO (AUTH)
 // ================================================================
 
-// REGISTRO: Muestra "CUENTA CREADA"
+// REGISTRO: ¿No tienes cuenta? -> Crea una.
 app.post('/auth/register', (req, res) => {
     const { nombre, email, password } = req.body;
-    const db = readDB();
+    const db = getData();
 
     if (db.find(u => u.email === email)) {
-        return res.status(400).json({ error: "Nodo ya registrado" });
+        return res.status(400).json({ error: "Este correo ya tiene cuenta." });
     }
 
-    const newUser = {
+    const nuevoUsuario = {
         id: Date.now(),
-        nombre,
+        nombre: nombre || "Usuario ECHACA",
         email,
         pass: password,
         isAdmin: false,
-        followers: []
+        followers: [] // IMPORTANTE: Empieza totalmente en 0
     };
 
-    db.push(newUser);
-    writeDB(db);
-    logAction(`NUEVA IDENTIDAD CREADA: ${nombre}`);
-    res.status(201).json({ message: "CUENTA CREADA", user: newUser });
+    db.push(nuevoUsuario);
+    saveData(db);
+    
+    console.log(`>> NUEVA CUENTA: ${nombre} (${email})`);
+    res.status(201).json({ message: "CUENTA CREADA", user: nuevoUsuario });
 });
 
-// LOGIN: Muestra "SESIÓN INICIADA"
+// LOGIN: Sesión Iniciada
 app.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
-    const db = readDB();
-    const user = db.find(u => u.email === email && u.pass === password);
+    const db = getData();
+    
+    const usuario = db.find(u => u.email === email && u.pass === password);
 
-    if (!user) {
-        logAction(`INTENTO DE ACCESO FALLIDO: ${email}`);
-        return res.status(401).json({ error: "Credenciales inválidas" });
+    if (!usuario) {
+        return res.status(401).json({ error: "Datos incorrectos." });
     }
 
-    logAction(`ACCESO CONCEDIDO: ${user.nombre}`);
-    res.json({ message: "SESIÓN INICIADA", user });
+    console.log(`>> ACCESO: ${usuario.nombre} ha entrado.`);
+    res.json({ message: "SESIÓN INICIADA", user: usuario });
 });
 
 // ================================================================
-// SISTEMA DE RADAR Y BÚSQUEDA
+// DIRECTORIO Y BÚSQUEDA
 // ================================================================
 
 app.get('/api/users/search', (req, res) => {
     const query = req.query.q ? req.query.q.toLowerCase() : '';
-    const db = readDB();
+    const db = getData();
     
-    const results = db.filter(u => 
+    // Filtramos para el directorio
+    const resultados = db.filter(u => 
         u.nombre.toLowerCase().includes(query) || 
         u.email.toLowerCase().includes(query)
-    ).map(({ id, nombre, email }) => ({ id, nombre, email }));
+    ).map(({ id, nombre, email, followers }) => ({ 
+        id, 
+        nombre, 
+        email, 
+        followersCount: (followers || []).length 
+    }));
 
-    logAction(`RADAR ESCANEANDO: "${query}" - ${results.length} NODOS`);
-    res.json(results);
+    res.json(resultados);
 });
 
 // ================================================================
-// GESTIÓN DE SEGUIDORES (FOLLOW)
+// CONEXIONES (FOLLOW)
 // ================================================================
 
 app.post('/api/users/follow', (req, res) => {
-    const { userId, targetId } = req.body;
-    let db = readDB();
+    const { miId, targetId } = req.body;
+    let db = getData();
     
-    const target = db.find(u => u.id === targetId);
-    if (!target) return res.status(404).json({ error: "Nodo no encontrado" });
+    const objetivo = db.find(u => u.id === targetId);
+    if (!objetivo) return res.status(404).json({ error: "Usuario no encontrado" });
 
-    if (!target.followers) target.followers = [];
+    // Asegurar que el array exista
+    if (!objetivo.followers) objetivo.followers = [];
     
-    const index = target.followers.indexOf(userId);
+    const index = objetivo.followers.indexOf(miId);
     if (index === -1) {
-        target.followers.push(userId);
-        logAction(`CONEXIÓN ESTABLECIDA: ${userId} -> ${target.nombre}`);
+        objetivo.followers.push(miId); // Conectar
     } else {
-        target.followers.splice(index, 1);
-        logAction(`CONEXIÓN CERRADA: ${userId} -x ${target.nombre}`);
+        objetivo.followers.splice(index, 1); // Desconectar
     }
 
-    writeDB(db);
-    res.json({ success: true, followersCount: target.followers.length });
+    saveData(db);
+    res.json({ success: true, total: objetivo.followers.length });
 });
 
 // ================================================================
-// PANEL DE AUDITORÍA (SOLO ADMIN)
+// CONTROL MAESTRO (ADMIN)
 // ================================================================
 
 app.get('/api/admin/database', (req, res) => {
-    // En producción, aquí validarías el token de Emmanuel
-    const db = readDB();
+    // Aquí Emmanuel recibe toda la base de datos
+    const db = getData();
     res.json(db);
 });
 
 app.delete('/api/admin/delete/:id', (req, res) => {
     const id = parseInt(req.params.id);
-    let db = readDB();
-    
-    const initialLength = db.length;
-    db = db.filter(u => u.id !== id);
+    if(id === 8731) return res.status(403).json({ error: "No puedes eliminar al Admin Maestro" });
 
-    if (db.length < initialLength) {
-        writeDB(db);
-        logAction(`NODO PURGADO: ID ${id}`);
-        res.json({ message: "NODO ELIMINADO" });
+    let db = getData();
+    const nuevaDB = db.filter(u => u.id !== id);
+
+    if (db.length !== nuevaDB.length) {
+        saveData(nuevaDB);
+        console.log(`>> NODO ELIMINADO: ID ${id}`);
+        res.json({ message: "IDENTIDAD PURGADA" });
     } else {
-        res.status(404).json({ error: "Nodo no encontrado" });
+        res.status(404).json({ error: "No se encontró el ID" });
     }
 });
 
 // ================================================================
-// LANZAMIENTO
+// ARRANQUE DEL SISTEMA
 // ================================================================
 
 app.listen(PORT, () => {
     console.log(`
     ---------------------------------------------------
-    ECHACA OS v60.0 - SERVER CORE
+    ECHACA OS v80.0 - NÚCLEO ACTIVO
     ---------------------------------------------------
-    ESTADO: OPERATIVO
+    ESTADO: ONLINE
     PUERTO: ${PORT}
-    ADMIN: EMMANUEL
-    URL: http://localhost:${PORT}
+    MAESTRO: EMMANUEL
+    
+    ¿No tienes cuenta? -> El sistema está listo.
     ---------------------------------------------------
     `);
 });
