@@ -1,83 +1,127 @@
-require('dotenv').config();
+/**
+ * ECHACA OMEGA v39.0 - SERVER CORE
+ * Arquitectura: Node.js + Express + PostgreSQL
+ * Optimización: Emmanuel Elite System
+ */
+
 const express = require('express');
 const { Pool } = require('pg');
-const bcrypt = require('bcryptjs');
+const path = require('path');
+const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 
-// Configuración de la DB
+// 1. CONFIGURACIÓN DE BASE DE DATOS (RENDER POSTGRES)
 const pool = new Pool({
-    connectionString: "postgresql://base_de_datos_hht8_user:kVJE1b7XsR9UyCi7IWkFhs3gWyM95cP4@dpg-d73ut99r0fns73c0b790-a.virginia-postgres.render.com/base_de_datos_hht8",
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
+// 2. MIDDLEWARES ESTILO APPLE (LIMPIEZA Y SEGURIDAD)
+app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname))); // Sirve el index.html
 
-// BASE DE DATOS DE EMERGENCIA (Si falla PostgreSQL, usa esto)
-let backupUsers = [
-    { id: 1, nombre: "Emmanuel", email: "emma2013rq@gmail.com", password: "", isAdmin: true }
-];
-let relations = { 1: { followers: [], following: [] } };
+// 3. INICIALIZACIÓN DE TABLAS (SI NO EXISTEN)
+const initDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id SERIAL PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                is_admin BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS seguidores (
+                id SERIAL PRIMARY KEY,
+                seguidor_id INTEGER REFERENCES usuarios(id),
+                siguiendo_id INTEGER REFERENCES usuarios(id)
+            );
+        `);
+        console.log("✅ ECHACA DATABASE: Estructura verificada.");
+    } catch (err) {
+        console.error("❌ ECHACA DATABASE ERROR:", err.message);
+    }
+};
+initDB();
 
+// 4. RUTAS DE AUTENTICACIÓN
 app.post('/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
-        const hash = await bcrypt.hash(password, 12);
-        // Intentar guardar en DB real
-        await pool.query('INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3)', [nombre, email, hash]);
-        res.status(201).json({ status: "ok" });
-    } catch (e) {
-        // Si la DB falla, guardamos en memoria para que puedas usar la web
-        console.log("DB falló, guardando en backup...");
-        const newId = backupUsers.length + 1;
-        const hash = await bcrypt.hash(password, 12);
-        backupUsers.push({ id: newId, nombre, email, password: hash });
-        relations[newId] = { followers: [], following: [] };
-        res.status(201).json({ status: "ok" });
+        const newUser = await pool.query(
+            "INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email",
+            [nombre, email, password]
+        );
+        res.json(newUser.rows[0]);
+    } catch (err) {
+        res.status(400).send("Email ya registrado o error de datos.");
     }
 });
 
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        let user;
-        const r = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-        
-        if (r.rows.length > 0) {
-            user = r.rows[0];
-        } else {
-            // Buscar en el backup si no está en la DB
-            user = backupUsers.find(u => u.email === email);
+        // Validación especial para la cuenta de Emmanuel (ADMIN)
+        if (email === "emma2013rq@gmail.com") {
+            const admin = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+            if (admin.rows.length > 0) {
+                return res.json({ ...admin.rows[0], isAdmin: true, stats: { followers: [], following: [] } });
+            }
         }
 
-        if (!user) return res.status(404).json({ error: "No existe" });
+        const user = await pool.query(
+            "SELECT * FROM usuarios WHERE email = $1 AND password = $2",
+            [email, password]
+        );
 
-        // SALTO MAESTRO: Si eres tú, te dejo pasar aunque la clave esté vacía en el backup
-        if (email === "emma2013rq@gmail.com" || await bcrypt.compare(password, user.password)) {
-            if(!relations[user.id]) relations[user.id] = { followers: [], following: [] };
-            res.json({ 
-                id: user.id, nombre: user.nombre, email: user.email, 
-                isAdmin: email === "emma2013rq@gmail.com",
-                stats: relations[user.id] 
+        if (user.rows.length > 0) {
+            // Obtenemos sus seguidores de forma simple para el dashboard
+            const following = await pool.query("SELECT siguiendo_id FROM seguidores WHERE seguidor_id = $1", [user.rows[0].id]);
+            res.json({
+                ...user.rows[0],
+                isAdmin: user.rows[0].email === "emma2013rq@gmail.com",
+                stats: { followers: [], following: following.rows.map(r => r.siguiendo_id) }
             });
         } else {
-            res.status(401).json({ error: "Clave errónea" });
+            res.status(401).send("Credenciales incorrectas.");
         }
-    } catch (e) {
-        res.status(500).json({ error: "Error de servidor" });
+    } catch (err) {
+        res.status(500).send("Error en el servidor.");
     }
 });
 
-// Ruta para ver todos (Admin)
+// 5. RUTAS DE ADMINISTRACIÓN (AUDITORÍA)
 app.get('/api/admin/database', async (req, res) => {
     try {
-        const r = await pool.query('SELECT id, nombre, email FROM usuarios');
-        res.json([...r.rows, ...backupUsers.filter(bu => !r.rows.find(ru => ru.email === bu.email))]);
-    } catch(e) {
-        res.json(backupUsers);
+        const users = await pool.query("SELECT id, nombre, email FROM usuarios ORDER BY id DESC");
+        res.json(users.rows);
+    } catch (err) {
+        res.status(500).json({ error: "No se pudo conectar a la DB" });
     }
 });
 
-app.listen(port, () => console.log('ECHACA OMEGA v35.0 - MODO INMORTAL ACTIVO'));
+// 6. BÚSQUEDA RÁPIDA (APPLE STYLE SEARCH)
+app.get('/api/users/search', async (req, res) => {
+    const { q } = req.query;
+    try {
+        const result = await pool.query(
+            "SELECT id, nombre, email FROM usuarios WHERE nombre ILIKE $1 LIMIT 5",
+            [`%${q}%`]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send("Error de búsqueda.");
+    }
+});
+
+// 7. INICIO DEL SISTEMA
+app.listen(PORT, () => {
+    console.log("-----------------------------------------");
+    console.log(`  ECHACA OMEGA v39.0 - APPLE EDITION    `);
+    console.log(`  MODO INMORTAL ACTIVO EN PUERTO: ${PORT} `);
+    console.log("-----------------------------------------");
+});
