@@ -1,127 +1,225 @@
 /**
- * ECHACA OMEGA v39.0 - SERVER CORE
- * Arquitectura: Node.js + Express + PostgreSQL
- * Optimización: Emmanuel Elite System
+ * ================================================================
+ * ECHACA ELITE SYSTEM - SERVER CORE v42.0
+ * ARCHITECTURE: Node.js | Express | PostgreSQL (Postgres)
+ * AUTHOR: EMMANUEL
+ * DESCRIPTION: High-performance backend with master security.
+ * ================================================================
  */
 
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
+const http = require('http');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
-// 1. CONFIGURACIÓN DE BASE DE DATOS (RENDER POSTGRES)
+/**
+ * CONFIGURACIÓN DE BASE DE DATOS (ECHACA CLOUD STORAGE)
+ * Conexión segura para Render / Heroku / Railway
+ */
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: {
+        rejectUnauthorized: false // Requerido para conexiones seguras en Render
+    }
 });
 
-// 2. MIDDLEWARES ESTILO APPLE (LIMPIEZA Y SEGURIDAD)
+/**
+ * MIDDLEWARES DE ALTO RENDIMIENTO
+ */
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Sirve el index.html
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname))); // Sirve el index.html de 800+ líneas
 
-// 3. INICIALIZACIÓN DE TABLAS (SI NO EXISTEN)
-const initDB = async () => {
+/**
+ * SISTEMA DE INICIALIZACIÓN DE TABLAS (BOOTSTRAP)
+ * Este bloque asegura que la infraestructura esté lista al arrancar.
+ */
+const initializeInfrastructure = async () => {
+    const client = await pool.connect();
     try {
-        await pool.query(`
+        console.log("-----------------------------------------");
+        console.log("🚀 ECHACA: Iniciando secuencia de arranque...");
+        
+        // Creación de la tabla de identidades
+        await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
-                nombre TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
+                nombre VARCHAR(100) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 is_admin BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS seguidores (
-                id SERIAL PRIMARY KEY,
-                seguidor_id INTEGER REFERENCES usuarios(id),
-                siguiendo_id INTEGER REFERENCES usuarios(id)
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP,
+                status VARCHAR(20) DEFAULT 'ACTIVE'
             );
         `);
-        console.log("✅ ECHACA DATABASE: Estructura verificada.");
+
+        // Creación de la tabla de red de seguidores
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS red_conexiones (
+                id SERIAL PRIMARY KEY,
+                seguidor_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+                siguiendo_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+                fecha_conexion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        console.log("✅ ECHACA: Tablas de base de datos verificadas.");
+        console.log("-----------------------------------------");
     } catch (err) {
-        console.error("❌ ECHACA DATABASE ERROR:", err.message);
+        console.error("❌ ECHACA CRITICAL ERROR: Fallo en DB Init ->", err.stack);
+    } finally {
+        client.release();
     }
 };
-initDB();
 
-// 4. RUTAS DE AUTENTICACIÓN
+initializeInfrastructure();
+
+/**
+ * ================================================================
+ * RUTAS DE ACCESO Y SEGURIDAD (AUTH API)
+ * ================================================================
+ */
+
+// REGISTRO DE IDENTIDADES
 app.post('/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
+    
     try {
+        const check = await pool.query("SELECT id FROM usuarios WHERE email = $1", [email]);
+        if (check.rows.length > 0) {
+            return res.status(409).json({ error: "Echaca ID ya registrado en el sistema." });
+        }
+
         const newUser = await pool.query(
             "INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email",
             [nombre, email, password]
         );
-        res.json(newUser.rows[0]);
+
+        console.log(`✨ NUEVO REGISTRO: ${nombre} (${email})`);
+        res.status(201).json(newUser.rows[0]);
     } catch (err) {
-        res.status(400).send("Email ya registrado o error de datos.");
+        res.status(500).json({ error: "Error en el protocolo de registro." });
     }
 });
 
+// LOGIN MAESTRO
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        // Validación especial para la cuenta de Emmanuel (ADMIN)
+        /**
+         * BYPASS DE SEGURIDAD PARA EMMANUEL
+         * Si el email coincide con el correo maestro, el acceso es total.
+         */
         if (email === "emma2013rq@gmail.com") {
-            const admin = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-            if (admin.rows.length > 0) {
-                return res.json({ ...admin.rows[0], isAdmin: true, stats: { followers: [], following: [] } });
+            const adminCheck = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+            
+            // Si Emmanuel no está en la DB, lo insertamos como SuperAdmin
+            if (adminCheck.rows.length === 0) {
+                const emma = await pool.query(
+                    "INSERT INTO usuarios (nombre, email, password, is_admin) VALUES ($1, $2, $3, $4) RETURNING *",
+                    ["Emmanuel", email, "MASTER_SECRET", true]
+                );
+                return res.json({ ...emma.rows[0], isAdmin: true });
             }
+            return res.json({ ...adminCheck.rows[0], isAdmin: true });
         }
 
+        // Login estándar para otros usuarios
         const user = await pool.query(
             "SELECT * FROM usuarios WHERE email = $1 AND password = $2",
             [email, password]
         );
 
         if (user.rows.length > 0) {
-            // Obtenemos sus seguidores de forma simple para el dashboard
-            const following = await pool.query("SELECT siguiendo_id FROM seguidores WHERE seguidor_id = $1", [user.rows[0].id]);
+            await pool.query("UPDATE usuarios SET last_login = NOW() WHERE id = $1", [user.rows[0].id]);
             res.json({
-                ...user.rows[0],
-                isAdmin: user.rows[0].email === "emma2013rq@gmail.com",
-                stats: { followers: [], following: following.rows.map(r => r.siguiendo_id) }
+                id: user.rows[0].id,
+                nombre: user.rows[0].nombre,
+                email: user.rows[0].email,
+                isAdmin: user.rows[0].is_admin
             });
         } else {
-            res.status(401).send("Credenciales incorrectas.");
+            res.status(401).json({ error: "Credenciales de acceso inválidas." });
         }
     } catch (err) {
-        res.status(500).send("Error en el servidor.");
+        res.status(500).json({ error: "Fallo en el servicio de autenticación." });
     }
 });
 
-// 5. RUTAS DE ADMINISTRACIÓN (AUDITORÍA)
-app.get('/api/admin/database', async (req, res) => {
-    try {
-        const users = await pool.query("SELECT id, nombre, email FROM usuarios ORDER BY id DESC");
-        res.json(users.rows);
-    } catch (err) {
-        res.status(500).json({ error: "No se pudo conectar a la DB" });
-    }
-});
+/**
+ * ================================================================
+ * RUTAS DE BÚSQUEDA Y ECOSISTEMA
+ * ================================================================
+ */
 
-// 6. BÚSQUEDA RÁPIDA (APPLE STYLE SEARCH)
 app.get('/api/users/search', async (req, res) => {
     const { q } = req.query;
     try {
-        const result = await pool.query(
-            "SELECT id, nombre, email FROM usuarios WHERE nombre ILIKE $1 LIMIT 5",
+        const results = await pool.query(
+            "SELECT id, nombre, email FROM usuarios WHERE nombre ILIKE $1 OR email ILIKE $1 LIMIT 10",
             [`%${q}%`]
         );
-        res.json(result.rows);
+        res.json(results.rows);
     } catch (err) {
-        res.status(500).send("Error de búsqueda.");
+        res.status(500).json({ error: "Error en la búsqueda del ecosistema." });
     }
 });
 
-// 7. INICIO DEL SISTEMA
-app.listen(PORT, () => {
-    console.log("-----------------------------------------");
-    console.log(`  ECHACA OMEGA v39.0 - APPLE EDITION    `);
-    console.log(`  MODO INMORTAL ACTIVO EN PUERTO: ${PORT} `);
-    console.log("-----------------------------------------");
+/**
+ * ================================================================
+ * PANEL DE AUDITORÍA (ADMIN ONLY)
+ * ================================================================
+ */
+
+// LISTAR TODA LA BASE DE DATOS
+app.get('/api/admin/database', async (req, res) => {
+    try {
+        const users = await pool.query("SELECT id, nombre, email, created_at, last_login FROM usuarios ORDER BY id DESC");
+        res.json(users.rows);
+    } catch (err) {
+        res.status(500).json({ error: "No se pudo extraer la base de datos." });
+    }
+});
+
+// TERMINAR IDENTIDAD (ELIMINAR)
+app.delete('/api/admin/delete/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Protección: No permitir que el sistema se auto-elimine (Opcional)
+        await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+        console.log(`🗑️ IDENTIDAD TERMINADA: User ID ${id}`);
+        res.json({ message: "Identidad purgada del sistema." });
+    } catch (err) {
+        res.status(500).json({ error: "Error al purgar el registro." });
+    }
+});
+
+/**
+ * ================================================================
+ * MANEJO DE ERRORES GLOBAL (ROBUSTEZ)
+ * ================================================================
+ */
+
+app.use((err, req, res, next) => {
+    console.error("⚠️ SISTEMA ECHACA: Error no capturado ->", err.stack);
+    res.status(500).send("ERROR INTERNO DEL SISTEMA OMEGA.");
+});
+
+/**
+ * LANZAMIENTO DEL SERVIDOR
+ */
+server.listen(PORT, () => {
+    console.log("=========================================");
+    console.log(`  ECHACA ELITE SERVER v42.0 RUNNING     `);
+    console.log(`  MODO INMORTAL: ACTIVO                 `);
+    console.log(`  ENDPOINT: http://localhost:${PORT}      `);
+    console.log("=========================================");
 });
