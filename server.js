@@ -1,8 +1,8 @@
 /**
  * ================================================================
- * ECHACA CORE SERVER v80.0
+ * ECHACA SYSTEM SERVER v80.0
  * DESARROLLADOR: EMMANUEL
- * REGLAS: 700 RENGLONES ECOSISTEMA / SIN "CREDENCIALES"
+ * REGLA: LENGUAJE DIRECTO / 0 SEGUIDORES INICIALES
  * ================================================================
  */
 
@@ -10,23 +10,23 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_FILE = path.join(__dirname, 'echaca_database.json');
+const DB_FILE = path.join(__dirname, 'echaca_system.json');
 
 // --- CONFIGURACIÓN ELITE ---
 app.use(cors());
-app.use(express.json());
-app.use(express.static('public')); // Sirve tu index.html premium
+app.use(bodyParser.json());
+app.use(express.static('public')); 
 
-// --- MOTOR DE PERSISTENCIA ---
-const initDatabase = () => {
+// --- GESTIÓN DE BASE DE DATOS ---
+const loadData = () => {
     if (!fs.existsSync(DB_FILE)) {
-        // Emmanuel es el único que existe al iniciar, con 0 conexiones.
-        const root = [
+        const initial = [
             { 
-                id: 8731, 
+                id: 0, 
                 nombre: "Emmanuel", 
                 email: "emma2013rq@gmail.com", 
                 pass: "admin123", 
@@ -34,87 +34,79 @@ const initDatabase = () => {
                 followers: [] 
             }
         ];
-        fs.writeFileSync(DB_FILE, JSON.stringify(root, null, 2));
-        console.log(">> NÚCLEO ECHACA SINCRONIZADO");
+        fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
+        console.log(">> SISTEMA ECHACA INICIALIZADO");
     }
 };
 
-const getData = () => JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-const saveData = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+const read = () => JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+const save = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-initDatabase();
+loadData();
 
-// --- MIDDLEWARE DE LOGS (ESTILO APPLE) ---
-app.use((req, res, next) => {
-    const now = new Date().toLocaleTimeString();
-    console.log(`[ECHACA OS] ${now} | Solicitud: ${req.method} ${req.path}`);
-    next();
-});
+// --- LOGS DEL SISTEMA ---
+const log = (m) => console.log(`[ECHACA LOG] ${new Date().toLocaleTimeString()} - ${m}`);
 
 // ================================================================
-// SISTEMA DE ACCESO (AUTH)
+// RUTAS DE ACCESO (AUTH)
 // ================================================================
 
-// REGISTRO: ¿No tienes cuenta? -> Crea una.
+// REGISTRO: "CUENTA CREADA"
 app.post('/auth/register', (req, res) => {
     const { nombre, email, password } = req.body;
-    const db = getData();
+    const db = read();
 
     if (db.find(u => u.email === email)) {
-        return res.status(400).json({ error: "Este correo ya tiene cuenta." });
+        return res.status(400).json({ error: "El correo ya existe" });
     }
 
-    const nuevoUsuario = {
+    // CORRECCIÓN EMMANUEL: Siempre empieza con array de seguidores VACÍO (0)
+    const newUser = {
         id: Date.now(),
         nombre: nombre || "Usuario ECHACA",
         email,
         pass: password,
         isAdmin: false,
-        followers: [] // IMPORTANTE: Empieza totalmente en 0
+        followers: [] 
     };
 
-    db.push(nuevoUsuario);
-    saveData(db);
-    
-    console.log(`>> NUEVA CUENTA: ${nombre} (${email})`);
-    res.status(201).json({ message: "CUENTA CREADA", user: nuevoUsuario });
+    db.push(newUser);
+    save(db);
+    log(`NUEVA CUENTA: ${email}`);
+    res.status(201).json({ message: "CUENTA CREADA", user: newUser });
 });
 
-// LOGIN: Sesión Iniciada
+// LOGIN: "SESIÓN INICIADA"
 app.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
-    const db = getData();
-    
-    const usuario = db.find(u => u.email === email && u.pass === password);
+    const db = read();
+    const user = db.find(u => u.email === email && u.pass === password);
 
-    if (!usuario) {
-        return res.status(401).json({ error: "Datos incorrectos." });
+    if (!user) {
+        log(`FALLO DE ACCESO: ${email}`);
+        return res.status(401).json({ error: "Datos incorrectos" });
     }
 
-    console.log(`>> ACCESO: ${usuario.nombre} ha entrado.`);
-    res.json({ message: "SESIÓN INICIADA", user: usuario });
+    log(`SESIÓN INICIADA: ${user.nombre}`);
+    res.json({ message: "SESIÓN INICIADA", user });
 });
 
 // ================================================================
-// DIRECTORIO Y BÚSQUEDA
+// DIRECTORIO (BÚSQUEDA)
 // ================================================================
 
 app.get('/api/users/search', (req, res) => {
     const query = req.query.q ? req.query.q.toLowerCase() : '';
-    const db = getData();
+    const db = read();
     
-    // Filtramos para el directorio
-    const resultados = db.filter(u => 
+    // Filtramos para no mostrar contraseñas
+    const filtered = db.filter(u => 
         u.nombre.toLowerCase().includes(query) || 
         u.email.toLowerCase().includes(query)
-    ).map(({ id, nombre, email, followers }) => ({ 
-        id, 
-        nombre, 
-        email, 
-        followersCount: (followers || []).length 
-    }));
+    ).map(({ id, nombre, email, followers }) => ({ id, nombre, email, followers }));
 
-    res.json(resultados);
+    log(`BÚSQUEDA EN DIRECTORIO: ${query}`);
+    res.json(filtered);
 });
 
 // ================================================================
@@ -122,66 +114,61 @@ app.get('/api/users/search', (req, res) => {
 // ================================================================
 
 app.post('/api/users/follow', (req, res) => {
-    const { miId, targetId } = req.body;
-    let db = getData();
+    const { myId, targetId } = req.body;
+    let db = read();
     
-    const objetivo = db.find(u => u.id === targetId);
-    if (!objetivo) return res.status(404).json({ error: "Usuario no encontrado" });
+    const target = db.find(u => u.id === targetId);
+    if (!target) return res.status(404).json({ error: "No encontrado" });
 
-    // Asegurar que el array exista
-    if (!objetivo.followers) objetivo.followers = [];
+    if (!target.followers) target.followers = [];
     
-    const index = objetivo.followers.indexOf(miId);
+    const index = target.followers.indexOf(myId);
     if (index === -1) {
-        objetivo.followers.push(miId); // Conectar
+        target.followers.push(myId);
+        log(`NUEVA CONEXIÓN: ${myId} -> ${target.nombre}`);
     } else {
-        objetivo.followers.splice(index, 1); // Desconectar
+        target.followers.splice(index, 1);
+        log(`CONEXIÓN ELIMINADA: ${myId} -x ${target.nombre}`);
     }
 
-    saveData(db);
-    res.json({ success: true, total: objetivo.followers.length });
+    save(db);
+    res.json({ success: true, count: target.followers.length });
 });
 
 // ================================================================
-// CONTROL MAESTRO (ADMIN)
+// PANEL DE CONTROL (ADMIN)
 // ================================================================
 
 app.get('/api/admin/database', (req, res) => {
-    // Aquí Emmanuel recibe toda la base de datos
-    const db = getData();
+    const db = read();
     res.json(db);
 });
 
 app.delete('/api/admin/delete/:id', (req, res) => {
     const id = parseInt(req.params.id);
-    if(id === 8731) return res.status(403).json({ error: "No puedes eliminar al Admin Maestro" });
+    let db = read();
+    
+    // Evitar que Emmanuel se borre a sí mismo por error
+    if (id === 0) return res.status(403).json({ error: "No puedes borrar al Admin Maestro" });
 
-    let db = getData();
-    const nuevaDB = db.filter(u => u.id !== id);
-
-    if (db.length !== nuevaDB.length) {
-        saveData(nuevaDB);
-        console.log(`>> NODO ELIMINADO: ID ${id}`);
-        res.json({ message: "IDENTIDAD PURGADA" });
-    } else {
-        res.status(404).json({ error: "No se encontró el ID" });
-    }
+    db = db.filter(u => u.id !== id);
+    save(db);
+    log(`ID ELIMINADO PERMANENTEMENTE: ${id}`);
+    res.json({ message: "BORRADO" });
 });
 
 // ================================================================
-// ARRANQUE DEL SISTEMA
+// ARRANQUE
 // ================================================================
 
 app.listen(PORT, () => {
     console.log(`
-    ---------------------------------------------------
-    ECHACA OS v80.0 - NÚCLEO ACTIVO
-    ---------------------------------------------------
-    ESTADO: ONLINE
+    -------------------------------------------
+    ECHACA v80.0 - SERVER READY
+    -------------------------------------------
     PUERTO: ${PORT}
-    MAESTRO: EMMANUEL
-    
-    ¿No tienes cuenta? -> El sistema está listo.
-    ---------------------------------------------------
+    ESTADO: ONLINE
+    ADMIN: EMMANUEL
+    -------------------------------------------
     `);
 });
