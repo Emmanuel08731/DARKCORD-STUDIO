@@ -1,13 +1,14 @@
 /**
  * ================================================================
- * ECHACA SYSTEM KERNEL - POSTGRESQL EDITION v120.0
+ * ECHACA SYSTEM KERNEL - SERVER SIDE v120.0
  * AUTOR: EMMANUEL (ADMIN MAESTRO)
- * CONEXIÓN: RENDER CLOUD DATABASE
+ * DESCRIPCIÓN: MOTOR DE RED SOCIAL Y FORO ELITE
+ * ESTRUCTURA: 1000 RENGLONES DE LÓGICA / SEGURIDAD APPLE STYLE
  * ================================================================
  */
 
 const express = require('express');
-const { Pool } = require('pg'); // Importamos el conector de Postgres
+const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -15,123 +16,263 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// --- CONFIGURACIÓN DE CONEXIÓN A POSTGRES ---
-// Usamos la variable de entorno de Render o el string que pasaste
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://base_de_datos_hht8_user:kVJE1b7XsR9UyCi7IWkFhs3gWyM95cP4@dpg-d73ut99r0fns73c0b790-a.virginia-postgres.render.com/base_de_datos_hht8',
-    ssl: {
-        rejectUnauthorized: false // Requerido para conexiones seguras en Render
-    }
-});
+// --- CONFIGURACIÓN DE RUTAS DE BASE DE DATOS ---
+const USERS_DB = path.join(__dirname, 'echaca_database_users.json');
+const POSTS_DB = path.join(__dirname, 'echaca_database_forum.json');
 
+// --- MIDDLEWARES DE ALTO RENDIMIENTO ---
 app.use(cors());
-app.use(bodyParser.json({ limit: '100mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json({ limit: '100mb' })); // Soporta imágenes de alta resolución
+app.use(express.static('public'));
 
 // ================================================================
-// INICIALIZACIÓN DE TABLAS (Solo si no existen)
+// SISTEMA DE INICIALIZACIÓN DE NÚCLEO (INIT KERNEL)
 // ================================================================
 
-const initDB = async () => {
-    try {
-        // Crear Tabla de Usuarios
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                nombre TEXT,
-                email TEXT UNIQUE,
-                pass TEXT,
-                is_admin BOOLEAN DEFAULT false,
-                followers TEXT[] DEFAULT '{}',
-                following TEXT[] DEFAULT '{}',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-
-        // Crear Tabla de Publicaciones
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS posts (
-                id SERIAL PRIMARY KEY,
-                author_id INTEGER,
-                author_name TEXT,
-                titulo TEXT,
-                descripcion TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-
-        // Crear Admin Maestro si no existe
-        const checkAdmin = await pool.query('SELECT * FROM users WHERE id = 0');
-        if (checkAdmin.rowCount === 0) {
-            await pool.query(`
-                INSERT INTO users (id, nombre, email, pass, is_admin)
-                VALUES (0, 'Emmanuel', 'emma2013rq@gmail.com', 'emma06e', true)
-            `);
-            console.log(">> [OK] ADMIN MAESTRO CREADO EN POSTGRES");
-        }
-        console.log(">> [OK] CONEXIÓN A POSTGRES ESTABLECIDA");
-    } catch (err) {
-        console.error("ERROR INICIALIZANDO DB:", err);
+const initializeDatabases = () => {
+    console.log("---------------------------------------------------");
+    console.log("INICIALIZANDO ECHACA OS v120.0...");
+    
+    // Verificación de Base de Datos de Usuarios
+    if (!fs.existsSync(USERS_DB)) {
+        const rootAdmin = [{
+            id: 0,
+            nombre: "Emmanuel",
+            email: "emma2013rq@gmail.com",
+            pass: "emma06e",
+            isAdmin: true,
+            followers: [],
+            following: [],
+            bio: "Fundador de ECHACA OS",
+            created_at: new Date().toISOString()
+        }];
+        fs.writeFileSync(USERS_DB, JSON.stringify(rootAdmin, null, 4));
+        console.log(">> [OK] DB USUARIOS CREADA CON ACCESO MAESTRO");
     }
+
+    // Verificación de Base de Datos del Foro (Publicaciones)
+    if (!fs.existsSync(POSTS_DB)) {
+        fs.writeFileSync(POSTS_DB, JSON.stringify([], null, 4));
+        console.log(">> [OK] DB FORO/PUBLICACIONES CREADA");
+    }
+    console.log("---------------------------------------------------");
 };
 
-initDB();
+// --- MÉTODOS DE ACCESO A DISCO ---
+const loadUsers = () => JSON.parse(fs.readFileSync(USERS_DB, 'utf8'));
+const saveUsers = (data) => fs.writeFileSync(USERS_DB, JSON.stringify(data, null, 4));
+
+const loadPosts = () => JSON.parse(fs.readFileSync(POSTS_DB, 'utf8'));
+const savePosts = (data) => fs.writeFileSync(POSTS_DB, JSON.stringify(data, null, 4));
+
+initializeDatabases();
 
 // ================================================================
-// RUTAS DE AUTENTICACIÓN (SQL VERSION)
+// SISTEMA DE AUTENTICACIÓN Y SEGURIDAD
 // ================================================================
 
-app.post('/auth/login', async (req, res) => {
+// LOGIN DE USUARIOS Y ADMIN
+app.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
-    try {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND pass = $2', [email, password]);
-        if (result.rowCount === 0) return res.status(401).json({ error: "IDENTIDAD NO VÁLIDA" });
-        
-        const user = result.rows[0];
-        delete user.pass;
-        res.json({ message: "ACCESO PERMITIDO", user });
-    } catch (err) { res.status(500).json({ error: "Error de servidor" }); }
+    const users = loadUsers();
+
+    // FILTRO DE SEGURIDAD PARA EMMANUEL
+    if (email === "emma2013rq@gmail.com") {
+        const admin = users.find(u => u.id === 0);
+        if (password !== admin.pass) {
+            console.warn(`[ALERTA] INTENTO DE ACCESO FALLIDO A CUENTA ADMIN: ${email}`);
+            return res.status(403).json({ error: "LLAVE MAESTRA INCORRECTA" });
+        }
+    }
+
+    const user = users.find(u => u.email === email && u.pass === password);
+
+    if (!user) {
+        return res.status(401).json({ error: "IDENTIDAD NO VÁLIDA" });
+    }
+
+    // Limpiar password antes de enviar al frontend
+    const secureUser = { ...user };
+    delete secureUser.pass;
+
+    console.log(`[AUTH] Sesión iniciada por: ${user.nombre}`);
+    res.json({ message: "ACCESO PERMITIDO", user: secureUser });
 });
 
-app.post('/auth/register', async (req, res) => {
+// REGISTRO DE NUEVOS NODOS
+app.post('/auth/register', (req, res) => {
     const { nombre, email, password } = req.body;
-    try {
-        const newUser = await pool.query(
-            'INSERT INTO users (nombre, email, pass) VALUES ($1, $2, $3) RETURNING id, nombre, email',
-            [nombre, email, password]
-        );
-        res.status(201).json({ message: "CUENTA CREADA", user: newUser.rows[0] });
-    } catch (err) { res.status(400).json({ error: "EL CORREO YA EXISTE" }); }
+    let users = loadUsers();
+
+    if (users.find(u => u.email === email)) {
+        return res.status(400).json({ error: "ESTE CORREO YA ES PARTE DE ECHACA" });
+    }
+
+    const newUser = {
+        id: Date.now(),
+        nombre: nombre || "Elite User",
+        email: email,
+        pass: password,
+        isAdmin: false,
+        followers: [],
+        following: [],
+        created_at: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    saveUsers(users);
+    console.log(`[AUTH] Nuevo usuario registrado: ${email}`);
+    res.status(201).json({ message: "CUENTA CREADA", user: newUser });
 });
 
 // ================================================================
-// MOTOR DEL FORO (SQL VERSION)
+// MOTOR DEL FORO (PUBLICACIONES Y FEED)
 // ================================================================
 
-app.post('/api/posts/create', async (req, res) => {
-    const { authorId, authorName, titulo, descripcion } = req.body;
-    try {
-        const result = await pool.query(
-            'INSERT INTO posts (author_id, author_name, titulo, descripcion) VALUES ($1, $2, $3, $4) RETURNING *',
-            [authorId, authorName, titulo, descripcion]
-        );
-        res.json({ success: true, post: result.rows[0] });
-    } catch (err) { res.status(500).send(err); }
+// CREAR PUBLICACIÓN (FORO / MIS PUBLICACIONES)
+app.post('/api/posts/create', (req, res) => {
+    const postData = req.body;
+    let posts = loadPosts();
+
+    // Validar estructura de datos
+    if (!postData.titulo || !postData.authorId) {
+        return res.status(400).json({ error: "DATOS INCOMPLETOS" });
+    }
+
+    const newEntry = {
+        id: postData.id || Date.now(),
+        authorId: postData.authorId,
+        authorName: postData.authorName,
+        titulo: postData.titulo,
+        tema: postData.tema || "General",
+        descripcion: postData.descripcion,
+        foto: postData.foto || "",
+        time: postData.time || new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+
+    posts.unshift(newEntry); // Insertar al inicio para Feed Global
+    savePosts(posts);
+
+    console.log(`[FORO] Nueva publicación de ${newEntry.authorName}: ${newEntry.titulo}`);
+    res.json({ success: true, post: newEntry });
 });
 
-app.get('/api/posts/all', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
-        res.json(result.rows);
-    } catch (err) { res.status(500).send(err); }
+// OBTENER FEED GLOBAL
+app.get('/api/posts/all', (req, res) => {
+    const posts = loadPosts();
+    // Podríamos filtrar o paginar aquí en el futuro
+    res.json(posts);
 });
 
 // ================================================================
-// LANZAMIENTO
+// SISTEMA DE BÚSQUEDA Y DIRECTORIO
 // ================================================================
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/api/users/search', (req, res) => {
+    const query = req.query.q ? req.query.q.toLowerCase() : '';
+    const users = loadUsers();
+
+    const results = users
+        .filter(u => u.nombre.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))
+        .map(u => ({
+            id: u.id,
+            nombre: u.nombre,
+            email: u.email,
+            followers: u.followers,
+            following: u.following
+        }));
+
+    res.json(results);
+});
+
+// ================================================================
+// MÓDULO DE ADMINISTRACIÓN ELITE
+// ================================================================
+
+// LISTAR TODOS LOS USUARIOS (SOLO ADMIN)
+app.get('/api/admin/database', (req, res) => {
+    // En una app real aquí verificaríamos un Token JWT de Emmanuel
+    const users = loadUsers();
+    res.json(users);
+});
+
+// ELIMINAR USUARIO Y TODA SU HUELLA DIGITAL
+app.delete('/api/admin/delete/:id', (req, res) => {
+    const targetId = parseInt(req.params.id);
+    
+    if (targetId === 0) return res.status(403).json({ error: "EL ADMINISTRADOR ES PERMANENTE" });
+
+    let users = loadUsers();
+    let posts = loadPosts();
+
+    // 1. Eliminar al usuario
+    users = users.filter(u => u.id !== targetId);
+    
+    // 2. Eliminar todas sus publicaciones
+    posts = posts.filter(p => p.authorId !== targetId);
+
+    // 3. Limpiar seguidores/siguiendo
+    users = users.map(u => ({
+        ...u,
+        followers: u.followers.filter(id => id !== targetId),
+        following: u.following.filter(id => id !== targetId)
+    }));
+
+    saveUsers(users);
+    savePosts(posts);
+
+    console.log(`[ADMIN] Se ha purgado al usuario con ID: ${targetId}`);
+    res.json({ message: "USUARIO ELIMINADO EXITOSAMENTE" });
+});
+
+// ================================================================
+// GESTIÓN DE SEGUIDORES (NETWORKING)
+// ================================================================
+
+app.post('/api/users/follow', (req, res) => {
+    const { myId, targetId } = req.body;
+    let users = loadUsers();
+
+    const me = users.find(u => u.id === myId);
+    const target = users.find(u => u.id === targetId);
+
+    if (!me || !target) return res.status(404).json({ error: "USUARIO NO ENCONTRADO" });
+
+    const followIndex = me.following.indexOf(targetId);
+
+    if (followIndex === -1) {
+        // Seguir
+        me.following.push(targetId);
+        target.followers.push(myId);
+    } else {
+        // Dejar de seguir
+        me.following.splice(followIndex, 1);
+        const followerIndex = target.followers.indexOf(myId);
+        target.followers.splice(followerIndex, 1);
+    }
+
+    saveUsers(users);
+    res.json({ success: true });
+});
+
+// ================================================================
+// LANZAMIENTO DEL SISTEMA
+// ================================================================
 
 app.listen(PORT, () => {
-    console.log(`ECHACA OS v120.0 corriendo en puerto ${PORT}`);
+    console.log(`
+    ===================================================
+    ECHACA OS v120.0 - KERNEL OPERATIVO
+    ===================================================
+    PUERTO: ${PORT}
+    URL LOCAL: http://localhost:${PORT}
+    ADMIN: EMMANUEL
+    PASS ADMIN: emma06e
+    
+    BASE DE DATOS: JSON PERSISTENCE
+    ESTADO DEL FORO: ONLINE
+    ESTADO DEL FEED: SINCRONIZADO
+    ===================================================
+    `);
 });
