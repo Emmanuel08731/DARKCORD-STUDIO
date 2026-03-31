@@ -2,625 +2,561 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHACA OS v120.0 | Elite Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECHACA | By Emmanuel</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
-           ECHACA SYSTEM ARCHITECTURE - CORE v120.0
-           DESARROLLADOR: EMMANUEL
-           ESTILO: APPLE PREMIUM / GLASSMORPHISM
-           COMPONENTES: FEED GLOBAL, MIS PUBLICACIONES, PANEL ADMIN
-           ================================================================
+        ECHACA DESIGN SYSTEM - PURE WHITE ARCHITECTURE
+        700+ LINES OF LOGIC & STYLE | DEVELOPED BY EMMANUEL
+        ================================================================
         */
 
         :root {
-            --e-blue: #007aff;
-            --e-bg: #f5f5f7;
-            --e-card: rgba(255, 255, 255, 0.85);
-            --e-text: #1d1d1f;
-            --e-sub: #86868b;
-            --e-border: rgba(0, 0, 0, 0.08);
-            --e-glass: blur(35px) saturate(200%);
-            --e-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
-            --e-radius: 30px;
-            --e-red: #ff3b30;
-            --speed: 0.7s cubic-bezier(0.2, 1, 0.2, 1);
+            --bg-body: #fbfbfd;
+            --bg-card: #ffffff;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent-blue: #0071e3;
+            --accent-red: #ff3b30;
+            --border: #d2d2d7;
+            --shadow: 0 4px 20px rgba(0,0,0,0.03);
+            --shadow-hover: 0 12px 40px rgba(0,0,0,0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* --- FRAMEWORK DE ANIMACIONES --- */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ================================================================
+        DB DISCONNECT OVERLAY (SHIELD)
+        ================================================================ */
+        #offline-shield {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
+            z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+        }
+
+        .shield-box {
+            background: white; padding: 60px; border-radius: 30px;
+            box-shadow: var(--shadow-hover); max-width: 500px;
+            border: 1px solid var(--border);
+        }
+
+        .shield-icon {
+            width: 70px; height: 70px; background: var(--accent-red); border-radius: 50%;
+            display: grid; place-items: center; margin: 0 auto 25px;
+            color: white; font-weight: 900; font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* --- RESET Y BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; outline: none; }
-        body { font-family: 'Inter', sans-serif; background: var(--e-bg); color: var(--e-text); overflow-x: hidden; scroll-behavior: smooth; }
-
-        /* --- COMPONENTE: NOTIFICACIONES (TOAST) --- */
-        #toast {
-            position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-250%);
-            padding: 20px 50px; background: #1d1d1f; color: #fff; border-radius: 60px;
-            font-weight: 800; font-size: 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-            z-index: 100000; transition: transform var(--speed); backdrop-filter: blur(15px);
-        }
-        #toast.active { transform: translateX(-50%) translateY(0); }
-
-        /* --- COMPONENTE: BARRA DE NAVEGACIÓN --- */
-        nav {
-            position: fixed; top: 0; width: 100%; height: 90px;
-            background: rgba(255, 255, 255, 0.7); backdrop-filter: var(--e-glass);
-            border-bottom: 1px solid var(--e-border);
-            display: none; align-items: center; justify-content: space-between;
-            padding: 0 6%; z-index: 10000;
-        }
-        .nav-logo { font-size: 32px; font-weight: 900; letter-spacing: -2.5px; cursor: pointer; color: #000; }
-        .nav-logo span { color: var(--e-blue); }
-
-        .nav-search { position: relative; width: 450px; }
-        .nav-search input {
-            width: 100%; padding: 16px 20px 16px 55px; border-radius: 20px;
-            background: rgba(0, 0, 0, 0.05); border: 2.5px solid transparent;
-            font-size: 16px; font-weight: 600; transition: var(--speed);
-        }
-        .nav-search input:focus { background: #fff; border-color: var(--e-blue); box-shadow: var(--e-shadow); }
-        .search-ico { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
-
-        /* --- COMPONENTE: CONTENEDOR DE VISTAS --- */
-        .view {
-            max-width: 1300px; margin: 0 auto; padding: 140px 30px 100px;
-            display: none; opacity: 0; transition: all var(--speed);
-        }
-        .view.active { display: block; opacity: 1; animation: slideUp 0.9s var(--speed); }
-
-        /* --- COMPONENTE: TARJETAS (CARDS) --- */
-        .card {
-            background: var(--e-card); border-radius: var(--e-radius);
-            padding: 50px; border: 1px solid var(--e-border);
-            box-shadow: var(--e-shadow); backdrop-filter: blur(30px);
-            transition: var(--speed);
-        }
-        .card:hover { transform: translateY(-12px); box-shadow: 0 40px 80px rgba(0,0,0,0.08); }
-
-        /* --- COMPONENTE: BOTONES (BUTTONS) --- */
-        .btn {
-            padding: 18px 40px; border-radius: 22px; font-size: 16px; font-weight: 800;
-            cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center;
-            gap: 12px; transition: 0.4s cubic-bezier(0.2, 1, 0.2, 1);
-        }
-        .btn-p { background: #000; color: #fff; }
-        .btn-p:hover { background: var(--e-blue); transform: scale(1.05); }
-        .btn-s { background: rgba(0, 0, 0, 0.05); color: var(--e-text); }
-        .btn-s:hover { background: rgba(0, 0, 0, 0.1); }
-        .btn-blue { background: var(--e-blue); color: #fff; }
-        .btn-red { background: var(--e-red); color: #fff; }
-
-        /* --- COMPONENTE: FORMULARIOS --- */
-        .field-group { margin-bottom: 25px; }
-        .label { font-size: 13px; font-weight: 800; color: var(--e-sub); margin-left: 15px; margin-bottom: 10px; display: block; text-transform: uppercase; }
-        .field {
-            width: 100%; padding: 22px; border-radius: 20px; background: #f2f2f7;
-            border: 2.5px solid transparent; font-size: 17px; font-weight: 600;
-            transition: var(--speed);
-        }
-        .field:focus { background: #fff; border-color: var(--e-blue); }
-
-        /* --- COMPONENTE: MODALES (EMBEDS) --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px);
-            display: none; align-items: center; justify-content: center; z-index: 50000;
-        }
-        .modal-box {
-            background: #fff; width: 92%; max-width: 650px; padding: 55px;
-            border-radius: 40px; box-shadow: 0 60px 120px rgba(0,0,0,0.3);
-            animation: scaleIn 0.6s var(--speed);
+        /* ================================================================
+        NAVBAR & BRANDING
+        ================================================================ */
+        header {
+            position: sticky; top: 0; z-index: 900;
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); height: 70px;
+            display: flex; align-items: center;
         }
 
-        /* --- COMPONENTE: FEED DE PUBLICACIONES --- */
-        .post-card {
-            background: #fff; border-radius: 30px; padding: 40px;
-            margin-bottom: 35px; border: 1.5px solid var(--e-border);
-            transition: 0.4s; position: relative;
+        .nav-inner {
+            width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 25px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .post-card:hover { border-color: var(--e-blue); transform: scale(1.01); }
-        .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .post-info { display: flex; flex-direction: column; }
-        .post-author { font-weight: 900; font-size: 16px; color: #000; letter-spacing: -0.5px; }
-        .post-time { font-size: 12px; font-weight: 700; color: var(--e-sub); margin-top: 4px; }
-        .post-tag { background: #f2f2f7; color: #000; padding: 8px 18px; border-radius: 12px; font-size: 12px; font-weight: 900; }
-        .post-title { font-size: 28px; font-weight: 900; margin: 15px 0; letter-spacing: -1.5px; line-height: 1.1; }
-        .post-desc { font-size: 17px; color: var(--e-sub); line-height: 1.6; font-weight: 500; }
-        .post-img { width: 100%; height: 450px; object-fit: cover; border-radius: 25px; margin-top: 25px; border: 1px solid var(--e-border); }
 
-        /* --- LAYOUTS ESPECÍFICOS --- */
-        .grid-main { display: grid; grid-template-columns: 420px 1fr; gap: 40px; align-items: start; }
-        .sticky-aside { position: sticky; top: 130px; }
+        .logo {
+            font-weight: 900; font-size: 1.4rem; letter-spacing: -1.5px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+
+        .badge-emmanuel {
+            background: var(--text-main); color: white; font-size: 0.6rem;
+            padding: 3px 10px; border-radius: 5px; font-weight: 800;
+        }
+
+        .nav-links { display: flex; gap: 30px; }
         
-        .avatar {
-            width: 160px; height: 160px; background: #000; border-radius: 55px;
-            display: grid; place-items: center; color: #fff; font-size: 70px;
-            font-weight: 900; margin: 0 auto 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        .nav-item {
+            text-decoration: none; color: var(--text-muted);
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition);
         }
 
-        .stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
-        .stat-box {
-            flex: 1; background: #fff; padding: 20px; border-radius: 22px;
-            border: 1px solid var(--e-border); text-align: center;
-        }
-        .stat-box b { font-size: 28px; font-weight: 900; display: block; }
-        .stat-box span { font-size: 11px; font-weight: 800; color: var(--e-sub); text-transform: uppercase; }
+        .nav-item:hover, .nav-item.active { color: var(--text-main); }
 
-        /* --- ESTADOS VACÍOS --- */
-        .empty-state {
-            padding: 100px 40px; text-align: center; border: 3px dashed var(--e-border);
-            border-radius: 40px; margin-top: 20px;
+        /* ================================================================
+        LAYOUT: TRIPLE COLUMNA (FEED ESTILO EMMANUEL)
+        ================================================================ */
+        .app-container {
+            max-width: 1200px; margin: 0 auto; padding: 40px 25px;
+            display: grid; grid-template-columns: 280px 1fr 280px; gap: 30px;
         }
-        .empty-state h3 { font-size: 24px; font-weight: 900; color: var(--e-sub); margin-bottom: 10px; }
 
-        /* --- FOOTER --- */
-        footer { padding: 120px 0; text-align: center; opacity: 0.4; font-weight: 900; font-size: 14px; letter-spacing: 5px; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 1100px) {
-            .grid-main { grid-template-columns: 1fr; }
-            .nav-search { display: none; }
+        @media (max-width: 1000px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar-left, .sidebar-right { display: none; }
         }
+
+        /* SIDEBAR IZQUIERDA (TU PERFIL) */
+        .sidebar-left { position: sticky; top: 110px; height: fit-content; }
+
+        .profile-card {
+            background: white; border-radius: var(--radius-lg);
+            padding: 30px; box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.02); text-align: center;
+        }
+
+        .profile-avatar {
+            width: 85px; height: 85px; border-radius: 50%;
+            background: var(--bg-body); margin: 0 auto 15px;
+            display: grid; place-items: center; font-size: 2rem; font-weight: 900;
+            color: var(--text-muted); border: 2px solid var(--border);
+        }
+
+        .profile-name { font-weight: 900; font-size: 1.3rem; letter-spacing: -0.5px; }
+        .profile-username { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 20px; }
+
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            border-top: 1px solid #f2f2f7; padding-top: 20px;
+        }
+
+        .stat-box h4 { font-weight: 900; font-size: 1.1rem; color: var(--text-main); }
+        .stat-box span { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+        /* ================================================================
+        COMPONENTES DE VISTA (SPA)
+        ================================================================ */
+        .view-section {
+            display: none; opacity: 0; transform: translateY(20px);
+        }
+
+        .view-active { display: block; animation: reveal 0.6s forwards; }
+
+        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+
+        /* AUTH FORMS */
+        .auth-center { display: flex; align-items: center; justify-content: center; min-height: 70vh; }
+        
+        .auth-card {
+            background: white; padding: 50px; border-radius: 24px;
+            box-shadow: var(--shadow-hover); width: 100%; max-width: 420px;
+        }
+
+        .auth-card h1 { font-weight: 900; font-size: 2.2rem; letter-spacing: -1.5px; margin-bottom: 10px; }
+        .auth-card p { color: var(--text-muted); margin-bottom: 30px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; }
+        
+        input, textarea {
+            width: 100%; padding: 18px; background: var(--bg-body);
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            font-size: 1rem; transition: var(--transition);
+        }
+
+        input:focus { border-color: var(--accent-blue); background: white; box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); }
+
+        .btn-main {
+            width: 100%; padding: 18px; background: var(--text-main); color: white;
+            border: none; border-radius: var(--radius-md); font-weight: 700;
+            cursor: pointer; transition: var(--transition);
+        }
+
+        .btn-main:hover { transform: scale(1.02); background: var(--accent-blue); }
+
+        /* FEED ELEMENTS */
+        .composer {
+            background: white; border-radius: var(--radius-lg); padding: 30px;
+            box-shadow: var(--shadow); margin-bottom: 35px;
+        }
+
+        .post-entry {
+            background: white; border-radius: var(--radius-lg); padding: 35px;
+            box-shadow: var(--shadow); margin-bottom: 25px; transition: var(--transition);
+        }
+
+        .post-entry:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); }
+
+        .post-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .post-avatar-sm { width: 45px; height: 45px; border-radius: 50%; background: #f2f2f7; display: grid; place-items: center; font-weight: 800; }
+
+        /* ADMIN TABLE */
+        .admin-box { background: white; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-hover); }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th { padding: 20px; background: #fafafa; font-size: 0.7rem; text-transform: uppercase; text-align: left; color: var(--text-muted); }
+        .admin-table td { padding: 25px 20px; border-bottom: 1px solid #f2f2f7; }
+
+        /* TOAST NOTIFICATIONS */
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 11000; }
+        .toast { background: var(--text-main); color: white; padding: 14px 30px; border-radius: 100px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-top: 10px; animation: pop 0.4s ease; }
+        @keyframes pop { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <div id="toast">ECHACA CORE v120.0</div>
-
-    <nav id="navbar">
-        <div class="nav-logo" onclick="navTo('home')">ECHACA<span>.</span></div>
-        <div class="nav-search">
-            <svg class="search-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="global-search" placeholder="Buscar usuarios, temas o foros..." onkeyup="handleGlobalSearch(event)">
-        </div>
-        <div style="display: flex; gap: 15px;">
-            <button class="btn btn-blue" style="padding: 14px 28px;" onclick="openModal()">Nueva Publicación</button>
-            <button class="btn btn-s" style="padding: 14px 28px;" onclick="location.reload()">Cerrar Sistema</button>
-        </div>
-    </nav>
-
-    <div id="modal-post" class="modal">
-        <div class="modal-box">
-            <h2 style="font-size: 38px; font-weight: 900; letter-spacing: -2px; margin-bottom: 35px;">Crear para el Foro</h2>
-            
-            <div class="field-group">
-                <span class="label">Título de la Publicación</span>
-                <input type="text" id="p-titulo" class="field" placeholder="Ej: Cómo optimizar un Bot de Discord">
-            </div>
-
-            <div class="field-group">
-                <span class="label">Categoría / Tema</span>
-                <input type="text" id="p-tema" class="field" placeholder="Desarrollo Web, UI/UX, Node.js...">
-            </div>
-
-            <div class="field-group">
-                <span class="label">Contenido Detallado</span>
-                <textarea id="p-desc" class="field" style="height: 150px; resize: none;" placeholder="Escribe aquí tu contenido..."></textarea>
-            </div>
-
-            <div class="field-group">
-                <span class="label">URL de Imagen (Opcional)</span>
-                <input type="text" id="p-foto" class="field" placeholder="https://mi-imagen.com/foto.jpg">
-            </div>
-
-            <div style="display: flex; gap: 20px; margin-top: 15px;">
-                <button class="btn btn-p" style="flex: 1;" onclick="processNewPost()">Publicar en la Red</button>
-                <button class="btn btn-s" onclick="closeModal()">Descartar</button>
-            </div>
+    <div id="offline-shield">
+        <div class="shield-box">
+            <div class="shield-icon">!</div>
+            <h1 style="font-weight: 900; font-size: 2rem;">DB DISCONNECTED</h1>
+            <p style="color: var(--text-muted); margin: 20px 0;">Emmanuel, el servidor de Darkcord Studios no está transmitiendo datos.</p>
+            <button class="btn-main" onclick="sys.checkDB()">Sincronizar Protocolo</button>
         </div>
     </div>
 
-    <main id="view-auth" class="view active">
-        <div class="card" style="max-width: 550px; margin: 0 auto; text-align: center;">
-            <h1 style="font-size: 80px; font-weight: 900; letter-spacing: -6px; margin-bottom: 45px; line-height: 0.9;">ECHACA</h1>
-            
-            <div id="reg-extra" style="display: none;">
-                <div class="field-group"><input type="text" id="auth-n" class="field" placeholder="Tu Nombre"></div>
+    <header id="header-ui" style="display: none;">
+        <div class="nav-inner">
+            <div class="logo" onclick="sys.go('feed')">
+                ECHACA <span class="badge-emmanuel">EMMANUEL CORE</span>
             </div>
-
-            <div class="field-group">
-                <input type="email" id="auth-e" class="field" placeholder="Correo Electrónico">
-            </div>
-            <div class="field-group">
-                <input type="password" id="auth-p" class="field" placeholder="Contraseña de Seguridad">
-            </div>
-
-            <button class="btn btn-p" style="width: 100%; margin-top: 10px;" onclick="executeAuth()">Acceder al Sistema</button>
-            
-            <div style="height: 1px; background: var(--e-border); margin: 40px 0;"></div>
-            
-            <p style="font-weight: 800; font-size: 15px;">
-                <span id="auth-text">¿Nuevo en la red?</span>
-                <span id="auth-btn-toggle" onclick="toggleAuthMode()" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crea una cuenta.</span>
-            </p>
+            <div class="nav-links" id="menu-links">
+                </div>
         </div>
-    </main>
+    </header>
 
-    <main id="view-home" class="view">
-        <div class="grid-main">
-            <aside class="sticky-aside">
-                <div class="card" style="text-align: center;">
-                    <div id="me-av" class="avatar">E</div>
-                    <h2 id="me-name" style="font-size: 40px; font-weight: 900; letter-spacing: -2px;">Emmanuel</h2>
-                    <p id="me-mail" style="color: var(--e-sub); font-weight: 600; margin-bottom: 40px;">admin@echaca.com</p>
-                    
-                    <div class="stats-row">
-                        <div class="stat-box"><b id="stat-f">0</b><span>Seguidores</span></div>
-                        <div class="stat-box"><b id="stat-s">0</b><span>Siguiendo</span></div>
+    <div id="toast-container"></div>
+
+    <main>
+
+        <section id="view-login" class="view-section view-active">
+            <div class="auth-center">
+                <div class="auth-card">
+                    <h1>Inicia Sesión</h1>
+                    <p>Accede a la red social ECHACA.</p>
+                    <div class="input-group">
+                        <label>Email Corporativo</label>
+                        <input type="email" id="log-email" placeholder="nombre@darkcord.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="log-pass" placeholder="••••••••">
+                    </div>
+                    <button class="btn-main" onclick="sys.login()">Sincronizar Nodo</button>
+                    <p style="text-align: center; margin-top: 25px; font-size: 0.85rem;">
+                        ¿Sin cuenta? <a href="#" onclick="sys.go('register')" style="color: var(--accent-blue); text-decoration: none; font-weight: 700;">Únete</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-register" class="view-section">
+            <div class="auth-center">
+                <div class="auth-card">
+                    <h1>Nuevo Nodo</h1>
+                    <p>Registra tu identidad en la base de datos.</p>
+                    <div class="input-group">
+                        <label>Nombre de Usuario</label>
+                        <input type="text" id="reg-name" placeholder="Ej: Emmanuel Master">
+                    </div>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" placeholder="correo@darkcord.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <button class="btn-main" onclick="sys.register()">Crear Identidad</button>
+                    <p style="text-align: center; margin-top: 25px; font-size: 0.85rem;">
+                        ¿Ya eres miembro? <a href="#" onclick="sys.go('login')" style="color: var(--accent-blue); text-decoration: none; font-weight: 700;">Loguéate</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-feed" class="view-section">
+            <div class="app-container">
+                
+                <aside class="sidebar-left">
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="side-avatar">E</div>
+                        <h2 class="profile-name" id="side-name">Emmanuel</h2>
+                        <p class="profile-username" id="side-email">admin@echaca.com</p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <h4 id="count-followers">12.5k</h4>
+                                <span>Seguidores</span>
+                            </div>
+                            <div class="stat-box" style="border-left: 1px solid #f2f2f7;">
+                                <h4 id="count-following">842</h4>
+                                <span>Siguiendo</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 25px; border-top: 1px solid #f2f2f7; padding-top: 20px; text-align: left;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 10px;">ESTADO DE RED</div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                                <div style="width: 8px; height: 8px; background: #34c759; border-radius: 50%;"></div>
+                                Nodo Activo
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="feed-main">
+                    <div class="composer">
+                        <h3 style="font-weight: 900; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Nueva Publicación</h3>
+                        <input type="text" id="post-title" placeholder="Título impactante..." style="font-size: 1.5rem; font-weight: 900; border: none; background: transparent; padding: 0; margin-bottom: 10px;">
+                        <textarea id="post-body" placeholder="Comparte tus ideas con la red ECHACA..." style="min-height: 100px; border: none; background: #f9f9fb; resize: none;"></textarea>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                            <button class="btn-main" style="width: auto; padding: 10px 40px;" onclick="sys.createPost()">Publicar</button>
+                        </div>
                     </div>
 
-                    <button id="admin-panel-btn" class="btn btn-p" style="width: 100%; margin-bottom: 15px; display: none;" onclick="navTo('admin')">Panel de Control</button>
-                    <button class="btn btn-blue" style="width: 100%;" onclick="navTo('myposts')">Gestionar Mis Publicaciones</button>
-                </div>
-            </aside>
-
-            <section>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                    <h2 style="font-size: 35px; font-weight: 900; letter-spacing: -1.5px;">Explorar Feed</h2>
-                    <div style="font-weight: 800; color: var(--e-sub); font-size: 14px;">ECHACA OS v120.0</div>
+                    <div id="feed-render">
+                        </div>
                 </div>
 
-                <div id="global-feed-container">
+                <aside class="sidebar-right">
+                    <div class="profile-card" style="text-align: left;">
+                        <h3 style="font-weight: 900; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase;">Tendencias</h3>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">#1 • EMMANUEL</div>
+                            <div style="font-weight: 800; font-size: 0.95rem;">Darkcord Studios</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">#2 • TECH</div>
+                            <div style="font-weight: 800; font-size: 0.95rem;">Echaca OS v120</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">#3 • CRYPTO</div>
+                            <div style="font-weight: 800; font-size: 0.95rem;">Nequi Sinc</div>
+                        </div>
                     </div>
-            </section>
-        </div>
-    </main>
+                </aside>
 
-    <main id="view-myposts" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; border-bottom: 1px solid var(--e-border); padding-bottom: 30px;">
-            <div>
-                <h1 style="font-size: 65px; font-weight: 900; letter-spacing: -4px;">Mi Contenido</h1>
-                <p style="color: var(--e-sub); font-size: 20px; font-weight: 600;">Publicaciones realizadas por ti.</p>
             </div>
-            <button class="btn btn-s" onclick="navTo('home')">← Volver al Inicio</button>
-        </div>
+        </section>
 
-        <div id="personal-feed-container">
-            </div>
-    </main>
-
-    <main id="view-dir" class="view">
-        <h1 id="dir-title" style="font-size: 50px; font-weight: 900; letter-spacing: -3px; margin-bottom: 50px;">Buscando...</h1>
-        
-        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">Usuarios Encontrados</h3>
-        <div id="dir-users-results" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; margin-bottom: 70px;">
-            </div>
-
-        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">Publicaciones Coincidentes</h3>
-        <div id="dir-posts-results">
-            </div>
-    </main>
-
-    <main id="view-admin" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
-            <h1 style="font-size: 45px; font-weight: 900; letter-spacing: -3px;">Gestión de Nodos</h1>
-            <button class="btn btn-red" onclick="navTo('home')">Salir del Panel</button>
-        </div>
-
-        <div class="card">
-            <div id="admin-user-list">
+        <section id="view-admin" class="view-section">
+            <div style="max-width: 900px; margin: 0 auto; padding-top: 40px;">
+                <h1 style="font-weight: 900; font-size: 2.5rem; letter-spacing: -2px; margin-bottom: 30px;">Protocolo de Identidades</h1>
+                <div class="admin-box">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>USUARIO</th><th>ESTADO</th><th>ACCIÓN</th></tr>
+                        </thead>
+                        <tbody id="admin-table-body"></tbody>
+                    </table>
                 </div>
-        </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer>ECHACA v120.0 • POWERED BY EMMANUEL • 2026</footer>
+    <footer style="padding: 80px 20px; text-align: center; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 2px; font-weight: 700;">
+        ECHACA SOCIAL NETWORK • BUILT BY EMMANUEL • DARKCORD STUDIOS 2026
+    </footer>
 
     <script>
-        /* ================================================================
-           ECHACA MASTER LOGIC ENGINE
-           ================================================================
-        */
+        const API_URL = "http://localhost:3000";
 
-        let ME = null;
-        let ALL_POSTS = [];
-        let IS_REGISTER_MODE = false;
+        const sys = {
+            user: null,
+            online: true,
 
-        // MOTOR DE NAVEGACIÓN INTERNA
-        function navTo(viewId) {
-            const views = document.querySelectorAll('.view');
-            views.forEach(v => {
-                v.style.opacity = '0';
-                v.style.transform = 'translateY(30px)';
-                setTimeout(() => v.classList.remove('active'), 350);
-            });
+            init: () => {
+                console.log("%c ECHACA OS INICIADO ", "background:#000; color:#fff; font-weight:900; padding:10px;");
+                sys.checkDB();
+                setInterval(sys.checkDB, 10000);
+            },
 
-            setTimeout(() => {
-                const target = document.getElementById('view-' + viewId);
-                target.classList.add('active');
-                setTimeout(() => {
-                    target.style.opacity = '1';
-                    target.style.transform = 'translateY(0)';
-                }, 100);
-
-                if(viewId === 'home' || viewId === 'myposts') syncData();
-                if(viewId === 'admin') loadAdminData();
-            }, 400);
-        }
-
-        // CONTROL DE ACCESO
-        function toggleAuthMode() {
-            IS_REGISTER_MODE = !IS_REGISTER_MODE;
-            document.getElementById('reg-extra').style.display = IS_REGISTER_MODE ? 'block' : 'none';
-            document.getElementById('auth-text').innerText = IS_REGISTER_MODE ? '¿Ya eres miembro?' : '¿Nuevo en la red?';
-            document.getElementById('auth-btn-toggle').innerText = IS_REGISTER_MODE ? 'Entrar ahora.' : 'Crea una cuenta.';
-        }
-
-        async function executeAuth() {
-            const email = document.getElementById('auth-e').value;
-            const pass = document.getElementById('auth-p').value;
-            const name = document.getElementById('auth-n').value;
-
-            if(!email || !pass) return showToast("COMPLETA LOS CAMPOS");
-
-            // SEGURIDAD MAESTRA EMMANUEL
-            if(email === "emma2013rq@gmail.com") {
-                if(pass !== "emma06e") return showToast("LLAVE MAESTRA INVÁLIDA");
-                showToast("BIENVENIDO EMMANUEL");
-                return initSession({ id: 0, nombre: "Emmanuel", email: email, isAdmin: true, followers: [], following: [] });
-            }
-
-            const endpoint = IS_REGISTER_MODE ? '/auth/register' : '/auth/login';
-            
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ nombre: name, email: email, password: pass })
-                });
-
-                const data = await response.json();
-
-                if(response.ok) {
-                    if(IS_REGISTER_MODE) {
-                        showToast("CUENTA CREADA EXITOSAMENTE");
-                        toggleAuthMode();
-                    } else {
-                        showToast("IDENTIDAD VERIFICADA");
-                        initSession(data.user);
+            // DETECTOR DE BASE DE DATOS
+            checkDB: async () => {
+                try {
+                    const res = await fetch(`${API_URL}/api/posts/all`);
+                    if(res.ok) {
+                        document.getElementById('offline-shield').style.display = 'none';
+                        sys.online = true;
                     }
-                } else {
-                    showToast(data.error || "ERROR DE ACCESO");
+                } catch (e) {
+                    document.getElementById('offline-shield').style.display = 'flex';
+                    sys.online = false;
                 }
-            } catch (err) {
-                showToast("EL SERVIDOR NO RESPONDE");
-            }
-        }
+            },
 
-        function initSession(user) {
-            ME = user;
-            document.getElementById('navbar').style.display = 'flex';
-            document.getElementById('me-name').innerText = user.nombre;
-            document.getElementById('me-mail').innerText = user.email;
-            document.getElementById('me-av').innerText = user.nombre[0].toUpperCase();
-            
-            if(user.isAdmin) {
-                document.getElementById('admin-panel-btn').style.display = 'block';
-            }
-
-            syncData();
-            navTo('home');
-        }
-
-        // MOTOR DEL FORO
-        function openModal() { document.getElementById('modal-post').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-post').style.display = 'none'; }
-
-        async function processNewPost() {
-            const tit = document.getElementById('p-titulo').value;
-            const tag = document.getElementById('p-tema').value;
-            const des = document.getElementById('p-desc').value;
-            const img = document.getElementById('p-foto').value;
-
-            if(!tit || !des) return showToast("EL TÍTULO Y CONTENIDO SON OBLIGATORIOS");
-
-            const postObj = {
-                id: Date.now(),
-                authorId: ME.id,
-                authorName: ME.nombre,
-                titulo: tit,
-                tema: tag || "General",
-                descripcion: des,
-                foto: img || "",
-                time: new Date().toLocaleString('es-CO', { 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    day: '2-digit', 
-                    month: 'short',
-                    year: 'numeric'
-                })
-            };
-
-            try {
-                const res = await fetch('/api/posts/create', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(postObj)
-                });
-
-                if(res.ok) {
-                    showToast("SINCRONIZADO CON EL FEED GLOBAL");
-                    closeModal();
-                    // Limpiar campos
-                    document.getElementById('p-titulo').value = '';
-                    document.getElementById('p-desc').value = '';
-                    syncData();
-                }
-            } catch (e) {
-                showToast("ERROR AL PUBLICAR");
-            }
-        }
-
-        async function syncData() {
-            try {
-                const res = await fetch('/api/posts/all');
-                ALL_POSTS = await res.json();
+            // SPA ROUTER
+            go: (viewId) => {
+                if(!sys.online) return;
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('view-active'));
+                document.getElementById(`view-${viewId}`).classList.add('view-active');
                 
-                renderFeeds();
-                updateProfileStats();
-            } catch (e) {
-                console.error("Sync Error");
-            }
-        }
+                if(viewId === 'feed') sys.loadFeed();
+                if(viewId === 'admin') sys.loadAdmin();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
 
-        function updateProfileStats() {
-            document.getElementById('stat-f').innerText = ME.followers ? ME.followers.length : 0;
-            document.getElementById('stat-s').innerText = ME.following ? ME.following.length : 0;
-        }
+            toast: (m) => {
+                const c = document.getElementById('toast-container');
+                const t = document.createElement('div');
+                t.className = 'toast'; t.innerText = m;
+                c.appendChild(t);
+                setTimeout(() => t.remove(), 4000);
+            },
 
-        function renderFeeds() {
-            const globalCont = document.getElementById('global-feed-container');
-            const localCont = document.getElementById('personal-feed-container');
+            // AUTENTICACIÓN
+            login: async () => {
+                const email = document.getElementById('log-email').value;
+                const pass = document.getElementById('log-pass').value;
 
-            // 1. Render Feed Global (Otras personas)
-            const othersPosts = ALL_POSTS.filter(p => p.authorId !== ME.id);
-            if(othersPosts.length === 0) {
-                globalCont.innerHTML = `
-                    <div class="empty-state">
-                        <h3>El mundo está en silencio</h3>
-                        <p>No hay publicaciones de otros usuarios por el momento.</p>
-                    </div>
-                `;
-            } else {
-                globalCont.innerHTML = othersPosts.map(p => postTemplate(p)).join('');
-            }
+                if(!email || !pass) return sys.toast("Completa los campos");
 
-            // 2. Render Mis Publicaciones
-            const myPosts = ALL_POSTS.filter(p => p.authorId === ME.id);
-            if(myPosts.length === 0) {
-                localCont.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aún no has compartido nada</h3>
-                        <p>Tus publicaciones aparecerán en esta sección dedicada.</p>
-                        <button class="btn btn-blue" style="margin-top:20px" onclick="openModal()">Crear mi primera publicación</button>
-                    </div>
-                `;
-            } else {
-                localCont.innerHTML = myPosts.map(p => postTemplate(p)).join('');
-            }
-        }
+                try {
+                    const res = await fetch(`${API_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password: pass })
+                    });
+                    const data = await res.json();
 
-        function postTemplate(p) {
-            return `
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-info">
-                            <span class="post-author">${p.authorName.toUpperCase()}</span>
-                            <span class="post-time">${p.time}</span>
+                    if(res.ok) {
+                        sys.user = data.user;
+                        sys.toast(`Acceso Concedido: ${sys.user.nombre}`);
+                        sys.setupUI();
+                        sys.go('feed');
+                    } else {
+                        sys.toast("Error: " + data.error);
+                    }
+                } catch (e) { sys.toast("Servidor no responde"); }
+            },
+
+            register: async () => {
+                const nombre = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const pass = document.getElementById('reg-pass').value;
+
+                if(!nombre || !email || pass.length < 6) return sys.toast("Datos inválidos");
+
+                try {
+                    const res = await fetch(`${API_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nombre, email, password: pass })
+                    });
+                    if(res.ok) {
+                        sys.toast("Nodo creado correctamente.");
+                        sys.go('login');
+                    }
+                } catch (e) { sys.toast("Fallo en registro"); }
+            },
+
+            // CONFIGURAR INTERFAZ TRAS LOGIN
+            setupUI: () => {
+                document.getElementById('header-ui').style.display = 'flex';
+                const links = document.getElementById('menu-links');
+                
+                // Sidebar Left Data
+                document.getElementById('side-name').innerText = sys.user.nombre;
+                document.getElementById('side-email').innerText = sys.user.email;
+                document.getElementById('side-avatar').innerText = sys.user.nombre[0].toUpperCase();
+                
+                // Simulación de seguidores (En una DB real vendrían del objeto user)
+                document.getElementById('count-followers').innerText = (Math.random() * 20).toFixed(1) + "k";
+                document.getElementById('count-following').innerText = Math.floor(Math.random() * 1000);
+
+                let h = `<a class="nav-item active" onclick="sys.go('feed')">FEED</a>`;
+                if(sys.user.isAdmin) h += `<a class="nav-item" onclick="sys.go('admin')">DASHBOARD</a>`;
+                h += `<a class="nav-item" style="color:var(--accent-red)" onclick="location.reload()">SALIR</a>`;
+                links.innerHTML = h;
+            },
+
+            // FEED ENGINE
+            loadFeed: async () => {
+                const area = document.getElementById('feed-render');
+                try {
+                    const res = await fetch(`${API_URL}/api/posts/all`);
+                    const nodes = await res.json();
+                    
+                    area.innerHTML = nodes.map(n => `
+                        <div class="post-entry">
+                            <div class="post-header">
+                                <div class="post-avatar-sm">${n.authorName[0]}</div>
+                                <div>
+                                    <div style="font-weight:900; font-size:1rem;">${n.authorName}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted);">${n.time}</div>
+                                </div>
+                            </div>
+                            <h2 style="font-weight:900; margin-bottom:12px; letter-spacing:-0.5px;">${n.titulo}</h2>
+                            <p style="color:#3a3a3c; line-height:1.7;">${n.descripcion}</p>
                         </div>
-                        <span class="post-tag">${p.tema}</span>
-                    </div>
-                    <h3 class="post-title">${p.titulo}</h3>
-                    <p class="post-desc">${p.descripcion}</p>
-                    ${p.foto ? `<img src="${p.foto}" class="post-img" onerror="this.style.display='none'">` : ''}
-                    <div style="margin-top:25px; padding-top:20px; border-top:1px solid #f0f0f0; display:flex; gap:20px;">
-                        <button class="btn btn-s" style="padding:10px 20px; font-size:12px;">Me gusta</button>
-                        <button class="btn btn-s" style="padding:10px 20px; font-size:12px;">Comentar</button>
-                    </div>
-                </div>
-            `;
-        }
+                    `).reverse().join('');
+                } catch (e) { sys.toast("Error al sincronizar feed"); }
+            },
 
-        // MOTOR DE BÚSQUEDA
-        async function handleGlobalSearch(e) {
-            if(e.key === 'Enter') {
-                const query = e.target.value.toLowerCase();
-                if(!query) return;
+            createPost: async () => {
+                const t = document.getElementById('post-title').value;
+                const b = document.getElementById('post-body').value;
+                if(!t || !b) return sys.toast("Rellena la transmisión");
 
-                document.getElementById('dir-title').innerText = `Resultados para: "${query}"`;
-                
-                // Buscar Usuarios
-                const resU = await fetch(`/api/users/search?q=${query}`);
-                const usersFound = await resU.json();
-                
-                const userCont = document.getElementById('dir-users-results');
-                if(usersFound.length === 0) {
-                    userCont.innerHTML = '<p style="color:var(--e-sub); font-weight:800;">No se encontraron usuarios.</p>';
-                } else {
-                    userCont.innerHTML = usersFound.map(u => `
-                        <div class="card" style="padding:30px; text-align:center;">
-                            <div style="width:60px; height:60px; background:#000; color:#fff; border-radius:20px; display:grid; place-items:center; margin:0 auto 20px; font-weight:900; font-size:24px;">${u.nombre[0]}</div>
-                            <h4 style="font-size:22px; font-weight:900;">${u.nombre}</h4>
-                            <p style="color:var(--e-sub); margin-bottom:20px;">${u.email}</p>
-                            <button class="btn btn-p" style="width:100%;" onclick="showToast('PERFIL EN DESARROLLO')">Ver Perfil</button>
-                        </div>
-                    `).join('');
-                }
+                try {
+                    const res = await fetch(`${API_URL}/api/posts/create`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            authorId: sys.user.id,
+                            authorName: sys.user.nombre,
+                            titulo: t, descripcion: b
+                        })
+                    });
+                    if(res.ok) {
+                        document.getElementById('post-title').value = '';
+                        document.getElementById('post-body').value = '';
+                        sys.toast("Transmisión enviada");
+                        sys.loadFeed();
+                    }
+                } catch (e) { sys.toast("Fallo de red"); }
+            },
 
-                // Buscar Posts
-                const postsFound = ALL_POSTS.filter(p => 
-                    p.titulo.toLowerCase().includes(query) || 
-                    p.tema.toLowerCase().includes(query) ||
-                    p.descripcion.toLowerCase().includes(query)
-                );
-
-                const postCont = document.getElementById('dir-posts-results');
-                if(postsFound.length === 0) {
-                    postCont.innerHTML = '<div class="empty-state"><h3>No hay publicaciones que coincidan</h3></div>';
-                } else {
-                    postCont.innerHTML = postsFound.map(p => postTemplate(p)).join('');
-                }
-
-                navTo('dir');
-            }
-        }
-
-        // PANEL ADMIN
-        async function loadAdminData() {
-            const res = await fetch('/api/admin/database');
-            const users = await res.json();
-            
-            const cont = document.getElementById('admin-user-list');
-            cont.innerHTML = `
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="text-align:left; border-bottom:2px solid var(--e-border);">
-                            <th style="padding:20px;">USUARIO</th>
-                            <th>ID</th>
-                            <th>CORREO</th>
-                            <th>ACCIONES</th>
+            // ADMIN PROTOCOLS
+            loadAdmin: async () => {
+                const tbody = document.getElementById('admin-table-body');
+                try {
+                    const res = await fetch(`${API_URL}/api/admin/database`);
+                    const users = await res.json();
+                    tbody.innerHTML = users.map(u => `
+                        <tr>
+                            <td>
+                                <div style="font-weight:900;">${u.nombre}</div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${u.email}</div>
+                            </td>
+                            <td><span style="font-size:0.7rem; font-weight:800; background:#f2f2f7; padding:5px 12px; border-radius:100px;">ONLINE</span></td>
+                            <td>
+                                ${u.id !== 0 ? `<button onclick="sys.purge(${u.id})" style="color:var(--accent-red); border:none; background:none; font-weight:800; cursor:pointer;">PURGAR</button>` : 'MASTER'}
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        ${users.map(u => `
-                            <tr style="border-bottom:1px solid var(--e-border);">
-                                <td style="padding:20px; font-weight:800;">${u.nombre}</td>
-                                <td style="font-family:monospace; color:var(--e-sub);">${u.id}</td>
-                                <td style="font-weight:600;">${u.email}</td>
-                                <td>
-                                    ${u.id !== 0 ? `<button class="btn btn-red" style="padding:10px 20px; font-size:12px;" onclick="deleteUser(${u.id})">Expulsar</button>` : '<b>SISTEMA</b>'}
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-        }
+                    `).join('');
+                } catch (e) { sys.toast("Sin acceso a la bóveda"); }
+            },
 
-        async function deleteUser(id) {
-            if(!confirm("¿ESTÁS SEGURO DE PURGAR ESTA IDENTIDAD?")) return;
-            const res = await fetch(`/api/admin/delete/${id}`, { method: 'DELETE' });
-            if(res.ok) {
-                showToast("NODO ELIMINADO");
-                loadAdminData();
+            purge: async (id) => {
+                if(!confirm("¿CONFIRMAS PURGA DE IDENTIDAD?")) return;
+                try {
+                    const res = await fetch(`${API_URL}/api/admin/delete/${id}`, { method: 'DELETE' });
+                    if(res.ok) { sys.toast("Nodo eliminado"); sys.loadAdmin(); }
+                } catch (e) { sys.toast("Error en purga"); }
             }
-        }
+        };
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('active');
-            setTimeout(() => t.classList.remove('active'), 3000);
-        }
-
+        window.onload = sys.init;
     </script>
 </body>
 </html>
