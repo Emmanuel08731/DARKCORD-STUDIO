@@ -5,14 +5,8 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const dbUrl = process.env.DATABASE_URL;
-if (!dbUrl) {
-    console.error("❌ DATABASE_URL no encontrada en Render Environment.");
-    process.exit(1);
-}
-
 const pool = new Pool({
-    connectionString: dbUrl,
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
@@ -20,13 +14,22 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- RUTAS DE USUARIO ---
+// LOGIN CON DETECCIÓN DE ERRORES ESPECÍFICOS
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email, password]);
-        if (result.rows.length > 0) res.json(result.rows[0]);
-        else res.status(401).json({ error: "Credenciales incorrectas" });
+        const userCheck = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+        
+        if (userCheck.rows.length === 0) {
+            return res.status(404).json({ error: "no_existe" });
+        }
+        
+        const user = userCheck.rows[0];
+        if (user.password !== password) {
+            return res.status(401).json({ error: "clave_incorrecta" });
+        }
+
+        res.json(user);
     } catch (err) { res.status(500).send(err); }
 });
 
@@ -35,9 +38,10 @@ app.post('/api/register', async (req, res) => {
     try {
         const result = await pool.query('INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email', [nombre, email, password]);
         res.json(result.rows[0]);
-    } catch (err) { res.status(500).json({ error: "Error al registrar" }); }
+    } catch (err) { res.status(500).json({ error: "email_duplicado" }); }
 });
 
+// (Rutas de tiempos y admin se mantienen igual...)
 app.post('/api/tiempo', async (req, res) => {
     const { usuario_id, actividad, inicio, fin, fecha } = req.body;
     try {
@@ -53,7 +57,6 @@ app.get('/api/tiempos/:id', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-// --- RUTAS DE ADMIN ---
 app.get('/api/admin/usuarios', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, nombre, email FROM usuarios');
@@ -61,4 +64,4 @@ app.get('/api/admin/usuarios', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-app.listen(port, () => console.log(`Servidor en puerto ${port}`));
+app.listen(port, () => console.log(`Servidor iniciado`));
