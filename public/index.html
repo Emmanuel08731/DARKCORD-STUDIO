@@ -4,188 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diesel Styles | Infinity OS</title>
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
     <style>
-        :root {
-            --apple-blue: #0071e3;
-            --apple-red: #ff3b30;
-            --apple-gray: #86868b;
-            --glass: rgba(255, 255, 255, 0.8);
-        }
-
+        :root { --blue: #0071e3; --red: #ff3b30; --bg: #f5f5f7; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-
-        body { 
-            background: linear-gradient(135deg, #e2e2e2 0%, #ffffff 100%); 
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-        }
-
+        body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .hidden { display: none !important; }
-
-        /* NAVEGACIÓN */
-        nav {
-            position: fixed; top: 0; width: 100%; height: 50px; z-index: 1000;
-            backdrop-filter: blur(20px); background: rgba(255,255,255,0.7);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 30px;
-        }
-
-        /* TARJETA PRINCIPAL */
-        .glass-card {
-            background: white; border-radius: 35px; padding: 45px;
-            width: 100%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        
+        .card { 
+            background: white; padding: 40px; border-radius: 30px; 
+            width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center; border: 1px solid rgba(0,0,0,0.05);
         }
 
-        h1 { font-size: 50px; font-weight: 800; letter-spacing: -3px; margin-bottom: 10px; }
-        .subtitle { color: var(--apple-gray); margin-bottom: 30px; }
-
-        /* FORMULARIOS */
-        .input-group { margin-bottom: 20px; text-align: left; }
-        label { font-size: 11px; font-weight: 800; color: var(--apple-blue); text-transform: uppercase; margin-left: 10px; }
-        input {
-            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid #d2d2d7;
-            background: #f5f5f7; font-size: 16px; margin-top: 5px; outline: none;
-        }
-        input:focus { border-color: var(--apple-blue); background: white; }
-
-        .btn-primary {
-            width: 100%; padding: 18px; border-radius: 15px; border: none;
-            background: var(--apple-blue); color: white; font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: 0.3s;
-        }
-        .btn-primary:active { transform: scale(0.97); }
-
-        .btn-admin {
-            background: #1d1d1f; color: white; margin-top: 20px; padding: 12px;
-            border-radius: 12px; width: 100%; border: none; cursor: pointer; font-weight: 700;
+        input { 
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; 
+            border: 1px solid #d2d2d7; background: #fafafa; font-size: 16px; outline: none;
         }
 
-        /* CRONÓMETRO */
-        .timer-display {
-            background: #000; color: #fff; border-radius: 25px;
-            padding: 50px 10px; margin: 25px 0;
+        .btn { 
+            width: 100%; padding: 15px; border-radius: 12px; border: none; 
+            font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px;
         }
-        .clock { font-size: 75px; font-weight: 800; letter-spacing: -4px; font-variant-numeric: tabular-nums; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-red { background: rgba(255,59,48,0.1); color: var(--red); }
 
-        /* ESTILOS DE LISTA */
-        .item-row {
-            background: #f9f9fb; padding: 15px; border-radius: 15px; margin-top: 10px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee;
+        /* Panel Admin */
+        .admin-view { 
+            position: fixed; inset: 0; background: #fff; z-index: 100; 
+            padding: 50px 20px; overflow-y: auto; 
         }
-
-        /* MODAL ADMIN */
-        .admin-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f5f5f7; z-index: 2000; padding: 70px 20px; overflow-y: auto;
+        .user-item { 
+            background: #f9f9fb; padding: 20px; border-radius: 15px; 
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
         }
-        .user-pill {
-            background: white; padding: 20px; border-radius: 20px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        }
-        .btn-delete {
-            background: #fff1f0; color: var(--apple-red); border: none;
-            padding: 8px 15px; border-radius: 10px; font-weight: 800; cursor: pointer;
-        }
-        .btn-delete:hover { background: var(--apple-red); color: white; }
     </style>
 </head>
 <body>
 
-<nav id="top-nav" class="hidden">
-    <div style="font-weight: 900; font-size: 22px;">DIESEL</div>
-    <div style="display: flex; gap: 15px; align-items: center;">
-        <span id="nav-user" style="font-size: 12px; font-weight: 700; color: var(--apple-gray);"></span>
-        <button onclick="location.reload()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">Salir</button>
+<div id="auth-ui" class="card animate__animated animate__fadeIn">
+    <h1 id="auth-title">Bienvenido</h1>
+    <p id="auth-sub" style="color: #86868b; margin-bottom: 20px;">Diesel Styles Infinity</p>
+    
+    <div id="reg-box" class="hidden">
+        <input type="text" id="name" placeholder="Nombre completo">
     </div>
-</nav>
-
-<div class="glass-card animate__animated animate__fadeIn" id="auth-box">
-    <h1>Hola</h1>
-    <p class="subtitle">Accede a la plataforma de producción.</p>
-
-    <div id="reg-fields" class="hidden">
-        <div class="input-group">
-            <label>Nombre Completo</label>
-            <input type="text" id="reg-name" placeholder="Tu nombre">
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="log-email" placeholder="correo@ejemplo.com">
-    </div>
-
-    <div class="input-group">
-        <label>Contraseña</label>
-        <input type="password" id="log-pass" placeholder="••••••••">
-    </div>
-
-    <button class="btn-primary" onclick="authAction()">Continuar</button>
-    <button onclick="toggleAuth()" id="toggle-btn" style="background:none; border:none; color:var(--apple-blue); margin-top:25px; cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</button>
+    <input type="email" id="email" placeholder="Correo electrónico">
+    <input type="password" id="pass" placeholder="Contraseña">
+    
+    <button class="btn btn-blue" onclick="auth()">Continuar</button>
+    <button class="btn" style="background:none; color:var(--blue)" onclick="toggleMode()" id="mode-btn">¿No tienes cuenta? Regístrate</button>
 </div>
 
-<div id="dash-box" class="glass-card hidden animate__animated animate__fadeInUp">
-    <div style="text-align: left;">
-        <h2 id="user-welcome" style="font-size: 35px; font-weight: 800;">Hola</h2>
-        <p id="work-status" style="color:var(--apple-gray); margin-bottom: 20px;">Listo para iniciar.</p>
-    </div>
-
-    <div id="pre-work">
-        <div class="input-group">
-            <label>Nombre del Proyecto</label>
-            <input type="text" id="project-name" placeholder="Ej: Diseño Web X">
-        </div>
-        <button class="btn-primary" onclick="startTimer()">Iniciar Cronómetro</button>
-        <button id="admin-trigger" class="btn-admin hidden" onclick="loadAdmin()">Panel de Usuarios →</button>
-    </div>
-
-    <div id="active-work" class="hidden">
-        <div class="timer-display">
-            <div class="clock" id="timer-text">00:00:00</div>
-        </div>
-        <button class="btn-primary" style="background:#000;" onclick="stopTimer()">Terminar y Guardar</button>
-    </div>
-
-    <div style="text-align: left; margin-top: 40px;">
-        <h3 style="font-size: 18px; font-weight: 800;">Actividad de Hoy</h3>
-        <div id="history-list"></div>
-    </div>
+<div id="dash-ui" class="card hidden animate__animated animate__fadeInUp">
+    <h2 id="user-name">Hola</h2>
+    <p style="margin-bottom: 20px;">Panel de control activo.</p>
+    <button id="admin-btn" class="btn btn-blue hidden" onclick="openAdmin()">Gestionar Usuarios</button>
+    <button class="btn btn-red" onclick="logout()">Cerrar Sesión</button>
 </div>
 
-<div id="admin-screen" class="admin-screen hidden animate__animated animate__slideInUp">
-    <div style="max-width: 450px; margin: 0 auto;">
-        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">← Regresar</button>
-        <h1 style="margin-top:30px; font-size: 40px;">Usuarios</h1>
-        <p class="subtitle">Gestión de cuentas activas en Diesel.</p>
-        <div id="admin-user-list"></div>
+<div id="admin-ui" class="admin-view hidden">
+    <div style="max-width: 400px; margin: 0 auto;">
+        <button onclick="closeAdmin()" style="border:none; color:var(--blue); cursor:pointer; font-weight:700;">← Volver</button>
+        <h1 style="margin: 20px 0;">Usuarios</h1>
+        <div id="users-list"></div>
     </div>
 </div>
 
 <script>
-    const ADMIN_EMAIL = 'emmanuel2013rq@gmail.com';
-    let currentUser = null;
-    let isRegistering = false;
-    let clockInt = null;
-    let timeStart = null;
+    const MASTER = 'emmanuel2013rq@gmail.com';
+    let user = null;
+    let isReg = false;
 
-    function toggleAuth() {
-        isRegistering = !isRegistering;
-        document.getElementById('reg-fields').classList.toggle('hidden');
-        document.getElementById('toggle-btn').innerText = isRegistering ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
+    function toggleMode() {
+        isReg = !isReg;
+        document.getElementById('reg-box').classList.toggle('hidden');
+        document.getElementById('auth-title').innerText = isReg ? 'Crear Cuenta' : 'Bienvenido';
+        document.getElementById('mode-btn').innerText = isReg ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate';
     }
 
-    async function authAction() {
-        const email = document.getElementById('log-email').value.toLowerCase().trim();
-        const password = document.getElementById('log-pass').value;
-        const nombre = document.getElementById('reg-name').value;
-        const url = isRegistering ? '/api/auth/register' : '/api/auth/login';
-
-        if (!email || !password) return Swal.fire('Aviso', 'Completa los datos', 'warning');
+    async function auth() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('pass').value;
+        const nombre = document.getElementById('name').value;
+        const url = isReg ? '/api/auth/register' : '/api/auth/login';
 
         try {
             const res = await fetch(url, {
@@ -194,138 +97,53 @@
                 body: JSON.stringify({ nombre, email, password })
             });
             const data = await res.json();
-
             if (res.ok) {
-                if (isRegistering) {
-                    Swal.fire('Éxito', 'Cuenta creada. Inicia sesión.', 'success');
-                    toggleAuth();
-                } else {
-                    currentUser = data;
-                    showDashboard();
+                if (isReg) { Swal.fire('Éxito', 'Cuenta creada', 'success'); toggleMode(); }
+                else { 
+                    user = data; 
+                    localStorage.setItem('diesel_user', JSON.stringify(user));
+                    showDash(); 
                 }
-            } else {
-                Swal.fire('Error', data.error, 'error');
-            }
-        } catch (e) {
-            Swal.fire('Error', 'No se pudo conectar al servidor.', 'error');
-        }
+            } else { Swal.fire('Error', data.error, 'error'); }
+        } catch (e) { Swal.fire('Error', 'Servidor desconectado', 'error'); }
     }
 
-    function showDashboard() {
-        document.getElementById('auth-box').classList.add('hidden');
-        document.getElementById('dash-box').classList.remove('hidden');
-        document.getElementById('top-nav').classList.remove('hidden');
-        document.getElementById('user-welcome').innerText = "Hola, " + currentUser.nombre;
-        document.getElementById('nav-user').innerText = currentUser.nombre;
-        
-        if (currentUser.email === ADMIN_EMAIL) {
-            document.getElementById('admin-trigger').classList.remove('hidden');
-        }
-        refreshHistory();
+    function showDash() {
+        document.getElementById('auth-ui').classList.add('hidden');
+        document.getElementById('dash-ui').classList.remove('hidden');
+        document.getElementById('user-name').innerText = "Hola, " + user.nombre;
+        if (user.email === MASTER) document.getElementById('admin-btn').classList.remove('hidden');
     }
 
-    // --- CRONÓMETRO ---
-    function startTimer() {
-        const project = document.getElementById('project-name').value;
-        if (!project) return Swal.fire('Info', 'Escribe el nombre del proyecto.', 'info');
-        
-        timeStart = new Date();
-        document.getElementById('pre-work').classList.add('hidden');
-        document.getElementById('active-work').classList.remove('hidden');
-        document.getElementById('work-status').innerText = "Trabajando en: " + project;
-        
-        clockInt = setInterval(() => {
-            const diff = new Date(new Date() - timeStart);
-            document.getElementById('timer-text').innerText = diff.toISOString().substr(11, 8);
-        }, 1000);
-    }
-
-    async function stopTimer() {
-        clearInterval(clockInt);
-        const duration = document.getElementById('timer-text').innerText;
-        
-        await fetch('/api/work/save', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                uid: currentUser.id, proyecto: document.getElementById('project-name').value,
-                inicio: timeStart.toLocaleTimeString(), fin: new Date().toLocaleTimeString(),
-                fecha: new Date().toLocaleDateString(), duracion: duration
-            })
-        });
-
-        document.getElementById('pre-work').classList.remove('hidden');
-        document.getElementById('active-work').classList.add('hidden');
-        document.getElementById('project-name').value = "";
-        document.getElementById('timer-text').innerText = "00:00:00";
-        document.getElementById('work-status').innerText = "Listo para iniciar.";
-        refreshHistory();
-    }
-
-    async function refreshHistory() {
-        const res = await fetch(`/api/work/history/${currentUser.id}`);
-        const logs = await res.json();
-        const today = new Date().toLocaleDateString();
-        const list = document.getElementById('history-list');
-        
-        const todayLogs = logs.filter(l => l.fecha === today);
-        list.innerHTML = todayLogs.length === 0 ? '<p style="color:#888; margin-top:15px;">Sin actividad hoy.</p>' :
-            todayLogs.map(l => `
-                <div class="item-row">
-                    <div><b>${l.proyecto}</b><br><small>${l.inicio}</small></div>
-                    <div style="font-weight:800; color:var(--apple-blue);">${l.duracion}</div>
-                </div>
-            `).join('');
-    }
-
-    // --- LÓGICA DE ADMINISTRACIÓN (ELIMINAR USUARIO) ---
-    async function loadAdmin() {
-        document.getElementById('admin-screen').classList.remove('hidden');
-        const res = await fetch(`/api/admin/all?admin_email=${currentUser.email}`);
+    async function openAdmin() {
+        document.getElementById('admin-ui').classList.remove('hidden');
+        const res = await fetch(`/api/admin/users?admin_email=${user.email}`);
         const users = await res.json();
-        
-        const list = document.getElementById('admin-user-list');
+        const list = document.getElementById('users-list');
         list.innerHTML = users.map(u => `
-            <div class="user-pill animate__animated animate__fadeIn">
-                <div style="text-align:left">
-                    <b style="font-size:16px">${u.nombre}</b><br>
-                    <small style="color:#888">${u.email}</small>
-                </div>
-                <button class="btn-delete" onclick="deleteUserAccount(${u.id}, '${u.nombre}')">Eliminar</button>
+            <div class="user-item">
+                <div style="text-align:left"><b>${u.nombre}</b><br><small>${u.email}</small></div>
+                <button class="btn-red" style="padding: 5px 10px; width:auto; margin:0;" onclick="deleteUser(${u.id})">Borrar</button>
             </div>
         `).join('');
     }
 
-    async function deleteUserAccount(id, name) {
-        const confirm = await Swal.fire({
-            title: `¿Eliminar a ${name}?`,
-            text: "Se borrará su cuenta y todo su historial de tiempo.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff3b30',
-            confirmButtonText: 'Sí, borrar cuenta'
-        });
-
+    async function deleteUser(id) {
+        const confirm = await Swal.fire({ title: '¿Borrar cuenta?', showCancelButton: true });
         if (confirm.isConfirmed) {
-            try {
-                // AQUÍ ESTÁ LA CLAVE: Enviamos el ID y tu correo de admin para autorizar
-                const res = await fetch(`/api/admin/user/${id}?admin_email=${currentUser.email}`, {
-                    method: 'DELETE'
-                });
-
-                if (res.ok) {
-                    Swal.fire('Eliminado', 'La cuenta ha sido borrada.', 'success');
-                    loadAdmin(); // Recargar la lista
-                } else {
-                    Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-                }
-            } catch (e) {
-                Swal.fire('Error', 'Fallo de conexión.', 'error');
-            }
+            await fetch(`/api/admin/user/${id}?admin_email=${user.email}`, { method: 'DELETE' });
+            openAdmin();
         }
     }
 
-    function closeAdmin() { document.getElementById('admin-screen').classList.add('hidden'); }
+    function logout() { localStorage.removeItem('diesel_user'); location.reload(); }
+    function closeAdmin() { document.getElementById('admin-ui').classList.add('hidden'); }
+
+    // Auto-login
+    window.onload = () => {
+        const saved = localStorage.getItem('diesel_user');
+        if (saved) { user = JSON.parse(saved); showDash(); }
+    };
 </script>
 </body>
 </html>
