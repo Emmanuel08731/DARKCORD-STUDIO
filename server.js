@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 10000;
 
-// CONFIGURACIÓN DE CONEXIÓN CON REINTENTOS
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -14,8 +13,7 @@ const pool = new Pool({
 
 const MASTER_KEY = 'emmanuel2013rq@gmail.com';
 
-// INICIALIZACIÓN DE ESQUEMA RELACIONAL
-const setupDB = async () => {
+const initDB = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
@@ -32,68 +30,56 @@ const setupDB = async () => {
                 fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log("✅ Tablas sincronizadas correctamente");
-    } catch (e) { console.error("❌ Error inicializando DB:", e); }
+    } catch (e) { console.error("Error DB Init:", e); }
 };
-setupDB();
+initDB();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- AUTH ---
+// AUTH
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
         const r = await pool.query('INSERT INTO usuarios (nombre, email, password) VALUES ($1,$2,$3) RETURNING *', [nombre, email.toLowerCase().trim(), password]);
-        res.status(201).json(r.rows[0]);
-    } catch (e) { res.status(400).json({error: "El correo ya está en uso."}); }
+        res.json(r.rows[0]);
+    } catch (e) { res.status(400).json({error: "Email ya registrado"}); }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
-    try {
-        const r = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email.toLowerCase().trim(), password]);
-        if (r.rows.length > 0) res.json(r.rows[0]);
-        else res.status(401).json({error: "Credenciales inválidas."});
-    } catch (e) { res.status(500).json({error: "Error interno."}); }
+    const r = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email.toLowerCase().trim(), password]);
+    if (r.rows.length > 0) res.json(r.rows[0]);
+    else res.status(401).json({error: "Credenciales incorrectas"});
 });
 
-// --- TIEMPO ---
+// TIEMPOS
 app.post('/api/tiempo/guardar', async (req, res) => {
     const { usuario_id, proyecto, duracion } = req.body;
-    if (!usuario_id || !duracion) return res.status(400).json({error: "Faltan datos."});
-    try {
-        await pool.query('INSERT INTO registros_trabajo (usuario_id, proyecto, duracion) VALUES ($1,$2,$3)', [usuario_id, proyecto || "Sin nombre", duracion]);
-        res.json({ok: true});
-    } catch (e) { res.status(500).json({error: "Error al guardar registro."}); }
+    await pool.query('INSERT INTO registros_trabajo (usuario_id, proyecto, duracion) VALUES ($1,$2,$3)', [usuario_id, proyecto, duracion]);
+    res.json({ok: true});
 });
 
-// --- ADMIN PANEL ---
+// MIS TAREAS (Para el usuario común)
+app.get('/api/tareas/mias', async (req, res) => {
+    const { uid } = req.query;
+    const r = await pool.query("SELECT proyecto, duracion, TO_CHAR(fecha, 'DD/MM/YYYY HH24:MI') as fecha FROM registros_trabajo WHERE usuario_id = $1 ORDER BY id DESC", [uid]);
+    res.json(r.rows);
+});
+
+// ADMIN
 app.get('/api/admin/usuarios', async (req, res) => {
-    if (req.query.admin_email !== MASTER_KEY) return res.status(403).send("Prohibido");
-    try {
-        const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE email != $1 ORDER BY nombre ASC', [MASTER_KEY]);
-        res.json(r.rows);
-    } catch (e) { res.status(500).json({error: "Error al listar."}); }
-});
-
-app.get('/api/admin/detalles/:id', async (req, res) => {
-    if (req.query.admin_email !== MASTER_KEY) return res.status(403).send("Prohibido");
-    try {
-        const r = await pool.query("SELECT proyecto, duracion, TO_CHAR(fecha, 'DD/MM/YYYY HH24:MI') as fecha FROM registros_trabajo WHERE usuario_id = $1 ORDER BY id DESC", [req.params.id]);
-        res.json(r.rows);
-    } catch (e) { res.status(500).json({error: "Error al consultar tiempos."}); }
+    if (req.query.admin_email !== MASTER_KEY) return res.status(403).send("No");
+    const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE email != $1', [MASTER_KEY]);
+    res.json(r.rows);
 });
 
 app.delete('/api/admin/usuarios/:id', async (req, res) => {
-    if (req.query.admin_email !== MASTER_KEY) return res.status(403).send("Prohibido");
-    try {
-        await pool.query('DELETE FROM usuarios WHERE id = $1', [req.params.id]);
-        res.json({ok: true});
-    } catch (e) { res.status(500).json({error: "No se pudo eliminar."}); }
+    if (req.query.admin_email !== MASTER_KEY) return res.status(403).send("No");
+    await pool.query('DELETE FROM usuarios WHERE id = $1', [req.params.id]);
+    res.json({ok: true});
 });
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-
-app.listen(port, () => console.log(`🚀 Sistema Apple-Style en puerto ${port}`));
+app.listen(port, () => console.log(`System Online on ${port}`));
