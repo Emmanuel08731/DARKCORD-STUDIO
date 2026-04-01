@@ -10,14 +10,17 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// ==========================================
-// ☢️ PROTOCOLO NUCLEAR DE LIMPIEZA ☢️
-// ==========================================
-const superClean = async () => {
+// ================================================================
+// 🛡️ PROTOCOLO DE IDENTIDAD EXCLUSIVA: EMMANUEL 🛡️
+// ================================================================
+const MASTER_EMAIL = 'emmanuel2013rq@gmail.com';
+
+const initializeDieselEngine = async () => {
     const client = await pool.connect();
     try {
-        console.log("-----------------------------------------");
-        console.log("🚀 INICIANDO LIMPIEZA PROFUNDA DE TABLAS...");
+        console.log("--------------------------------------------------");
+        console.log("🍎 DIESEL STYLES OS - SISTEMA DE ALTO RENDIMIENTO");
+        console.log("🛠️  AUTORIZANDO ACCESO MAESTRO A: " + MASTER_EMAIL);
         
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
@@ -27,74 +30,69 @@ const superClean = async () => {
                 password VARCHAR(100),
                 rol VARCHAR(20) DEFAULT 'worker'
             );
+            CREATE TABLE IF NOT EXISTS tiempos (
+                id SERIAL PRIMARY KEY,
+                usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+                actividad TEXT,
+                hora_inicio VARCHAR(50),
+                hora_fin VARCHAR(50),
+                fecha VARCHAR(50),
+                duracion_total VARCHAR(50)
+            );
         `);
 
-        // 1. Cambiamos el correo de cualquier "fantasma" para liberar el índice UNIQUE
-        await client.query(`
-            UPDATE usuarios 
-            SET email = 'old_' || id || '@deleted.com' 
-            WHERE email = 'emma2013rqgmail.com'
-        `);
-
-        // 2. Ahora sí, borramos todo rastro
-        await client.query("DELETE FROM usuarios WHERE email LIKE '%@deleted.com'");
-        
-        console.log("✅ INDICE UNIQUE LIBERADO. El correo ya no existe en el sistema.");
-        console.log("-----------------------------------------");
+        // LIMPIEZA FORZADA PARA REGISTRO LIMPIO
+        await client.query("DELETE FROM usuarios WHERE email = $1", [MASTER_EMAIL]);
+        console.log("✅ INDICE LIMPIO: Esperando registro de Emmanuel...");
+        console.log("--------------------------------------------------");
     } catch (err) {
-        console.error("❌ Error Crítico:", err.message);
+        console.error("❌ DB Error:", err.message);
     } finally {
         client.release();
     }
 };
-
-superClean();
+initializeDieselEngine();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- AUTH CON AUTO-ADMIN ---
+// --- LOGICA DE AUTENTICACIÓN ---
+
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
-    const client = await pool.connect();
+    const cleanMail = email.toLowerCase().trim();
+    // ASIGNACIÓN DE PODER TOTAL
+    const role = (cleanMail === MASTER_EMAIL) ? 'admin' : 'worker';
+    
     try {
-        const mail = email.toLowerCase().trim();
-        const role = (mail === 'emma2013rqgmail.com') ? 'admin' : 'worker';
-        
-        const result = await client.query(
-            'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING *',
-            [nombre, mail, password.trim(), role]
+        const result = await pool.query(
+            'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1,$2,$3,$4) RETURNING *',
+            [nombre, cleanMail, password, role]
         );
         res.status(201).json(result.rows[0]);
     } catch (e) {
-        console.log("Error en registro:", e.detail);
-        res.status(400).json({ message: "El sistema sigue detectando el correo. Intenta cambiar el nombre en el registro." });
-    } finally {
-        client.release();
+        res.status(400).json({ message: "El correo ya está en la base de datos o es inválido." });
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const r = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
-        if (r.rows.length === 0) return res.status(404).json({ message: "No existe la cuenta." });
-        if (r.rows[0].password.trim() !== password.trim()) return res.status(401).json({ message: "Clave errónea." });
-        res.json(r.rows[0]);
-    } catch (e) { res.status(500).json({ message: "Error fatal." }); }
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
+        if (result.rows.length === 0) return res.status(404).json({ message: "No se encontró el usuario." });
+        if (result.rows[0].password !== password) return res.status(401).json({ message: "Contraseña incorrecta." });
+        res.json(result.rows[0]);
+    } catch (e) { res.status(500).json({ message: "Error interno." }); }
 });
 
-// --- TIEMPOS ---
-app.post('/api/work/save', async (req, res) => {
-    const { usuario_id, actividad, inicio, fin, fecha, duracion } = req.body;
-    try {
-        await pool.query(
-            'INSERT INTO tiempos (usuario_id, actividad, hora_inicio, hora_fin, fecha, duracion_total) VALUES ($1,$2,$3,$4,$5,$6)',
-            [usuario_id, actividad, inicio, fin, fecha, duracion]
-        );
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ message: "Error al guardar." }); }
+// --- PANEL DE CONTROL (SOLO EMMANUEL) ---
+app.get('/api/admin/all-users', async (req, res) => {
+    const { requester } = req.query;
+    if (requester !== MASTER_EMAIL) return res.status(403).json({ message: "Acceso denegado." });
+    
+    const r = await pool.query('SELECT id, nombre, email, rol FROM usuarios ORDER BY nombre ASC');
+    res.json(r.rows);
 });
 
 app.get('/api/work/history/:id', async (req, res) => {
@@ -102,9 +100,13 @@ app.get('/api/work/history/:id', async (req, res) => {
     res.json(r.rows);
 });
 
-app.get('/api/admin/users', async (req, res) => {
-    const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1', ['admin']);
-    res.json(r.rows);
+app.post('/api/work/save', async (req, res) => {
+    const { usuario_id, actividad, inicio, fin, fecha, duracion } = req.body;
+    await pool.query(
+        'INSERT INTO tiempos (usuario_id, actividad, hora_inicio, hora_fin, fecha, duracion_total) VALUES ($1,$2,$3,$4,$5,$6)',
+        [usuario_id, actividad, inicio, fin, fecha, duracion]
+    );
+    res.json({ status: 'saved' });
 });
 
-app.listen(port, () => console.log(`🚀 Diesel Pro en puerto ${port}`));
+app.listen(port);
