@@ -30,7 +30,8 @@ const initDB = async () => {
                 fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-    } catch (e) { console.error("DB Error:", e); }
+        console.log("✅ Base de Datos Sincronizada");
+    } catch (e) { console.error("Error DB Init:", e); }
 };
 initDB();
 
@@ -38,22 +39,23 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- RUTAS DE USUARIO ---
+// --- AUTH ---
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
         const r = await pool.query('INSERT INTO usuarios (nombre, email, password) VALUES ($1,$2,$3) RETURNING *', [nombre, email.toLowerCase().trim(), password]);
         res.status(201).json(r.rows[0]);
-    } catch (e) { res.status(400).json({error: "Este correo ya existe."}); }
+    } catch (e) { res.status(400).json({error: "Email ya registrado."}); }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     const r = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [email.toLowerCase().trim(), password]);
     if (r.rows.length > 0) res.json(r.rows[0]);
-    else res.status(401).json({error: "Acceso denegado."});
+    else res.status(401).json({error: "Credenciales incorrectas."});
 });
 
+// --- TIEMPOS ---
 app.post('/api/tiempo/guardar', async (req, res) => {
     const { usuario_id, proyecto, duracion } = req.body;
     await pool.query('INSERT INTO registros_trabajo (usuario_id, proyecto, duracion) VALUES ($1,$2,$3)', [usuario_id, proyecto, duracion]);
@@ -65,7 +67,7 @@ app.get('/api/tareas/mias', async (req, res) => {
     res.json(r.rows);
 });
 
-// --- RUTAS DE ADMINISTRADOR ---
+// --- ADMIN ---
 app.get('/api/admin/usuarios', async (req, res) => {
     if (req.query.admin_email !== MASTER_ADMIN) return res.status(403).send("No authorized");
     const r = await pool.query('SELECT id, nombre, email, password FROM usuarios WHERE email != $1 ORDER BY nombre ASC', [MASTER_ADMIN]);
@@ -85,4 +87,4 @@ app.delete('/api/admin/usuarios/:id', async (req, res) => {
 });
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.listen(port, () => console.log(`Apple Server v5 Online on ${port}`));
+app.listen(port, () => console.log(`Apple Pure White Server Online on ${port}`));
