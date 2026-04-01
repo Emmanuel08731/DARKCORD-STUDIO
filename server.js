@@ -10,13 +10,14 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// --- SISTEMA DE AUTO-LIMPIEZA Y CONFIGURACIÓN ---
-const bootSystem = async () => {
+// ==========================================
+// ESTRATEGIA DE LIMPIEZA PROFUNDA (BOOT)
+// ==========================================
+const initDatabase = async () => {
     const client = await pool.connect();
     try {
-        console.log("🛠️  Preparando sistema Diesel Styles...");
+        console.log("🍏 Diesel Pro: Sincronizando con Apple Design Guidelines...");
         
-        // Crear tablas
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -36,56 +37,57 @@ const bootSystem = async () => {
             );
         `);
 
-        // ELIMINAR CUENTA ADMIN ANTIGUA PARA PERMITIR NUEVO REGISTRO
-        const targetEmail = 'emma2013rqgmail.com';
-        await client.query('DELETE FROM usuarios WHERE email = $1', [targetEmail]);
-        console.log(`✅ Cuenta ${targetEmail} liberada. Ya puedes registrarte desde la web.`);
-
+        // ELIMINACIÓN CRÍTICA: Permite que te registres de nuevo
+        const target = 'emma2013rqgmail.com';
+        await client.query("DELETE FROM usuarios WHERE email = $1", [target]);
+        console.log(`✅ Registro liberado para: ${target}. Puedes crear tu cuenta ahora.`);
+        
     } catch (err) {
-        console.error("❌ Error en boot:", err.message);
+        console.error("❌ Error en DB Init:", err);
     } finally {
         client.release();
     }
 };
 
-bootSystem();
+initDatabase();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- RUTAS DE AUTENTICACIÓN ---
+// --- ENDPOINTS DE AUTENTICACIÓN ---
 
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
-        // Lógica de Auto-Admin
-        const role = (email.trim() === 'emma2013rqgmail.com') ? 'admin' : 'worker';
+        const cleanEmail = email.toLowerCase().trim();
+        // ASIGNACIÓN AUTOMÁTICA DE ADMIN
+        const role = (cleanEmail === 'emma2013rqgmail.com') ? 'admin' : 'worker';
         
         const result = await pool.query(
             'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING *',
-            [nombre, email.trim(), password.trim(), role]
+            [nombre, cleanEmail, password.trim(), role]
         );
         res.status(201).json(result.rows[0]);
     } catch (e) {
-        res.status(500).json({ message: "Este correo ya está en uso o hubo un error." });
+        res.status(400).json({ message: "El correo ya existe o los datos son inválidos." });
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.trim()]);
-        if (result.rows.length === 0) return res.status(404).json({ message: "Usuario no encontrado." });
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
+        if (result.rows.length === 0) return res.status(404).json({ message: "La cuenta no existe." });
         
         const user = result.rows[0];
         if (user.password.trim() !== password.trim()) return res.status(401).json({ message: "Contraseña incorrecta." });
         
         res.json(user);
-    } catch (e) { res.status(500).json({ message: "Error de conexión." }); }
+    } catch (e) { res.status(500).json({ message: "Error de servidor." }); }
 });
 
-// --- RUTAS DE TRABAJO ---
+// --- ENDPOINTS DE TIEMPO ---
 
 app.post('/api/work/save', async (req, res) => {
     const { usuario_id, actividad, inicio, fin, fecha, duracion } = req.body;
@@ -95,7 +97,7 @@ app.post('/api/work/save', async (req, res) => {
             [usuario_id, actividad, inicio, fin, fecha, duracion]
         );
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ message: "Error al guardar." }); }
+    } catch (e) { res.status(500).json({ message: "Error al registrar tiempo." }); }
 });
 
 app.get('/api/work/history/:id', async (req, res) => {
@@ -108,4 +110,4 @@ app.get('/api/admin/users', async (req, res) => {
     res.json(r.rows);
 });
 
-app.listen(port, () => console.log(`🚀 Diesel Pro Online`));
+app.listen(port, () => console.log(`🚀 Diesel Styles High-End Online`));
