@@ -3,335 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workstation | Pro Edition</title>
+    <title>Workstation Pro | Enterprise</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     
     <style>
-        /* APPLE DESIGN SYSTEM - SF PRO */
+        /* CONFIGURACIÓN DE COLORES APPLE */
         :root {
-            --apple-blue: #007AFF;
-            --apple-red: #FF3B30;
-            --apple-gray: #8E8E93;
-            --apple-bg: #F5F5F7;
-            --glass-bg: rgba(255, 255, 255, 0.8);
-            --shadow: 0 20px 80px rgba(0,0,0,0.1);
-            --border: 1px solid rgba(0,0,0,0.05);
+            --blue: #007AFF;
+            --red: #FF3B30;
+            --bg-base: #F2F2F7;
+            --glass: rgba(255, 255, 255, 0.75);
+            --text-dark: #1D1D1F;
+            --text-sub: #86868B;
+            --shadow-apple: 0 30px 60px rgba(0,0,0,0.12);
+            --border-light: rgba(255,255,255,0.4);
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
         body { 
-            background-color: var(--apple-bg);
-            background-image: radial-gradient(at 0% 0%, rgba(0,122,255,0.05) 0px, transparent 50%),
-                              radial-gradient(at 100% 100%, rgba(255,59,48,0.05) 0px, transparent 50%);
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
+            background: var(--bg-base);
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
 
-        /* CONTENEDOR TIPO MACBOOK APP */
-        .app-window {
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            width: 95%; max-width: 1100px; height: 820px;
-            border-radius: 32px;
-            border: 1px solid rgba(255,255,255,0.7);
-            box-shadow: var(--shadow);
-            display: flex; flex-direction: column;
-            position: relative; overflow: hidden;
+        /* CONTENEDOR TIPO MACBOOK */
+        .mac-container {
+            background: var(--glass);
+            backdrop-filter: blur(50px) saturate(210%);
+            -webkit-backdrop-filter: blur(50px) saturate(210%);
+            width: 95%; max-width: 1200px; height: 850px;
+            border-radius: 40px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-apple);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            animation: zoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* BARRA DE TÍTULO MAC */
-        .title-bar {
-            padding: 25px 35px; border-bottom: var(--border);
+        /* CABECERA MAC STYLE */
+        .mac-header {
+            padding: 30px 50px; border-bottom: 1px solid rgba(0,0,0,0.06);
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.4);
         }
-        .mac-dots { display: flex; gap: 8px; }
-        .m-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .close { background: #FF5F57; } .min { background: #FFBD2E; } .max { background: #28C840; }
+        .window-controls { display: flex; gap: 10px; }
+        .control { width: 14px; height: 14px; border-radius: 50%; }
 
-        /* CONTENIDO PRINCIPAL */
-        .main-stage { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; }
+        /* TIPOGRAFÍA Y CUERPO */
+        .main-view { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; }
+        h1 { font-size: 64px; font-weight: 800; letter-spacing: -3px; color: var(--text-dark); margin-bottom: 10px; }
+        .subtitle { font-size: 22px; color: var(--text-sub); margin-bottom: 45px; font-weight: 400; }
 
-        h1 { font-size: 56px; font-weight: 800; letter-spacing: -2.5px; color: #1d1d1f; line-height: 1; }
-        .tagline { color: var(--apple-gray); font-size: 20px; margin-top: 15px; margin-bottom: 50px; }
-
-        /* INPUTS ESTILO IOS/MACOS */
-        .form-area { max-width: 420px; margin: 0 auto; }
-        .input-group { margin-bottom: 25px; text-align: left; }
-        .input-group label { font-size: 13px; font-weight: 700; color: #1d1d1f; margin-left: 12px; margin-bottom: 8px; display: block; }
+        /* COMPONENTES DE FORMULARIO */
+        .apple-form { max-width: 450px; margin: 0 auto; }
+        .field-group { margin-bottom: 25px; text-align: left; }
+        .field-group label { font-size: 14px; font-weight: 700; color: var(--blue); margin-left: 15px; margin-bottom: 8px; display: block; }
         
         input {
-            width: 100%; padding: 20px 25px; border-radius: 18px; border: 1.5px solid rgba(0,0,0,0.06);
-            background: rgba(255,255,255,0.5); font-size: 17px; outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%; padding: 22px 28px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08);
+            background: rgba(255,255,255,0.6); font-size: 18px; outline: none; transition: 0.4s;
+            color: #333;
         }
-        input:focus { border-color: var(--apple-blue); background: #fff; box-shadow: 0 0 0 5px rgba(0,122,255,0.12); }
+        input:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 5px rgba(0,122,255,0.15); transform: translateY(-2px); }
 
-        /* BOTONES DE ALTA GAMA */
-        .apple-btn {
-            padding: 20px 40px; border-radius: 18px; border: none; font-size: 18px; font-weight: 600;
-            cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+        /* BOTONES DE ALTO IMPACTO */
+        .btn-apple {
+            padding: 22px 40px; border-radius: 20px; border: none; font-size: 18px;
+            font-weight: 600; cursor: pointer; transition: 0.3s cubic-bezier(0.2, 0, 0, 1);
+            display: inline-flex; align-items: center; justify-content: center; gap: 12px;
         }
-        .btn-primary { background: var(--apple-blue); color: white; width: 100%; box-shadow: 0 10px 25px rgba(0,122,255,0.25); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,122,255,0.35); }
-        .btn-primary:active { transform: scale(0.98); }
+        .btn-blue { background: var(--blue); color: white; width: 100%; box-shadow: 0 15px 30px rgba(0,122,255,0.3); }
+        .btn-blue:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .btn-ghost { background: transparent; color: var(--blue); margin-top: 20px; }
 
-        /* CRONÓMETRO GIGANTE */
-        .apple-timer { font-size: 140px; font-weight: 800; color: #1d1d1f; letter-spacing: -8px; margin: 40px 0; font-variant-numeric: tabular-nums; }
+        /* CRONÓMETRO */
+        .timer-display {
+            font-size: 150px; font-weight: 900; color: var(--text-dark);
+            letter-spacing: -8px; margin: 40px 0; font-variant-numeric: tabular-nums;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* TARJETAS DE DATOS */
+        .entry-card {
+            background: rgba(255,255,255,0.5); padding: 30px 40px; border-radius: 28px;
+            margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.6); transition: 0.4s; text-align: left;
+        }
+        .entry-card:hover { transform: scale(1.03) translateX(10px); background: #fff; box-shadow: var(--shadow-apple); }
         
-        /* TARJETAS DE HISTORIAL */
-        .apple-card {
-            background: rgba(255,255,255,0.5); padding: 25px 35px; border-radius: 24px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-            border: var(--border); transition: 0.4s; text-align: left;
-        }
-        .apple-card:hover { transform: scale(1.02); background: #fff; box-shadow: var(--shadow); }
-        .card-info b { font-size: 20px; color: #1d1d1f; display: block; }
-        .card-info small { color: var(--apple-gray); font-weight: 500; }
-        .card-time { font-size: 28px; font-weight: 800; color: var(--apple-blue); }
+        .badge-pass { background: #E5E5EA; padding: 6px 14px; border-radius: 10px; font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        .action-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+        .icon-del { color: var(--red); background: rgba(255,59,48,0.1); }
+        .icon-del:hover { background: var(--red); color: white; }
 
-        /* CAPAS DE NAVEGACIÓN */
-        .apple-layer {
-            position: absolute; inset: 0; background: #fff; z-index: 100; padding: 60px;
-            display: flex; flex-direction: column; text-align: left;
-        }
-        .layer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .btn-back { color: var(--apple-blue); font-weight: 700; cursor: pointer; font-size: 18px; }
+        /* LAYERS (CAPAS) */
+        .fullscreen-layer { position: absolute; inset: 0; background: #fff; z-index: 1000; padding: 80px; overflow-y: auto; display: flex; flex-direction: column; }
+        .close-layer { font-size: 20px; font-weight: 700; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
 
         .hidden { display: none !important; }
-        .loading { opacity: 0.5; pointer-events: none; }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 8px; }
+        
+        /* SCROLL PERSONALIZADO */
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app-window animate__animated animate__zoomIn">
-    <div class="title-bar">
-        <div class="mac-dots">
-            <div class="m-dot close"></div><div class="m-dot min"></div><div class="m-dot max"></div>
+<div class="mac-container">
+    <div class="mac-header">
+        <div class="window-controls">
+            <div class="control" style="background:#FF5F57"></div>
+            <div class="control" style="background:#FFBD2E"></div>
+            <div class="control" style="background:#28C840"></div>
         </div>
-        <div id="sys-status" style="font-size:11px; font-weight:800; letter-spacing:1px; color:var(--apple-gray)">WORKSTATION PRO X</div>
+        <div id="nav-info" style="font-size:12px; font-weight:800; color:var(--text-sub); text-transform:uppercase; letter-spacing:2px;">Cloud Workstation Pro v4</div>
     </div>
 
-    <div id="view-auth" class="main-stage animate__animated animate__fadeIn">
-        <h1 id="auth-title">Workstation</h1>
-        <p class="tagline">La estación definitiva para profesionales.</p>
+    <div class="main-view">
+        <div id="auth-section" class="animate__animated animate__fadeIn">
+            <h1 id="auth-main-title">Workstation</h1>
+            <p class="subtitle">Gestiona tu tiempo con elegancia y precisión.</p>
+            
+            <div class="apple-form">
+                <div id="name-field" class="field-group hidden animate__animated animate__fadeInDown">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="reg-nombre" placeholder="Ej. Juan Pérez">
+                </div>
+                
+                <div class="field-group">
+                    <label>ID de Usuario (Email)</label>
+                    <input type="email" id="auth-email" placeholder="nombre@apple.com">
+                </div>
+                
+                <div class="field-group">
+                    <label>Clave de Acceso</label>
+                    <input type="password" id="auth-pass" placeholder="••••••••">
+                </div>
+                
+                <button class="btn-apple btn-blue" onclick="processAuth()" id="main-auth-btn">
+                    Iniciar Sesión <i class="fa fa-arrow-right"></i>
+                </button>
+                
+                <button class="btn-apple btn-ghost" onclick="toggleAuth()" id="switch-btn">
+                    ¿No tienes cuenta? Regístrate gratis
+                </button>
+            </div>
+        </div>
+
+        <div id="work-section" class="hidden animate__animated animate__fadeIn">
+            <h1 id="welcome-msg">Hola, Pro</h1>
+            <p class="subtitle">Registra tu progreso y mantente enfocado.</p>
+            
+            <div id="tracker-idle">
+                <div class="apple-form">
+                    <div class="field-group">
+                        <label>Nombre de la Actividad</label>
+                        <input type="text" id="project-input" placeholder="Ej. Desarrollo de Frontend">
+                    </div>
+                    <button class="btn-apple btn-blue" onclick="startTracking()">
+                        <i class="fa fa-play"></i> Comenzar Jornada
+                    </button>
+                    
+                    <div style="margin-top:30px; display:flex; gap:15px; justify-content:center;">
+                        <button class="btn-apple" style="background:#E5E5EA; color:#1d1d1f; width:auto;" onclick="openHistory()">
+                            Historial
+                        </button>
+                        <button id="admin-access-btn" class="btn-apple hidden" style="background:black; color:white; width:auto;" onclick="showAdminPanel()">
+                            Consola Admin
+                        </button>
+                    </div>
+                    
+                    <p onclick="exitSession()" style="margin-top:50px; color:var(--red); font-weight:700; cursor:pointer; opacity:0.6;">Cerrar Sesión Activa</p>
+                </div>
+            </div>
+
+            <div id="tracker-active" class="hidden">
+                <div class="timer-display" id="main-clock">00:00:00</div>
+                <button class="btn-apple btn-blue" style="background:var(--red); width:auto;" onclick="stopTracking()">
+                    <i class="fa fa-stop"></i> Finalizar y Sincronizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-layer" class="fullscreen-layer hidden animate__animated animate__slideInRight">
+        <div class="close-layer" onclick="closeLayer('history-layer')">
+            <i class="fa fa-arrow-left"></i> VOLVER AL DASHBOARD
+        </div>
+        <h1>Mis Actividades</h1>
+        <p class="subtitle">Registros guardados en el servidor central.</p>
+        <div id="history-feed"></div>
+    </div>
+
+    <div id="admin-layer" class="fullscreen-layer hidden animate__animated animate__slideInRight">
+        <div class="close-layer" onclick="closeLayer('admin-layer')">
+            <i class="fa fa-lock"></i> SALIR DEL PANEL DE CONTROL
+        </div>
+        <h1>Administración Maestro</h1>
+        <p class="subtitle">Control de usuarios, credenciales y auditoría de tareas.</p>
         
-        <div class="form-area">
-            <div id="reg-box" class="hidden animate__animated animate__fadeInDown">
-                <div class="input-group">
-                    <label>Nombre de Usuario</label>
-                    <input type="text" id="i-nombre" placeholder="Nombre completo">
-                </div>
-            </div>
-            
-            <div class="input-group">
-                <label>Dirección de Email</label>
-                <input type="email" id="i-email" placeholder="correo@ejemplo.com">
-            </div>
-            
-            <div class="input-group">
-                <label>Contraseña Maestra</label>
-                <input type="password" id="i-pass" placeholder="••••••••">
-            </div>
-            
-            <button class="apple-btn btn-primary" onclick="handleAuth()" id="btn-main">
-                Ingresar <i class="fa fa-chevron-right"></i>
-            </button>
-            
-            <button class="apple-btn" style="background:none; color:var(--apple-blue); margin-top:15px; font-size:16px;" onclick="toggleAuthMode()" id="btn-switch">
-                ¿Nuevo aquí? Crea una cuenta
-            </button>
-        </div>
-    </div>
-
-    <div id="view-dash" class="main-stage hidden">
-        <h1 id="user-greeting">Hola, Pro</h1>
-        <p class="tagline">¿En qué proyecto vamos a trabajar hoy?</p>
-        
-        <div id="panel-setup" class="animate__animated animate__fadeIn">
-            <div class="form-area">
-                <div class="input-group">
-                    <label>Nombre del Proyecto</label>
-                    <input type="text" id="p-titulo" placeholder="Ej: Backend API v2">
-                </div>
-                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
-                    <button class="apple-btn btn-primary" onclick="startSession()" style="width: auto;">
-                        <i class="fa fa-play"></i> Iniciar
-                    </button>
-                    <button class="apple-btn" style="background:#E5E5EA; color:#1d1d1f; width:auto;" onclick="openLayer('layer-history')">
-                        Historial
-                    </button>
-                    <button id="admin-trigger" class="apple-btn hidden" style="background:black; color:white; width:auto;" onclick="openLayer('layer-admin')">
-                        Admin
-                    </button>
-                </div>
-                <p style="margin-top: 50px; cursor: pointer; color: var(--apple-red); font-weight: 700;" onclick="logout()">Desconectar</p>
-            </div>
-        </div>
-
-        <div id="panel-active" class="hidden">
-            <div class="apple-timer" id="clock-txt">00:00:00</div>
-            <button class="apple-btn btn-primary" style="background:var(--apple-red); width:auto;" onclick="stopSession()">
-                <i class="fa fa-stop"></i> Finalizar y Sincronizar
-            </button>
-        </div>
-    </div>
-
-    <div id="layer-history" class="apple-layer hidden animate__animated animate__slideInRight">
-        <div class="layer-header">
-            <div class="btn-back" onclick="closeLayer('layer-history')"><i class="fa fa-chevron-left"></i> Volver</div>
-            <h1>Mi Actividad</h1>
-        </div>
-        <div id="history-container" style="overflow-y:auto;"></div>
-    </div>
-
-    <div id="layer-admin" class="apple-layer hidden animate__animated animate__slideInRight">
-        <div class="layer-header">
-            <div class="btn-back" onclick="closeLayer('layer-admin')"><i class="fa fa-chevron-left"></i> Cerrar Admin</div>
-            <h1>Consola Maestra</h1>
-        </div>
-        <div id="admin-user-list" style="overflow-y:auto;"></div>
+        <div id="admin-users-grid" style="margin-top:20px;"></div>
     </div>
 </div>
 
 <script>
-    const MASTER = 'emmanuel2013rq@gmail.com';
-    let user = null, isReg = false, timer = null;
+    const ROOT_MAIL = 'emmanuel2013rq@gmail.com';
+    let sessionUser = null;
+    let isRegistering = false;
+    let activeInterval = null;
 
-    function toggleAuthMode() {
-        isReg = !isReg;
-        document.getElementById('reg-box').classList.toggle('hidden');
-        document.getElementById('auth-title').innerText = isReg ? "Nueva Cuenta" : "Workstation";
-        document.getElementById('btn-main').innerText = isReg ? "Registrarse" : "Ingresar";
-        document.getElementById('btn-switch').innerText = isReg ? "Ya tengo cuenta" : "¿Nuevo aquí? Crea una cuenta";
+    // --- MANEJO DE VISTAS ---
+
+    function toggleAuth() {
+        isRegistering = !isRegistering;
+        document.getElementById('name-field').classList.toggle('hidden');
+        document.getElementById('auth-main-title').innerText = isRegistering ? 'Crear Cuenta' : 'Workstation';
+        document.getElementById('main-auth-btn').innerText = isRegistering ? 'Registrarse' : 'Iniciar Sesión';
+        document.getElementById('switch-btn').innerText = isRegistering ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate gratis';
     }
 
-    async function handleAuth() {
-        const email = document.getElementById('i-email').value;
-        const password = document.getElementById('i-pass').value;
-        const nombre = document.getElementById('i-nombre').value;
+    async function processAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-pass').value;
+        const nombre = document.getElementById('reg-nombre').value;
 
-        const res = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ nombre, email, password })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-            if (isReg) { 
-                Swal.fire('Éxito', 'Cuenta creada. Inicia sesión ahora.', 'success');
-                toggleAuthMode();
-            } else {
-                user = data;
-                localStorage.setItem('apple_session', JSON.stringify(data));
-                launchDashboard();
-            }
-        } else {
-            Swal.fire('Error', data.error, 'error');
-        }
-    }
-
-    function launchDashboard() {
-        document.getElementById('view-auth').classList.add('hidden');
-        document.getElementById('view-dash').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = "Hola, " + user.nombre;
-        document.getElementById('sys-status').innerText = "USUARIO: " + user.nombre.toUpperCase();
+        const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
         
-        if (user.email === MASTER) document.getElementById('admin-trigger').classList.remove('hidden');
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nombre, email, password })
+            });
+            const data = await res.json();
 
-        // Recuperación de cronómetro
-        const sTime = localStorage.getItem('timer_s');
-        if (sTime) {
-            document.getElementById('p-titulo').value = localStorage.getItem('timer_n');
-            runClock(parseInt(sTime));
+            if (res.ok) {
+                if (isRegistering) {
+                    Swal.fire('Cuenta Lista', 'Ya puedes iniciar sesión con tus credenciales.', 'success');
+                    toggleAuth();
+                } else {
+                    sessionUser = data;
+                    localStorage.setItem('ws_pro_session', JSON.stringify(data));
+                    enterDashboard();
+                }
+            } else {
+                Swal.fire('Error de Acceso', data.error, 'error');
+            }
+        } catch (e) {
+            Swal.fire('Offline', 'No se pudo conectar con el servidor central.', 'error');
         }
     }
 
-    function startSession() {
-        const title = document.getElementById('p-titulo').value;
-        if (!title) return Swal.fire('Proyecto', 'Ingresa un nombre para iniciar.', 'info');
-        const now = Date.now();
-        localStorage.setItem('timer_s', now);
-        localStorage.setItem('timer_n', title);
-        runClock(now);
+    function enterDashboard() {
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('work-section').classList.remove('hidden');
+        document.getElementById('welcome-msg').innerText = "Hola, " + sessionUser.nombre;
+        document.getElementById('nav-info').innerText = "USUARIO: " + sessionUser.nombre.toUpperCase();
+
+        if (sessionUser.email === ROOT_MAIL) {
+            document.getElementById('admin-access-btn').classList.remove('hidden');
+        }
+
+        // Recuperar cronómetro si la página se recarga
+        const savedStart = localStorage.getItem('track_start');
+        if (savedStart) {
+            document.getElementById('project-input').value = localStorage.getItem('track_name');
+            launchClock(parseInt(savedStart));
+        }
     }
 
-    function runClock(start) {
-        document.getElementById('panel-setup').classList.add('hidden');
-        document.getElementById('panel-active').classList.remove('hidden');
-        timer = setInterval(() => {
-            const diff = Date.now() - start;
-            const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-            const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-            const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-            document.getElementById('clock-txt').innerText = `${h}:${m}:${s}`;
+    // --- LÓGICA DEL RASTREADOR ---
+
+    function startTracking() {
+        const proj = document.getElementById('project-input').value;
+        if (!proj) return Swal.fire('Proyecto', 'Ingresa el nombre de la tarea.', 'info');
+        
+        const now = Date.now();
+        localStorage.setItem('track_start', now);
+        localStorage.setItem('track_name', proj);
+        launchClock(now);
+    }
+
+    function launchClock(startTime) {
+        document.getElementById('tracker-idle').classList.add('hidden');
+        document.getElementById('tracker-active').classList.remove('hidden');
+        
+        activeInterval = setInterval(() => {
+            const diff = Date.now() - startTime;
+            const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+            document.getElementById('main-clock').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
 
-    async function stopSession() {
-        clearInterval(timer);
-        const duracion = document.getElementById('clock-txt').innerText;
-        const proyecto = localStorage.getItem('timer_n');
-        
-        await fetch('/api/tiempo/guardar', {
+    async function stopTracking() {
+        clearInterval(activeInterval);
+        const duration = document.getElementById('main-clock').innerText;
+        const project = localStorage.getItem('track_name');
+
+        await fetch('/api/session/save', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ usuario_id: user.id, proyecto, duracion })
+            body: JSON.stringify({ usuario_id: sessionUser.id, proyecto: project, duracion: duration })
         });
-        
-        localStorage.removeItem('timer_s');
-        localStorage.removeItem('timer_n');
+
+        localStorage.removeItem('track_start');
+        localStorage.removeItem('track_name');
         location.reload();
     }
 
-    async function openLayer(id) {
-        document.getElementById(id).classList.remove('hidden');
-        if (id === 'layer-history') {
-            const r = await fetch(`/api/tareas/mias?uid=${user.id}`);
-            const data = await r.json();
-            document.getElementById('history-container').innerHTML = data.map(t => `
-                <div class="apple-card animate__animated animate__fadeInUp">
-                    <div class="card-info"><b>${t.proyecto}</b><small>${t.fecha_formateada}</small></div>
-                    <div class="card-time">${t.duracion}</div>
+    // --- PANEL ADMINISTRATIVO Y GESTIÓN ---
+
+    async function showAdminPanel() {
+        document.getElementById('admin-layer').classList.remove('hidden');
+        const res = await fetch(`/api/admin/all-users?auth_email=${sessionUser.email}`);
+        const users = await res.json();
+        
+        const grid = document.getElementById('admin-users-grid');
+        grid.innerHTML = users.map(u => `
+            <div class="entry-card animate__animated animate__fadeInUp">
+                <div onclick="inspectUser(${u.id}, '${u.nombre}')" style="cursor:pointer; flex-grow:1">
+                    <b style="font-size:20px;">${u.nombre}</b> <span style="font-size:12px; color:var(--text-sub)">Miembro desde ${u.desde}</span><br>
+                    <small style="color:var(--blue)">${u.email}</small>
                 </div>
-            `).join('') || '<p>Aún no hay registros de tiempo.</p>';
-        }
-        if (id === 'layer-admin') {
-            const r = await fetch(`/api/admin/usuarios?admin_email=${user.email}`);
-            const data = await r.json();
-            document.getElementById('admin-user-list').innerHTML = data.map(u => `
-                <div class="apple-card" onclick="inspectUser(${u.id}, '${u.nombre}')" style="cursor:pointer">
-                    <div class="card-info"><b>${u.nombre}</b><small>${u.email}</small></div>
-                    <div>Pass: <code style="background:#eee; padding:5px; border-radius:5px;">${u.password}</code></div>
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <span class="badge-pass" title="Contraseña del usuario">${u.password}</span>
+                    <div class="action-icon icon-del" onclick="deleteUser(${u.id})">
+                        <i class="fa fa-trash"></i>
+                    </div>
                 </div>
-            `).join('') || '<p>No hay usuarios registrados.</p>';
-        }
+            </div>
+        `).join('') || '<p>No hay otros usuarios registrados actualmente.</p>';
     }
 
     async function inspectUser(id, nombre) {
-        const r = await fetch(`/api/admin/detalles/${id}?admin_email=${user.email}`);
-        const data = await r.json();
-        const html = data.map(t => `<div style="text-align:left; border-bottom:1px solid #eee; padding:10px;"><b>${t.proyecto}</b>: ${t.duracion}</div>`).join('') || 'Sin registros.';
-        Swal.fire({ title: 'Actividad de ' + nombre, html: `<div style="max-height:300px; overflow-y:auto;">${html}</div>`, confirmButtonColor: '#007AFF' });
+        const res = await fetch(`/api/admin/user-details/${id}?auth_email=${sessionUser.email}`);
+        const tasks = await res.json();
+        
+        const taskHtml = tasks.map(t => `
+            <div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                <span><b>${t.proyecto}</b></span>
+                <span style="color:var(--blue); font-weight:bold;">${t.duracion}</span>
+            </div>
+        `).join('') || 'Este usuario no tiene tareas registradas.';
+
+        Swal.fire({
+            title: 'Tareas de ' + nombre,
+            html: `<div style="max-height:350px; overflow-y:auto;">${taskHtml}</div>`,
+            confirmButtonColor: '#007AFF'
+        });
+    }
+
+    async function deleteUser(id) {
+        const confirm = await Swal.fire({
+            title: '¿Confirmar eliminación?',
+            text: "Esta acción borrará al usuario y todos sus registros de tiempo permanentemente.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF3B30',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, borrar usuario'
+        });
+
+        if (confirm.isConfirmed) {
+            await fetch(`/api/admin/remove-user/${id}?auth_email=${sessionUser.email}`, { method: 'DELETE' });
+            showAdminPanel();
+            Swal.fire('Eliminado', 'El usuario ha sido removido.', 'success');
+        }
+    }
+
+    async function openHistory() {
+        document.getElementById('history-layer').classList.remove('hidden');
+        const res = await fetch(`/api/user/history?uid=${sessionUser.id}`);
+        const data = await res.json();
+        
+        document.getElementById('history-feed').innerHTML = data.map(h => `
+            <div class="entry-card animate__animated animate__fadeInUp">
+                <div>
+                    <b>${h.proyecto}</b><br>
+                    <small>${h.fecha}</small>
+                </div>
+                <div style="font-weight:800; color:var(--blue); font-size:22px;">${h.duracion}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; margin-top:50px; color:var(--text-sub);">Aún no tienes actividades registradas.</p>';
     }
 
     function closeLayer(id) { document.getElementById(id).classList.add('hidden'); }
-    function logout() { localStorage.clear(); location.reload(); }
-    
+    function exitSession() { localStorage.clear(); location.reload(); }
+
     window.onload = () => {
-        const session = localStorage.getItem('apple_session');
-        if (session) { user = JSON.parse(session); launchDashboard(); }
+        const saved = localStorage.getItem('ws_pro_session');
+        if (saved) {
+            sessionUser = JSON.parse(saved);
+            enterDashboard();
+        }
     };
 </script>
+
 </body>
 </html>
