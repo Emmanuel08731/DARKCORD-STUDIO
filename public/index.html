@@ -9,337 +9,323 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        /* --- SISTEMA DE DISEÑO APPLE SEQUOIA --- */
         :root {
             --apple-blue: #0071e3;
             --apple-red: #ff3b30;
             --apple-gray: #86868b;
-            --glass: rgba(255, 255, 255, 0.7);
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass: rgba(255, 255, 255, 0.8);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
 
         body { 
-            background: var(--bg-gradient); 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #e2e2e2 0%, #ffffff 100%); 
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
         }
 
         .hidden { display: none !important; }
 
-        /* --- NAVEGACIÓN --- */
+        /* NAVEGACIÓN */
         nav {
             position: fixed; top: 0; width: 100%; height: 50px; z-index: 1000;
-            backdrop-filter: blur(20px) saturate(180%); background: var(--glass);
+            backdrop-filter: blur(20px); background: rgba(255,255,255,0.7);
             border-bottom: 1px solid rgba(0,0,0,0.1);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px;
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .main-wrapper { width: 100%; max-width: 450px; padding: 20px; z-index: 10; }
-
+        /* TARJETA PRINCIPAL */
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 40px;
-            padding: 50px 40px;
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 40px 100px rgba(0,0,0,0.12);
-            text-align: center;
-            transition: transform 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            background: white; border-radius: 35px; padding: 45px;
+            width: 100%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            text-align: center; border: 1px solid rgba(0,0,0,0.05);
         }
 
-        h1 { font-size: 55px; font-weight: 800; letter-spacing: -3px; margin-bottom: 10px; color: #1d1d1f; }
-        .subtitle { color: var(--apple-gray); font-size: 18px; margin-bottom: 40px; }
+        h1 { font-size: 50px; font-weight: 800; letter-spacing: -3px; margin-bottom: 10px; }
+        .subtitle { color: var(--apple-gray); margin-bottom: 30px; }
 
-        /* --- INPUTS PREMIUM --- */
-        .input-group { margin-bottom: 25px; text-align: left; }
-        label { font-size: 11px; font-weight: 800; color: var(--apple-blue); text-transform: uppercase; margin-left: 15px; }
-        
+        /* FORMULARIOS */
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { font-size: 11px; font-weight: 800; color: var(--apple-blue); text-transform: uppercase; margin-left: 10px; }
         input {
-            width: 100%; padding: 20px; border-radius: 18px; border: 1px solid #d2d2d7;
-            background: rgba(245, 245, 247, 0.8); font-size: 16px; margin-top: 8px;
-            outline: none; transition: 0.3s ease;
+            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid #d2d2d7;
+            background: #f5f5f7; font-size: 16px; margin-top: 5px; outline: none;
         }
-        input:focus { border-color: var(--apple-blue); background: #fff; box-shadow: 0 0 0 4px rgba(0,113,227,0.15); }
+        input:focus { border-color: var(--apple-blue); background: white; }
 
-        /* --- BOTONES --- */
         .btn-primary {
-            width: 100%; padding: 20px; border-radius: 18px; border: none;
+            width: 100%; padding: 18px; border-radius: 15px; border: none;
             background: var(--apple-blue); color: white; font-size: 17px; font-weight: 600;
             cursor: pointer; transition: 0.3s;
         }
-        .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-primary:active { transform: scale(0.97); }
 
         .btn-admin {
-            background: #000; color: white; margin-top: 25px; padding: 15px;
-            border-radius: 15px; font-size: 14px; font-weight: 700; width: 100%;
-            cursor: pointer; border: none; animation: pulse 2s infinite;
+            background: #1d1d1f; color: white; margin-top: 20px; padding: 12px;
+            border-radius: 12px; width: 100%; border: none; cursor: pointer; font-weight: 700;
         }
 
-        /* --- CRONÓMETRO --- */
-        .timer-box {
-            background: #000; color: #fff; border-radius: 30px;
-            padding: 60px 20px; margin: 30px 0; position: relative;
+        /* CRONÓMETRO */
+        .timer-display {
+            background: #000; color: #fff; border-radius: 25px;
+            padding: 50px 10px; margin: 25px 0;
         }
-        .clock { font-size: 85px; font-weight: 800; letter-spacing: -5px; font-variant-numeric: tabular-nums; }
+        .clock { font-size: 75px; font-weight: 800; letter-spacing: -4px; font-variant-numeric: tabular-nums; }
 
-        /* --- LISTAS --- */
-        .log-item {
-            background: #fff; padding: 20px; border-radius: 20px; margin-top: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(0,0,0,0.04);
+        /* ESTILOS DE LISTA */
+        .item-row {
+            background: #f9f9fb; padding: 15px; border-radius: 15px; margin-top: 10px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee;
         }
 
-        /* --- PANEL ADMIN --- */
-        .admin-modal {
+        /* MODAL ADMIN */
+        .admin-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f5f5f7; z-index: 2000; padding: 80px 20px; overflow-y: auto;
+            background: #f5f5f7; z-index: 2000; padding: 70px 20px; overflow-y: auto;
         }
-
-        .user-row {
-            background: #fff; padding: 20px; border-radius: 25px; margin-bottom: 15px;
+        .user-pill {
+            background: white; padding: 20px; border-radius: 20px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
-
         .btn-delete {
-            background: rgba(255, 59, 48, 0.1); color: var(--apple-red);
-            border: none; padding: 10px 15px; border-radius: 12px; font-weight: 700; cursor: pointer;
+            background: #fff1f0; color: var(--apple-red); border: none;
+            padding: 8px 15px; border-radius: 10px; font-weight: 800; cursor: pointer;
         }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        .btn-delete:hover { background: var(--apple-red); color: white; }
     </style>
 </head>
 <body>
 
-<nav id="navbar" class="hidden">
-    <div style="font-weight: 900; font-size: 20px;">DIESEL</div>
-    <div style="display: flex; gap: 20px; align-items: center;">
-        <span id="user-display" style="font-size: 12px; font-weight: 800; color: var(--apple-gray);"></span>
-        <button onclick="location.reload()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">Cerrar</button>
+<nav id="top-nav" class="hidden">
+    <div style="font-weight: 900; font-size: 22px;">DIESEL</div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <span id="nav-user" style="font-size: 12px; font-weight: 700; color: var(--apple-gray);"></span>
+        <button onclick="location.reload()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">Salir</button>
     </div>
 </nav>
 
-<div class="main-wrapper">
-    
-    <div id="auth-panel" class="glass-card animate__animated animate__fadeIn">
-        <h1>Hola</h1>
-        <p class="subtitle">Entra a tu estación de trabajo.</p>
+<div class="glass-card animate__animated animate__fadeIn" id="auth-box">
+    <h1>Hola</h1>
+    <p class="subtitle">Accede a la plataforma de producción.</p>
 
-        <div id="reg-name-group" class="hidden input-group">
-            <label>Nombre de Usuario</label>
-            <input type="text" id="in-name" placeholder="Tu nombre">
-        </div>
-
+    <div id="reg-fields" class="hidden">
         <div class="input-group">
-            <label>Correo Electrónico</label>
-            <input type="email" id="in-email" placeholder="ejemplo@gmail.com">
+            <label>Nombre Completo</label>
+            <input type="text" id="reg-name" placeholder="Tu nombre">
         </div>
-
-        <div class="input-group">
-            <label>Contraseña</label>
-            <input type="password" id="in-pass" placeholder="••••••••">
-        </div>
-
-        <button class="btn-primary" onclick="handleAuth()">Siguiente</button>
-        <button onclick="toggleAuthMode()" id="toggle-btn" style="background:none; border:none; color:var(--apple-blue); margin-top:30px; cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</button>
     </div>
 
-    <div id="dash-panel" class="glass-card hidden animate__animated animate__fadeInUp">
-        <div style="text-align: left;">
-            <h2 id="welcome-text" style="font-size: 40px; font-weight: 800;">Bienvenido</h2>
-            <p id="task-status" style="color:var(--apple-gray); margin-bottom: 25px;">Listo para trabajar.</p>
-        </div>
+    <div class="input-group">
+        <label>Correo Electrónico</label>
+        <input type="email" id="log-email" placeholder="correo@ejemplo.com">
+    </div>
 
-        <div id="start-work-box">
-            <div class="input-group">
-                <label>Proyecto / Tarea</label>
-                <input type="text" id="task-name" placeholder="¿En qué vas a trabajar?">
-            </div>
-            <button class="btn-primary" onclick="startClock()">Iniciar Reloj</button>
-            <button id="admin-btn" class="btn-admin hidden" onclick="openAdmin()">Ver Usuarios Registrados →</button>
-        </div>
+    <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="log-pass" placeholder="••••••••">
+    </div>
 
-        <div id="timer-active-box" class="hidden">
-            <div class="timer-box">
-                <div style="font-size: 11px; font-weight: 900; color: var(--apple-blue); text-transform: uppercase; margin-bottom: 10px;">Grabando Tiempo</div>
-                <div class="clock" id="clock-txt">00:00:00</div>
-            </div>
-            <button class="btn-primary" style="background:#000;" onclick="stopClock()">Finalizar Sesión</button>
-        </div>
+    <button class="btn-primary" onclick="authAction()">Continuar</button>
+    <button onclick="toggleAuth()" id="toggle-btn" style="background:none; border:none; color:var(--apple-blue); margin-top:25px; cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</button>
+</div>
 
-        <div style="text-align: left; margin-top: 45px;">
-            <h3 style="font-size: 20px; font-weight: 800;">Historial de Hoy</h3>
-            <div id="history-list"></div>
+<div id="dash-box" class="glass-card hidden animate__animated animate__fadeInUp">
+    <div style="text-align: left;">
+        <h2 id="user-welcome" style="font-size: 35px; font-weight: 800;">Hola</h2>
+        <p id="work-status" style="color:var(--apple-gray); margin-bottom: 20px;">Listo para iniciar.</p>
+    </div>
+
+    <div id="pre-work">
+        <div class="input-group">
+            <label>Nombre del Proyecto</label>
+            <input type="text" id="project-name" placeholder="Ej: Diseño Web X">
         </div>
+        <button class="btn-primary" onclick="startTimer()">Iniciar Cronómetro</button>
+        <button id="admin-trigger" class="btn-admin hidden" onclick="loadAdmin()">Panel de Usuarios →</button>
+    </div>
+
+    <div id="active-work" class="hidden">
+        <div class="timer-display">
+            <div class="clock" id="timer-text">00:00:00</div>
+        </div>
+        <button class="btn-primary" style="background:#000;" onclick="stopTimer()">Terminar y Guardar</button>
+    </div>
+
+    <div style="text-align: left; margin-top: 40px;">
+        <h3 style="font-size: 18px; font-weight: 800;">Actividad de Hoy</h3>
+        <div id="history-list"></div>
     </div>
 </div>
 
-<div id="admin-modal" class="admin-modal hidden animate__animated animate__slideInUp">
-    <div style="max-width: 500px; margin: 0 auto;">
-        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">← Volver al Panel</button>
-        <h1 style="margin-top:40px; font-size: 45px;">Cuentas</h1>
-        <p class="subtitle">Gestión de la base de datos Diesel.</p>
-        <div id="user-db-list"></div>
+<div id="admin-screen" class="admin-screen hidden animate__animated animate__slideInUp">
+    <div style="max-width: 450px; margin: 0 auto;">
+        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">← Regresar</button>
+        <h1 style="margin-top:30px; font-size: 40px;">Usuarios</h1>
+        <p class="subtitle">Gestión de cuentas activas en Diesel.</p>
+        <div id="admin-user-list"></div>
     </div>
 </div>
 
 <script>
-    const MASTER_EMAIL = 'emmanuel2013rq@gmail.com';
-    let user = null; 
-    let isRegister = false; 
-    let timerInt = null; 
-    let startTime = null;
+    const ADMIN_EMAIL = 'emmanuel2013rq@gmail.com';
+    let currentUser = null;
+    let isRegistering = false;
+    let clockInt = null;
+    let timeStart = null;
 
-    // --- CAMBIAR ENTRE LOGIN Y REGISTRO ---
-    function toggleAuthMode() {
-        isRegister = !isRegister;
-        document.getElementById('reg-name-group').classList.toggle('hidden');
-        document.getElementById('toggle-btn').innerText = isRegister ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
+    function toggleAuth() {
+        isRegistering = !isRegistering;
+        document.getElementById('reg-fields').classList.toggle('hidden');
+        document.getElementById('toggle-btn').innerText = isRegistering ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
     }
 
-    // --- PROCESAR LOGIN O REGISTRO ---
-    async function handleAuth() {
-        const email = document.getElementById('in-email').value.toLowerCase().trim();
-        const password = document.getElementById('in-pass').value;
-        const nombre = document.getElementById('in-name').value;
-        const path = isRegister ? '/api/auth/register' : '/api/auth/login';
+    async function authAction() {
+        const email = document.getElementById('log-email').value.toLowerCase().trim();
+        const password = document.getElementById('log-pass').value;
+        const nombre = document.getElementById('reg-name').value;
+        const url = isRegistering ? '/api/auth/register' : '/api/auth/login';
 
-        if(!email || !password) return Swal.fire('Error', 'Completa los campos', 'error');
+        if (!email || !password) return Swal.fire('Aviso', 'Completa los datos', 'warning');
 
         try {
-            const res = await fetch(path, {
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ nombre, email, password })
             });
-
             const data = await res.json();
 
             if (res.ok) {
-                if (isRegister) {
-                    Swal.fire('¡Éxito!', 'Cuenta creada. Inicia sesión.', 'success');
-                    toggleAuthMode();
+                if (isRegistering) {
+                    Swal.fire('Éxito', 'Cuenta creada. Inicia sesión.', 'success');
+                    toggleAuth();
                 } else {
-                    user = data; // Guardamos el usuario de la DB
-                    initDashboard();
+                    currentUser = data;
+                    showDashboard();
                 }
             } else {
-                Swal.fire('Atención', data.error, 'warning');
+                Swal.fire('Error', data.error, 'error');
             }
-        } catch (err) {
-            Swal.fire('Error', 'Servidor no responde', 'error');
+        } catch (e) {
+            Swal.fire('Error', 'No se pudo conectar al servidor.', 'error');
         }
     }
 
-    function initDashboard() {
-        document.getElementById('auth-panel').classList.add('hidden');
-        document.getElementById('dash-panel').classList.remove('hidden');
-        document.getElementById('navbar').classList.remove('hidden');
-        document.getElementById('welcome-text').innerText = "Hola, " + user.nombre;
-        document.getElementById('user-display').innerText = user.nombre;
-
-        // Si el usuario es Emmanuel, mostramos el botón de admin
-        if (user.email === MASTER_EMAIL) {
-            document.getElementById('admin-btn').classList.remove('hidden');
+    function showDashboard() {
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('dash-box').classList.remove('hidden');
+        document.getElementById('top-nav').classList.remove('hidden');
+        document.getElementById('user-welcome').innerText = "Hola, " + currentUser.nombre;
+        document.getElementById('nav-user').innerText = currentUser.nombre;
+        
+        if (currentUser.email === ADMIN_EMAIL) {
+            document.getElementById('admin-trigger').classList.remove('hidden');
         }
-        loadHistory();
+        refreshHistory();
     }
 
-    // --- LÓGICA DEL CRONÓMETRO ---
-    function startClock() {
-        const task = document.getElementById('task-name').value;
-        if (!task) return Swal.fire('Info', '¿Qué tarea vas a realizar?', 'info');
+    // --- CRONÓMETRO ---
+    function startTimer() {
+        const project = document.getElementById('project-name').value;
+        if (!project) return Swal.fire('Info', 'Escribe el nombre del proyecto.', 'info');
         
-        startTime = new Date();
-        document.getElementById('start-work-box').classList.add('hidden');
-        document.getElementById('timer-active-box').classList.remove('hidden');
-        document.getElementById('task-status').innerText = "En progreso: " + task;
+        timeStart = new Date();
+        document.getElementById('pre-work').classList.add('hidden');
+        document.getElementById('active-work').classList.remove('hidden');
+        document.getElementById('work-status').innerText = "Trabajando en: " + project;
         
-        timerInt = setInterval(() => {
-            const diff = new Date(new Date() - startTime);
-            document.getElementById('clock-txt').innerText = diff.toISOString().substr(11, 8);
+        clockInt = setInterval(() => {
+            const diff = new Date(new Date() - timeStart);
+            document.getElementById('timer-text').innerText = diff.toISOString().substr(11, 8);
         }, 1000);
     }
 
-    async function stopClock() {
-        clearInterval(timerInt);
-        const duration = document.getElementById('clock-txt').innerText;
+    async function stopTimer() {
+        clearInterval(clockInt);
+        const duration = document.getElementById('timer-text').innerText;
         
         await fetch('/api/work/save', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                uid: user.id, 
-                tarea: document.getElementById('task-name').value,
-                inicio: startTime.toLocaleTimeString(), 
-                fin: new Date().toLocaleTimeString(),
-                fecha: new Date().toLocaleDateString(), 
-                duracion: duration
+                uid: currentUser.id, proyecto: document.getElementById('project-name').value,
+                inicio: timeStart.toLocaleTimeString(), fin: new Date().toLocaleTimeString(),
+                fecha: new Date().toLocaleDateString(), duracion: duration
             })
         });
 
-        document.getElementById('start-work-box').classList.remove('hidden');
-        document.getElementById('timer-active-box').classList.add('hidden');
-        document.getElementById('task-name').value = "";
-        document.getElementById('clock-txt').innerText = "00:00:00";
-        document.getElementById('task-status').innerText = "Listo para trabajar.";
-        loadHistory();
+        document.getElementById('pre-work').classList.remove('hidden');
+        document.getElementById('active-work').classList.add('hidden');
+        document.getElementById('project-name').value = "";
+        document.getElementById('timer-text').innerText = "00:00:00";
+        document.getElementById('work-status').innerText = "Listo para iniciar.";
+        refreshHistory();
     }
 
-    async function loadHistory() {
-        const res = await fetch(`/api/work/history/${user.id}`);
+    async function refreshHistory() {
+        const res = await fetch(`/api/work/history/${currentUser.id}`);
         const logs = await res.json();
         const today = new Date().toLocaleDateString();
-        const filtered = logs.filter(l => l.fecha === today);
-        
         const list = document.getElementById('history-list');
-        list.innerHTML = filtered.length === 0 ? '<p style="color:#86868b; margin-top:20px;">Sin actividad hoy.</p>' :
-            filtered.map(l => `
-                <div class="log-item">
-                    <div><b>${l.tarea}</b><br><small>${l.inicio} - ${l.fin}</small></div>
+        
+        const todayLogs = logs.filter(l => l.fecha === today);
+        list.innerHTML = todayLogs.length === 0 ? '<p style="color:#888; margin-top:15px;">Sin actividad hoy.</p>' :
+            todayLogs.map(l => `
+                <div class="item-row">
+                    <div><b>${l.proyecto}</b><br><small>${l.inicio}</small></div>
                     <div style="font-weight:800; color:var(--apple-blue);">${l.duracion}</div>
                 </div>
             `).join('');
     }
 
-    // --- PANEL ADMIN ---
-    async function openAdmin() {
-        document.getElementById('admin-modal').classList.remove('hidden');
-        const res = await fetch(`/api/admin/all?admin_email=${user.email}`);
+    // --- LÓGICA DE ADMINISTRACIÓN (ELIMINAR USUARIO) ---
+    async function loadAdmin() {
+        document.getElementById('admin-screen').classList.remove('hidden');
+        const res = await fetch(`/api/admin/all?admin_email=${currentUser.email}`);
         const users = await res.json();
         
-        document.getElementById('user-db-list').innerHTML = users.map(u => `
-            <div class="user-row">
-                <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
-                <button class="btn-delete" onclick="deleteUser(${u.id}, '${u.nombre}')">Eliminar</button>
+        const list = document.getElementById('admin-user-list');
+        list.innerHTML = users.map(u => `
+            <div class="user-pill animate__animated animate__fadeIn">
+                <div style="text-align:left">
+                    <b style="font-size:16px">${u.nombre}</b><br>
+                    <small style="color:#888">${u.email}</small>
+                </div>
+                <button class="btn-delete" onclick="deleteUserAccount(${u.id}, '${u.nombre}')">Eliminar</button>
             </div>
         `).join('');
     }
 
-    async function deleteUser(id, name) {
-        const result = await Swal.fire({
-            title: `¿Borrar a ${name}?`,
-            text: "Esta acción es irreversible.",
+    async function deleteUserAccount(id, name) {
+        const confirm = await Swal.fire({
+            title: `¿Eliminar a ${name}?`,
+            text: "Se borrará su cuenta y todo su historial de tiempo.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff3b30',
             confirmButtonText: 'Sí, borrar cuenta'
         });
 
-        if (result.isConfirmed) {
-            await fetch(`/api/admin/user/${id}?admin_email=${user.email}`, { method: 'DELETE' });
-            Swal.fire('Eliminado', 'Usuario borrado de la base de datos.', 'success');
-            openAdmin();
+        if (confirm.isConfirmed) {
+            try {
+                // AQUÍ ESTÁ LA CLAVE: Enviamos el ID y tu correo de admin para autorizar
+                const res = await fetch(`/api/admin/user/${id}?admin_email=${currentUser.email}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    Swal.fire('Eliminado', 'La cuenta ha sido borrada.', 'success');
+                    loadAdmin(); // Recargar la lista
+                } else {
+                    Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error', 'Fallo de conexión.', 'error');
+            }
         }
     }
 
-    function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+    function closeAdmin() { document.getElementById('admin-screen').classList.add('hidden'); }
 </script>
 </body>
 </html>
