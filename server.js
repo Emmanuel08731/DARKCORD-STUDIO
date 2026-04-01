@@ -1,29 +1,30 @@
+/**
+ * WORKSTATION CORE PRO - BLACK EDITION
+ * Configuración optimizada para Render y PostgreSQL
+ */
+
 const express = require('express');
 const { Pool } = require('pg');
-const path = require('path');
 const cors = require('cors');
+const path = require('path');
+const morgan = require('morgan');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
-// CONFIGURACIÓN DE CONEXIÓN PROFESIONAL
+// Configuración de conexión con validación SSL forzada para Render
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false // REQUERIDO PARA RENDER
-    },
-    max: 10, // Máximo de conexiones simultáneas
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    ssl: { rejectUnauthorized: false }
 });
 
-// FUNCIÓN DE PRUEBA DE CONEXIÓN INMEDIATA
-const checkConnection = async () => {
+const MASTER_ADMIN = 'emmanuel2013rq@gmail.com';
+
+// Inicialización de tablas con logs de auditoría
+const startDB = async () => {
     try {
         const client = await pool.connect();
-        console.log("💎 CONEXIÓN EXITOSA CON POSTGRESQL");
-        
-        // Crear tablas si no existen (Estructura corregida)
+        console.log("--- INICIANDO PROTOCOLO DE DATOS ---");
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -40,52 +41,77 @@ const checkConnection = async () => {
                 fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+        const check = await client.query('SELECT COUNT(*) FROM usuarios');
+        console.log(`✅ ESTADO: ${check.rows[0].count} usuarios detectados en el sistema.`);
         client.release();
-    } catch (err) {
-        console.error("❌ ERROR CRÍTICO DE BASE DE DATOS:", err.message);
-        console.log("Reintentando conexión en 5 segundos...");
-        setTimeout(checkConnection, 5000);
+    } catch (e) {
+        console.error("❌ ERROR EN BASE DE DATOS:", e.message);
     }
 };
+startDB();
 
-checkConnection();
-
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API: Registro con manejo de errores de DB
+// --- SISTEMA DE AUTENTICACIÓN ---
+
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
-        const result = await pool.query(
-            'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [nombre, email.toLowerCase().trim(), password]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (e) {
-        console.error(e);
-        res.status(400).json({ error: "Error: El email ya existe o la DB no responde." });
-    }
+        const mail = email.toLowerCase().trim();
+        const r = await pool.query('INSERT INTO usuarios (nombre, email, password) VALUES ($1,$2,$3) RETURNING id, nombre, email', [nombre, mail, password]);
+        res.status(201).json(r.rows[0]);
+    } catch (e) { res.status(400).json({error: "El registro falló o el usuario ya existe."}); }
 });
 
-// API: Login
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query(
-            'SELECT * FROM usuarios WHERE email = $1 AND password = $2',
-            [email.toLowerCase().trim(), password]
-        );
-        if (result.rows.length > 0) res.json(result.rows[0]);
-        else res.status(401).json({ error: "Credenciales incorrectas." });
-    } catch (e) {
-        res.status(500).json({ error: "Error de conexión con la base de datos." });
-    }
+        const mail = email.toLowerCase().trim();
+        const r = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND password = $2', [mail, password]);
+        if (r.rows.length > 0) res.json(r.rows[0]);
+        else res.status(401).json({error: "Credenciales no válidas."});
+    } catch (e) { res.status(500).json({error: "Error interno de servidor."}); }
 });
 
-// RESTO DE TUS RUTAS (Admin, Guardar tiempo, etc.)
-// ... (Mantén las rutas del código anterior pero asegúrate de usar pool.query)
+// --- PANEL DE ADMINISTRACIÓN (VISTA TOTAL) ---
+
+app.get('/api/admin/usuarios', async (req, res) => {
+    const { admin_email } = req.query;
+    if (!admin_email || admin_email.toLowerCase().trim() !== MASTER_ADMIN) {
+        return res.status(403).json({error: "No autorizado"});
+    }
+    try {
+        // Obtenemos todos los usuarios para asegurar que la lista no esté vacía
+        const r = await pool.query('SELECT id, nombre, email, password FROM usuarios ORDER BY id DESC');
+        res.json(r.rows);
+    } catch (e) { res.status(500).json([]); }
+});
+
+app.delete('/api/admin/usuarios/:id', async (req, res) => {
+    const { admin_email } = req.query;
+    if (admin_email !== MASTER_ADMIN) return res.status(403).send("Forbidden");
+    await pool.query('DELETE FROM usuarios WHERE id = $1', [req.params.id]);
+    res.json({ok: true});
+});
+
+// --- GESTIÓN DE TIEMPOS ---
+
+app.post('/api/tareas/guardar', async (req, res) => {
+    const { usuario_id, proyecto, duracion } = req.body;
+    try {
+        await pool.query('INSERT INTO registros_trabajo (usuario_id, proyecto, duracion) VALUES ($1, $2, $3)', [usuario_id, proyecto, duracion]);
+        res.json({ok: true});
+    } catch (e) { res.status(500).json({error: "No se pudo guardar."}); }
+});
+
+app.get('/api/tareas/ver', async (req, res) => {
+    const r = await pool.query("SELECT proyecto, duracion, TO_CHAR(fecha, 'DD/MM/YYYY HH:MI') as fecha FROM registros_trabajo WHERE usuario_id = $1 ORDER BY id DESC", [req.query.uid]);
+    res.json(r.rows);
+});
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.listen(port, () => console.log(`🚀 Servidor en puerto ${port}`));
+
+app.listen(port, () => console.log(`🚀 WORKSTATION ONLINE: ${port}`));
