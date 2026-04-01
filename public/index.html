@@ -3,210 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workstation Studio | Professional Edition</title>
+    <title>Crystal Studio | Elite Workstation</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
         :root {
-            --apple-blue: #0071E3;
-            --apple-gray: #F5F5F7;
-            --apple-text: #1D1D1F;
-            --apple-sub: #86868B;
-            --white: #FFFFFF;
-            --border: #D2D2D7;
-            --red: #FF3B30;
+            --accent: #0071e3;
+            --accent-glow: rgba(0, 113, 227, 0.3);
+            --bg-crystal: rgba(255, 255, 255, 0.75);
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-lux: 0 50px 100px -20px rgba(0,0,0,0.12), 0 30px 60px -30px rgba(0,0,0,0.15);
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
         body { 
-            background-color: var(--apple-gray); 
+            background: radial-gradient(circle at 0% 0%, #ffffff 0%, #f5f5f7 50%, #e8e8ed 100%);
             height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
-            color: var(--apple-text);
+            color: var(--text-primary);
         }
 
-        /* Contenedor Estilo Mac Studio */
-        .app-window {
-            background: var(--white);
-            width: 95%; max-width: 1000px; height: 850px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            box-shadow: 0 30px 70px rgba(0,0,0,0.07);
-            display: flex; flex-direction: column;
-            position: relative; overflow: hidden;
-            animation: fadeIn 0.8s ease;
+        /* Canvas de Fondo Decorativo */
+        .mesh-bg {
+            position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(0, 113, 227, 0.05) 0px, transparent 50%),
+                radial-gradient(at 90% 10%, rgba(255, 59, 48, 0.03) 0px, transparent 50%),
+                radial-gradient(at 50% 90%, rgba(52, 199, 89, 0.03) 0px, transparent 50%);
         }
 
-        .title-bar {
-            padding: 20px 40px; border-bottom: 1px solid var(--apple-gray);
-            display: flex; justify-content: space-between; align-items: center;
+        /* Main Container: Crystal Glass Style */
+        .studio-card {
+            background: var(--bg-crystal); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
+            width: 95%; max-width: 1100px; height: 880px; border-radius: 45px;
+            border: 1px solid var(--glass-border); box-shadow: var(--shadow-lux);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
         }
-        .dots { display: flex; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* Vistas principales */
-        .view { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; }
-        h1 { font-size: 55px; font-weight: 800; letter-spacing: -2.5px; margin-bottom: 5px; }
-        .sub { color: var(--apple-sub); font-size: 19px; margin-bottom: 45px; }
+        .header { padding: 35px 55px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .window-controls { display: flex; gap: 10px; }
+        .win-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* Inputs Studio */
-        .field { max-width: 400px; margin: 0 auto 20px; text-align: left; }
-        label { font-size: 12px; font-weight: 700; color: var(--apple-blue); margin-left: 10px; margin-bottom: 6px; display: block; text-transform: uppercase; }
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: 100%; padding: 20px; border-radius: 14px; border: 1px solid var(--border);
-            background: var(--apple-gray); font-size: 17px; outline: none; transition: 0.2s;
+        .main-scroll { flex: 1; padding: 50px 100px; overflow-y: auto; scrollbar-width: none; text-align: center; }
+        .main-scroll::-webkit-scrollbar { display: none; }
+
+        h1 { font-size: 72px; font-weight: 800; letter-spacing: -4px; line-height: 1; margin-bottom: 15px; background: linear-gradient(180deg, #1d1d1f 0%, #434344 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tag { font-size: 20px; color: var(--text-secondary); margin-bottom: 50px; font-weight: 400; }
+
+        /* Inputs de Lujo */
+        .input-group { max-width: 450px; margin: 0 auto 28px; text-align: left; }
+        .input-group label { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 1px; margin: 0 0 10px 8px; display: block; text-transform: uppercase; }
+        
+        input {
+            width: 100%; padding: 24px; border-radius: 22px; border: 1.5px solid rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.5); font-size: 18px; color: #000; outline: none;
         }
-        input:focus { border-color: var(--apple-blue); background: var(--white); box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
+        input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 5px var(--accent-glow); transform: scale(1.02); }
 
-        /* Input de Imagen Profesional */
-        .file-drop {
-            border: 2px dashed var(--border); border-radius: 14px; padding: 20px;
-            background: var(--apple-gray); cursor: pointer; transition: 0.3s;
-            margin-bottom: 25px; position: relative;
+        /* Botones Elite */
+        .btn-elite {
+            padding: 24px 45px; border-radius: 22px; border: none; font-size: 19px; font-weight: 600;
+            cursor: pointer; width: 100%; max-width: 450px; position: relative; overflow: hidden;
+            background: var(--accent); color: white; box-shadow: 0 15px 35px var(--accent-glow);
         }
-        .file-drop:hover { border-color: var(--apple-blue); background: var(--white); }
-        .file-drop i { font-size: 24px; color: var(--apple-sub); margin-bottom: 5px; }
+        .btn-elite:hover { transform: translateY(-4px); box-shadow: 0 20px 45px var(--accent-glow); filter: brightness(1.1); }
+        .btn-elite:active { transform: translateY(0); }
 
-        /* Botones */
-        .btn {
-            padding: 20px 35px; border-radius: 14px; border: none; font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        .btn-ghost { background: transparent; color: var(--accent); margin-top: 20px; box-shadow: none; border: 1px solid transparent; }
+        .btn-ghost:hover { background: rgba(0,113,227,0.05); border-color: var(--accent-glow); }
+
+        /* Cronómetro Digital */
+        .crystal-timer { font-size: 160px; font-weight: 800; letter-spacing: -10px; margin: 40px 0; color: var(--text-primary); text-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        /* Upload Zone Decorada */
+        .drop-zone {
+            border: 2px dashed var(--accent-glow); border-radius: 30px; padding: 45px;
+            background: rgba(255,255,255,0.4); cursor: pointer; margin-bottom: 40px; position: relative;
         }
-        .btn-blue { background: var(--apple-blue); color: white; width: 100%; max-width: 400px; box-shadow: 0 10px 20px rgba(0,113,227,0.2); }
-        .btn-blue:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-red { background: var(--red); color: white; }
+        .drop-zone:hover { border-color: var(--accent); background: #fff; }
+        .drop-zone i { font-size: 40px; color: var(--accent); margin-bottom: 15px; opacity: 0.8; }
 
-        /* Timer Studio */
-        .timer-display { font-size: 130px; font-weight: 800; letter-spacing: -6px; margin: 30px 0; color: var(--apple-text); }
-
-        /* Admin Cards */
-        .user-card {
-            background: var(--white); padding: 25px; border-radius: 20px;
-            margin-bottom: 12px; border: 1px solid var(--border); display: flex;
-            justify-content: space-between; align-items: center; transition: 0.3s;
+        /* Admin Cards Lux */
+        .lux-card {
+            background: #fff; padding: 30px; border-radius: 28px; margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
-        .user-card:hover { transform: scale(1.01); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .u-name { font-size: 20px; font-weight: 700; color: var(--apple-blue); cursor: pointer; }
-        .u-cred { font-family: monospace; font-size: 13px; color: var(--apple-sub); background: #eee; padding: 8px; border-radius: 8px; margin-top: 5px; }
+        .u-title { font-size: 24px; font-weight: 800; color: var(--accent); cursor: pointer; }
+        .u-meta { font-size: 13px; color: var(--text-secondary); margin-top: 5px; font-family: 'SF Mono', monospace; }
 
-        .btn-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .btn-vault { color: #FF9500; background: #FFF9F0; } .btn-vault:hover { background: #FF9500; color: white; }
-        .btn-del { color: var(--red); background: #FFF2F1; } .btn-del:hover { background: var(--red); color: white; }
+        .action-icon { width: 55px; height: 55px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
+        .icon-key { background: #fff8e1; color: #ffab00; } .icon-key:hover { background: #ffab00; color: #fff; }
+        .icon-del { background: #ffebee; color: #ff1744; } .icon-del:hover { background: #ff1744; color: #fff; }
 
-        /* Capas de información */
-        .layer { position: absolute; inset: 0; background: var(--white); z-index: 100; padding: 60px; overflow-y: auto; text-align: left; }
-        .back-link { color: var(--apple-blue); font-weight: 700; cursor: pointer; margin-bottom: 30px; display: block; font-size: 18px; }
-
+        /* Overlay FullScreen */
+        .overlay-studio { position: absolute; inset: 0; background: #fff; z-index: 2000; padding: 70px 100px; overflow-y: auto; }
+        .close-studio { font-size: 18px; font-weight: 700; color: var(--accent); cursor: pointer; margin-bottom: 40px; display: inline-flex; align-items: center; gap: 10px; }
+        
         .hidden { display: none !important; }
-        .evidence-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
+
+        /* Evidence Style */
+        .thumb { width: 80px; height: 80px; border-radius: 18px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); cursor: pointer; }
+        .row-item { padding: 30px; border-bottom: 1px solid #f5f5f7; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
-<div class="app-window animate__animated animate__fadeInUp">
-    <div class="title-bar">
-        <div class="dots">
-            <div class="dot" style="background:#FF5F57"></div>
-            <div class="dot" style="background:#FFBD2E"></div>
-            <div class="dot" style="background:#28C840"></div>
+<div class="mesh-bg"></div>
+
+<div class="studio-card animate__animated animate__fadeInUp">
+    <div class="header">
+        <div class="window-controls">
+            <div class="win-dot" style="background:#ff5f56"></div>
+            <div class="win-dot" style="background:#ffbd2e"></div>
+            <div class="win-dot" style="background:#27c93f"></div>
         </div>
-        <div style="font-size:11px; font-weight:800; letter-spacing:1.5px; opacity:0.4;">WORKSTATION STUDIO V9</div>
+        <div style="font-size:12px; font-weight:800; letter-spacing:3px; opacity:0.3; color:#000;">CRYSTAL WORKSTATION V11</div>
     </div>
 
-    <div id="v-auth" class="view">
-        <h1>Workstation</h1>
-        <p class="sub">Potencia y simplicidad profesional.</p>
-        
-        <div class="form-studio">
-            <div id="reg-box" class="hidden animate__animated animate__fadeInDown">
-                <div class="field">
-                    <label>Nombre de Usuario</label>
-                    <input type="text" id="i-name" placeholder="Ej. Alex Rivera">
+    <div class="main-scroll">
+        <div id="view-login">
+            <h1>Crystal</h1>
+            <p class="tag">Workstation de alto rendimiento para el Studio.</p>
+            
+            <div id="reg-fields" class="hidden animate__animated animate__fadeInDown">
+                <div class="input-group">
+                    <label>Nombre Profesional</label>
+                    <input type="text" id="reg-name" placeholder="Ej. Emmanuel Rivera">
                 </div>
             </div>
-            <div class="field">
-                <label>Email Corporativo</label>
-                <input type="email" id="i-email" placeholder="nombre@studio.com">
-            </div>
-            <div class="field">
-                <label>Contraseña</label>
-                <input type="password" id="i-pass" placeholder="••••••••">
+            
+            <div class="input-group">
+                <label>ID de Acceso</label>
+                <input type="email" id="log-email" placeholder="nombre@studio.com">
             </div>
             
-            <button class="btn btn-blue" onclick="handleAuth()" id="btn-auth">Iniciar Sesión</button>
-            <p onclick="toggleReg()" id="mode-txt" style="margin-top:25px; color:var(--apple-blue); cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</p>
-        </div>
-    </div>
+            <div class="input-group">
+                <label>Contraseña Maestra</label>
+                <input type="password" id="log-pass" placeholder="••••••••">
+            </div>
 
-    <div id="v-dash" class="view hidden">
-        <h1 id="user-hi">Hola</h1>
-        <p class="sub">Gestiona tu productividad diaria.</p>
-        
-        <div id="prep-zone">
-            <div class="field">
-                <label>Proyecto / Tarea</label>
-                <input type="text" id="p-title" placeholder="Ej. Desarrollo de API Core">
-            </div>
-            <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
-                <button class="btn btn-blue" onclick="startClock()" style="width:auto;"><i class="fa fa-play"></i> Iniciar</button>
-                <button class="btn" style="background:var(--apple-gray); width:auto;" onclick="openLayer('l-history')">Historial</button>
-                <button id="adm-btn" class="btn hidden" style="background:black; color:white; width:auto;" onclick="openLayer('l-admin')">Bóveda Admin</button>
-            </div>
-            <p onclick="logout()" style="margin-top:60px; color:var(--red); font-weight:700; cursor:pointer; opacity:0.6;">Cerrar sesión segura</p>
+            <button class="btn-elite" onclick="processAuth()" id="btn-auth-main">Entrar al Studio</button>
+            <button class="btn-elite btn-ghost" onclick="toggleAuth()" id="btn-toggle">¿Eres nuevo? Crea una cuenta</button>
         </div>
 
-        <div id="work-zone" class="hidden">
-            <div class="timer-display" id="timer">00:00:00</div>
-            
-            <div class="field">
-                <label>Imagen de Prueba (Obligatoria)</label>
-                <div class="file-drop" onclick="document.getElementById('i-file').click()">
-                    <i class="fa fa-camera"></i><br>
-                    <span id="file-name" style="font-size:13px; color:var(--apple-sub);">Haz clic para subir evidencia</span>
-                    <input type="file" id="i-file" accept="image/*" class="hidden" onchange="fileSelected()">
+        <div id="view-dash" class="hidden animate__animated animate__fadeIn">
+            <h1 id="user-welcome">Bienvenido</h1>
+            <p class="tag">Panel de control de activos y cronometría.</p>
+
+            <div id="setup-work">
+                <div class="input-group">
+                    <label>Nombre del Proyecto</label>
+                    <input type="text" id="project-name" placeholder="Ej. Renderizado de Fachada">
                 </div>
+                <button class="btn-elite" onclick="startTimer()"><i class="fa fa-play"></i> Iniciar Sesión de Trabajo</button>
+                
+                <div style="margin-top:35px; display:flex; gap:20px; justify-content:center;">
+                    <button class="btn-elite" style="background:#000; width:auto;" onclick="openOverlay('ov-history')">Mi Historial</button>
+                    <button id="admin-lock" class="btn-elite hidden" style="background:#fff; color:#000; border:1px solid #000; width:auto;" onclick="openOverlay('ov-admin')">
+                        <i class="fa fa-shield"></i> Bóveda Admin
+                    </button>
+                </div>
+                <p onclick="exit()" style="margin-top:60px; color:var(--text-secondary); cursor:pointer; font-weight:600;">Finalizar sesión segura</p>
             </div>
 
-            <button class="btn btn-blue btn-red" style="width:auto;" onclick="stopClock()">
-                <i class="fa fa-stop"></i> Finalizar y Guardar
-            </button>
+            <div id="active-work" class="hidden">
+                <div class="crystal-timer" id="timer-val">00:00:00</div>
+                
+                <div class="input-group">
+                    <label>Captura de Evidencia (Obligatoria)</label>
+                    <div class="drop-zone" onclick="document.getElementById('file-upload').click()">
+                        <i class="fa fa-camera-retro"></i><br>
+                        <span id="file-info" style="font-size:15px; color:var(--text-secondary)">Haz clic para subir la prueba del trabajo</span>
+                        <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="updateFileLabel()">
+                    </div>
+                </div>
+
+                <button class="btn-elite" style="background:#ff3b30; box-shadow:0 15px 35px rgba(255,59,48,0.3);" onclick="stopAndSave()">
+                    <i class="fa fa-cloud-upload"></i> Finalizar y Sincronizar
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="l-admin" class="layer hidden">
-        <span class="back-link" onclick="closeLayer('l-admin')"><i class="fa fa-chevron-left"></i> Volver al Studio</span>
-        <h1>Control de Usuarios</h1>
-        <p class="sub">Bóveda de seguridad activa.</p>
-        <div id="admin-list"></div>
+    <div id="ov-admin" class="overlay-studio hidden animate__animated animate__slideInUp">
+        <span class="close-studio" onclick="closeOverlay('ov-admin')"><i class="fa fa-arrow-left"></i> VOLVER AL PANEL</span>
+        <h1>Bóveda Administrativa</h1>
+        <p class="tag">Auditoría completa de miembros y credenciales.</p>
+        <div id="admin-content"></div>
     </div>
 
-    <div id="l-history" class="layer hidden">
-        <span class="back-link" onclick="closeLayer('l-history')"><i class="fa fa-chevron-left"></i> Volver al Studio</span>
-        <h1 id="hist-title">Mi Actividad</h1>
-        <p class="sub">Registros sincronizados con la nube.</p>
-        <div id="hist-list" style="margin-top:20px; background:var(--apple-gray); border-radius:24px; overflow:hidden;"></div>
+    <div id="ov-history" class="overlay-studio hidden animate__animated animate__slideInUp">
+        <span class="close-studio" onclick="closeOverlay('ov-history')"><i class="fa fa-arrow-left"></i> VOLVER AL PANEL</span>
+        <h1 id="hist-user-title">Historial</h1>
+        <p class="tag">Registros de tiempo validados por evidencia fotográfica.</p>
+        <div id="history-content" style="background:#fff; border-radius:35px; overflow:hidden; border:1px solid #f0f0f0;"></div>
     </div>
 </div>
 
 <script>
-    const MASTER = 'emmanuel2013rq@gmail.com';
-    let user = null, isReg = false, timerInt = null;
+    const MASTER_KEY = 'emmanuel2013rq@gmail.com';
+    let user = null, isReg = false, clockInt = null;
 
-    function toggleReg() {
+    function toggleAuth() {
         isReg = !isReg;
-        document.getElementById('reg-box').classList.toggle('hidden');
-        document.getElementById('btn-auth').innerText = isReg ? 'Crear Cuenta' : 'Iniciar Sesión';
-        document.getElementById('mode-txt').innerText = isReg ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
+        document.getElementById('reg-fields').classList.toggle('hidden');
+        document.getElementById('btn-auth-main').innerText = isReg ? 'Crear mi Cuenta' : 'Entrar al Studio';
+        document.getElementById('btn-toggle').innerText = isReg ? '¿Ya tienes cuenta? Entra' : '¿Eres nuevo? Crea una cuenta';
     }
 
-    async function handleAuth() {
-        const email = document.getElementById('i-email').value, 
-              password = document.getElementById('i-pass').value, 
-              nombre = document.getElementById('i-name').value;
+    async function processAuth() {
+        const email = document.getElementById('log-email').value, 
+              password = document.getElementById('log-pass').value,
+              nombre = document.getElementById('reg-name').value;
+
+        if(!email || !password) return Swal.fire('Aviso', 'Completa los campos', 'info');
 
         const res = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
             method: 'POST',
@@ -214,114 +232,113 @@
             body: JSON.stringify({ nombre, email, password })
         });
         const data = await res.json();
-
         if (res.ok) {
-            if (isReg) { Swal.fire('Bienvenido', 'Cuenta creada.', 'success'); toggleReg(); }
-            else { user = data; localStorage.setItem('ws_user', JSON.stringify(data)); launch(); }
-        } else { Swal.fire('Acceso Denegado', data.error, 'error'); }
+            if (isReg) { Swal.fire('Bienvenido', 'Registro exitoso', 'success'); toggleAuth(); }
+            else { user = data; localStorage.setItem('crystal_session', JSON.stringify(data)); bootApp(); }
+        } else { Swal.fire('Error', data.error, 'error'); }
     }
 
-    function launch() {
-        document.getElementById('v-auth').classList.add('hidden');
-        document.getElementById('v-dash').classList.remove('hidden');
-        document.getElementById('user-hi').innerText = "Hola, " + user.nombre;
-        if (user.email === MASTER) document.getElementById('adm-btn').classList.remove('hidden');
+    function bootApp() {
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        document.getElementById('user-welcome').innerText = "Hola, " + user.nombre;
+        if (user.email === MASTER_KEY) document.getElementById('admin-lock').classList.remove('hidden');
     }
 
-    function startClock() {
-        if (!document.getElementById('p-title').value) return Swal.fire('Proyecto', 'Ingresa un nombre de tarea.', 'info');
-        document.getElementById('prep-zone').classList.add('hidden');
-        document.getElementById('work-zone').classList.remove('hidden');
+    function startTimer() {
+        if (!document.getElementById('project-name').value) return Swal.fire('Proyecto', 'Indica el nombre de la tarea.', 'warning');
+        document.getElementById('setup-work').classList.add('hidden');
+        document.getElementById('active-work').classList.remove('hidden');
         const start = Date.now();
-        timerInt = setInterval(() => {
+        clockInt = setInterval(() => {
             const d = Date.now() - start;
             const h = Math.floor(d/3600000).toString().padStart(2,'0');
             const m = Math.floor((d%3600000)/60000).toString().padStart(2,'0');
             const s = Math.floor((d%60000)/1000).toString().padStart(2,'0');
-            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            document.getElementById('timer-val').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
 
-    function fileSelected() {
-        const file = document.getElementById('i-file').files[0];
-        document.getElementById('file-name').innerText = file ? `Imagen cargada: ${file.name}` : "Haz clic para subir evidencia";
+    function updateFileLabel() {
+        const file = document.getElementById('file-upload').files[0];
+        document.getElementById('file-info').innerText = file ? "✅ Imagen Cargada: " + file.name : "Error en archivo";
     }
 
-    async function stopClock() {
-        const file = document.getElementById('i-file').files[0];
-        if (!file) return Swal.fire('Evidencia Obligatoria', 'Debes subir una foto de tu trabajo para guardar.', 'warning');
+    async function stopAndSave() {
+        const file = document.getElementById('file-upload').files[0];
+        if (!file) return Swal.fire('Falta Evidencia', 'Es obligatorio subir una prueba para guardar.', 'error');
+
+        Swal.fire({ title: 'Sincronizando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = async () => {
-            const base64 = reader.result;
-            const dur = document.getElementById('timer').innerText;
-            
-            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
-
-            await fetch('/api/tareas/guardar', {
+            const res = await fetch('/api/trabajo/guardar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ usuario_id: user.id, proyecto: document.getElementById('p-title').value, duracion: dur, evidencia: base64 })
+                body: JSON.stringify({ 
+                    usuario_id: user.id, 
+                    proyecto: document.getElementById('project-name').value, 
+                    duracion: document.getElementById('timer-val').innerText, 
+                    evidencia: reader.result 
+                })
             });
-            location.reload();
+            if (res.ok) location.reload();
+            else Swal.fire('Error', 'No se pudo guardar la sesión.', 'error');
         };
     }
 
-    async function openLayer(id) {
+    async function openOverlay(id) {
         document.getElementById(id).classList.remove('hidden');
-        if (id === 'l-admin') {
-            const r = await fetch(`/api/admin/usuarios?admin_email=${user.email}`);
-            const users = await r.json();
-            document.getElementById('admin-list').innerHTML = users.map(u => `
-                <div class="user-card animate__animated animate__fadeInUp">
+        if (id === 'ov-admin') {
+            const r = await fetch(`/api/admin/usuarios?auth=${user.email}`);
+            const data = await r.json();
+            document.getElementById('admin-content').innerHTML = data.map(u => `
+                <div class="lux-card animate__animated animate__fadeInUp">
                     <div>
-                        <span class="u-name" onclick="inspectUser(${u.id}, '${u.nombre}')">${u.nombre}</span>
-                        <div id="vault-${u.id}" class="u-cred hidden">📧 ${u.email} <br> 🔑 ${u.password}</div>
+                        <span class="u-title" onclick="inspect(${u.id}, '${u.nombre}')">${u.nombre}</span>
+                        <div id="vault-${u.id}" class="u-meta hidden">EMAIL: ${u.email} <br> PASS: ${u.password}</div>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <div class="btn-icon btn-vault" onclick="unlock('${u.id}')"><i class="fa fa-key"></i></div>
-                        <div class="btn-icon btn-del" onclick="deleteUser(${u.id})"><i class="fa fa-trash"></i></div>
+                    <div style="display:flex; gap:15px;">
+                        <div class="action-icon icon-key" onclick="reveal('${u.id}')"><i class="fa fa-key"></i></div>
+                        <div class="action-icon icon-del" onclick="killUser(${u.id})"><i class="fa fa-trash"></i></div>
                     </div>
                 </div>
-            `).join('') || 'No hay registros.';
+            `).join('') || 'Sin usuarios registrados.';
         }
-        if (id === 'l-history') inspectUser(user.id, "Mi Actividad");
+        if (id === 'ov-history') inspect(user.id, "Mi Actividad Profesional");
     }
 
-    async function unlock(id) {
-        const { value: pin } = await Swal.fire({ title: 'Bóveda de Seguridad', input: 'password', inputPlaceholder: 'Clave Maestra' });
+    async function reveal(id) {
+        const { value: pin } = await Swal.fire({ title: 'PIN de Seguridad', input: 'password', inputPlaceholder: 'Código Bóveda' });
         if (pin === '0613') document.getElementById(`vault-${id}`).classList.toggle('hidden');
-        else Swal.fire('Error', 'PIN incorrecto', 'error');
+        else Swal.fire('Dato', 'PIN Incorrecto', 'error');
     }
 
-    async function inspectUser(id, nombre) {
-        document.getElementById('l-history').classList.remove('hidden');
-        document.getElementById('hist-title').innerText = "Tareas: " + nombre;
-        const r = await fetch(`/api/admin/tareas/${id}`);
+    async function inspect(uid, nombre) {
+        document.getElementById('ov-history').classList.remove('hidden');
+        document.getElementById('hist-user-title').innerText = "Historial: " + nombre;
+        const r = await fetch(`/api/admin/tareas/${uid}`);
         const tasks = await r.json();
-        document.getElementById('hist-list').innerHTML = tasks.map(t => `
-            <div style="padding:20px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; background:white;">
-                <div><b>${t.proyecto}</b><br><small style="color:var(--apple-sub)">${t.fecha}</small></div>
-                <div style="display:flex; align-items:center; gap:20px;">
-                    <span style="font-weight:800; color:var(--apple-blue); font-size:18px;">${t.duracion}</span>
-                    <img src="${t.evidencia}" class="evidence-thumb" onclick="Swal.fire({imageUrl: '${t.evidencia}', imageWidth:600})">
+        document.getElementById('history-content').innerHTML = tasks.map(t => `
+            <div class="row-item">
+                <div><b style="font-size:20px;">${t.proyecto}</b><br><small style="color:var(--text-secondary)">${t.fecha}</small></div>
+                <div style="display:flex; align-items:center; gap:25px;">
+                    <span style="font-weight:800; color:var(--accent); font-size:22px;">${t.duracion}</span>
+                    <img src="${t.evidencia}" class="thumb" onclick="Swal.fire({imageUrl: '${t.evidencia}', imageWidth: 800, background: '#fff'})">
                 </div>
             </div>
-        `).join('') || '<p style="padding:30px; text-align:center;">Sin registros de tiempo.</p>';
+        `).join('') || '<div style="padding:60px; text-align:center; color:var(--text-secondary);">No se encontraron registros de tiempo.</div>';
     }
 
-    async function deleteUser(id) {
-        const c = await Swal.fire({ title: '¿Eliminar usuario?', icon: 'warning', showCancelButton: true });
-        if (c.isConfirmed) { 
-            await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, { method: 'DELETE' }); 
-            openLayer('l-admin'); 
-        }
+    async function killUser(id) {
+        const res = await Swal.fire({ title: '¿Borrar usuario?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff3b30' });
+        if (res.isConfirmed) { await fetch(`/api/admin/usuarios/${id}?auth=${user.email}`, {method: 'DELETE'}); openOverlay('ov-admin'); }
     }
 
-    function closeLayer(id) { document.getElementById(id).classList.add('hidden'); }
-    function logout() { localStorage.clear(); location.reload(); }
-    window.onload = () => { const s = localStorage.getItem('ws_user'); if(s) { user = JSON.parse(s); launch(); } };
+    function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
+    function exit() { localStorage.clear(); location.reload(); }
+    window.onload = () => { const s = localStorage.getItem('crystal_session'); if(s) { user = JSON.parse(s); bootApp(); } };
 </script>
 </body>
 </html>
