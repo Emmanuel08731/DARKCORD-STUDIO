@@ -2,625 +2,258 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHACA OS v120.0 | Elite Network</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diesel Colombia Styles | Workforce</title>
     <style>
-        /* ================================================================
-           ECHACA SYSTEM ARCHITECTURE - CORE v120.0
-           DESARROLLADOR: EMMANUEL
-           ESTILO: APPLE PREMIUM / GLASSMORPHISM
-           COMPONENTES: FEED GLOBAL, MIS PUBLICACIONES, PANEL ADMIN
-           ================================================================
-        */
-
         :root {
-            --e-blue: #007aff;
-            --e-bg: #f5f5f7;
-            --e-card: rgba(255, 255, 255, 0.85);
-            --e-text: #1d1d1f;
-            --e-sub: #86868b;
-            --e-border: rgba(0, 0, 0, 0.08);
-            --e-glass: blur(35px) saturate(200%);
-            --e-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
-            --e-radius: 30px;
-            --e-red: #ff3b30;
-            --speed: 0.7s cubic-bezier(0.2, 1, 0.2, 1);
+            --apple-bg: #f5f5f7;
+            --apple-card: rgba(255, 255, 255, 0.8);
+            --apple-blue: #0071e3;
+            --apple-text: #1d1d1f;
+            --apple-gray: #86868b;
         }
-
-        /* --- FRAMEWORK DE ANIMACIONES --- */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* --- RESET Y BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; outline: none; }
-        body { font-family: 'Inter', sans-serif; background: var(--e-bg); color: var(--e-text); overflow-x: hidden; scroll-behavior: smooth; }
-
-        /* --- COMPONENTE: NOTIFICACIONES (TOAST) --- */
-        #toast {
-            position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-250%);
-            padding: 20px 50px; background: #1d1d1f; color: #fff; border-radius: 60px;
-            font-weight: 800; font-size: 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-            z-index: 100000; transition: transform var(--speed); backdrop-filter: blur(15px);
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
         }
-        #toast.active { transform: translateX(-50%) translateY(0); }
-
-        /* --- COMPONENTE: BARRA DE NAVEGACIÓN --- */
-        nav {
-            position: fixed; top: 0; width: 100%; height: 90px;
-            background: rgba(255, 255, 255, 0.7); backdrop-filter: var(--e-glass);
-            border-bottom: 1px solid var(--e-border);
-            display: none; align-items: center; justify-content: space-between;
-            padding: 0 6%; z-index: 10000;
-        }
-        .nav-logo { font-size: 32px; font-weight: 900; letter-spacing: -2.5px; cursor: pointer; color: #000; }
-        .nav-logo span { color: var(--e-blue); }
-
-        .nav-search { position: relative; width: 450px; }
-        .nav-search input {
-            width: 100%; padding: 16px 20px 16px 55px; border-radius: 20px;
-            background: rgba(0, 0, 0, 0.05); border: 2.5px solid transparent;
-            font-size: 16px; font-weight: 600; transition: var(--speed);
-        }
-        .nav-search input:focus { background: #fff; border-color: var(--e-blue); box-shadow: var(--e-shadow); }
-        .search-ico { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
-
-        /* --- COMPONENTE: CONTENEDOR DE VISTAS --- */
-        .view {
-            max-width: 1300px; margin: 0 auto; padding: 140px 30px 100px;
-            display: none; opacity: 0; transition: all var(--speed);
-        }
-        .view.active { display: block; opacity: 1; animation: slideUp 0.9s var(--speed); }
-
-        /* --- COMPONENTE: TARJETAS (CARDS) --- */
-        .card {
-            background: var(--e-card); border-radius: var(--e-radius);
-            padding: 50px; border: 1px solid var(--e-border);
-            box-shadow: var(--e-shadow); backdrop-filter: blur(30px);
-            transition: var(--speed);
-        }
-        .card:hover { transform: translateY(-12px); box-shadow: 0 40px 80px rgba(0,0,0,0.08); }
-
-        /* --- COMPONENTE: BOTONES (BUTTONS) --- */
-        .btn {
-            padding: 18px 40px; border-radius: 22px; font-size: 16px; font-weight: 800;
-            cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center;
-            gap: 12px; transition: 0.4s cubic-bezier(0.2, 1, 0.2, 1);
-        }
-        .btn-p { background: #000; color: #fff; }
-        .btn-p:hover { background: var(--e-blue); transform: scale(1.05); }
-        .btn-s { background: rgba(0, 0, 0, 0.05); color: var(--e-text); }
-        .btn-s:hover { background: rgba(0, 0, 0, 0.1); }
-        .btn-blue { background: var(--e-blue); color: #fff; }
-        .btn-red { background: var(--e-red); color: #fff; }
-
-        /* --- COMPONENTE: FORMULARIOS --- */
-        .field-group { margin-bottom: 25px; }
-        .label { font-size: 13px; font-weight: 800; color: var(--e-sub); margin-left: 15px; margin-bottom: 10px; display: block; text-transform: uppercase; }
-        .field {
-            width: 100%; padding: 22px; border-radius: 20px; background: #f2f2f7;
-            border: 2.5px solid transparent; font-size: 17px; font-weight: 600;
-            transition: var(--speed);
-        }
-        .field:focus { background: #fff; border-color: var(--e-blue); }
-
-        /* --- COMPONENTE: MODALES (EMBEDS) --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px);
-            display: none; align-items: center; justify-content: center; z-index: 50000;
-        }
-        .modal-box {
-            background: #fff; width: 92%; max-width: 650px; padding: 55px;
-            border-radius: 40px; box-shadow: 0 60px 120px rgba(0,0,0,0.3);
-            animation: scaleIn 0.6s var(--speed);
-        }
-
-        /* --- COMPONENTE: FEED DE PUBLICACIONES --- */
-        .post-card {
-            background: #fff; border-radius: 30px; padding: 40px;
-            margin-bottom: 35px; border: 1.5px solid var(--e-border);
-            transition: 0.4s; position: relative;
-        }
-        .post-card:hover { border-color: var(--e-blue); transform: scale(1.01); }
-        .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .post-info { display: flex; flex-direction: column; }
-        .post-author { font-weight: 900; font-size: 16px; color: #000; letter-spacing: -0.5px; }
-        .post-time { font-size: 12px; font-weight: 700; color: var(--e-sub); margin-top: 4px; }
-        .post-tag { background: #f2f2f7; color: #000; padding: 8px 18px; border-radius: 12px; font-size: 12px; font-weight: 900; }
-        .post-title { font-size: 28px; font-weight: 900; margin: 15px 0; letter-spacing: -1.5px; line-height: 1.1; }
-        .post-desc { font-size: 17px; color: var(--e-sub); line-height: 1.6; font-weight: 500; }
-        .post-img { width: 100%; height: 450px; object-fit: cover; border-radius: 25px; margin-top: 25px; border: 1px solid var(--e-border); }
-
-        /* --- LAYOUTS ESPECÍFICOS --- */
-        .grid-main { display: grid; grid-template-columns: 420px 1fr; gap: 40px; align-items: start; }
-        .sticky-aside { position: sticky; top: 130px; }
+        .hidden { display: none !important; }
         
-        .avatar {
-            width: 160px; height: 160px; background: #000; border-radius: 55px;
-            display: grid; place-items: center; color: #fff; font-size: 70px;
-            font-weight: 900; margin: 0 auto 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        /* Glassmorphism Navbar */
+        nav {
+            position: sticky; top: 0;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.7);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
 
-        .stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
-        .stat-box {
-            flex: 1; background: #fff; padding: 20px; border-radius: 22px;
-            border: 1px solid var(--e-border); text-align: center;
-        }
-        .stat-box b { font-size: 28px; font-weight: 900; display: block; }
-        .stat-box span { font-size: 11px; font-weight: 800; color: var(--e-sub); text-transform: uppercase; }
+        .container { max-width: 700px; margin: 60px auto; padding: 20px; text-align: center; }
 
-        /* --- ESTADOS VACÍOS --- */
-        .empty-state {
-            padding: 100px 40px; text-align: center; border: 3px dashed var(--e-border);
-            border-radius: 40px; margin-top: 20px;
-        }
-        .empty-state h3 { font-size: 24px; font-weight: 900; color: var(--e-sub); margin-bottom: 10px; }
-
-        /* --- FOOTER --- */
-        footer { padding: 120px 0; text-align: center; opacity: 0.4; font-weight: 900; font-size: 14px; letter-spacing: 5px; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 1100px) {
-            .grid-main { grid-template-columns: 1fr; }
-            .nav-search { display: none; }
+        /* Apple Cards */
+        .card {
+            background: var(--apple-card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
         }
 
+        h1, h2 { font-weight: 600; letter-spacing: -0.02em; }
+        
+        input {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            border-radius: 12px; border: 1px solid #d2d2d7;
+            background: #fff; font-size: 16px; box-sizing: border-box;
+            transition: border 0.3s;
+        }
+        input:focus { border: 1px solid var(--apple-blue); outline: none; }
+
+        button {
+            width: 100%; padding: 14px; border-radius: 12px;
+            border: none; background: var(--apple-blue);
+            color: white; font-size: 16px; font-weight: 500;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        button:hover { opacity: 0.9; transform: scale(0.98); }
+        .btn-secondary { background: #e8e8ed; color: var(--apple-blue); margin-top: 10px; }
+
+        .timer-big { font-size: 4rem; font-weight: 700; margin: 20px 0; color: var(--apple-text); }
+        
+        /* Admin Section */
+        .user-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border-bottom: 1px solid #eee; text-align: left;
+        }
+        .admin-badge { background: #ff3b30; color: white; padding: 2px 8px; border-radius: 5px; font-size: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="toast">ECHACA CORE v120.0</div>
-
-    <nav id="navbar">
-        <div class="nav-logo" onclick="navTo('home')">ECHACA<span>.</span></div>
-        <div class="nav-search">
-            <svg class="search-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="global-search" placeholder="Buscar usuarios, temas o foros..." onkeyup="handleGlobalSearch(event)">
+<nav id="navbar" class="hidden">
+    <div style="font-weight: 600;">Diesel Styles</div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <div id="admin-tools" class="hidden">
+            <button onclick="showUserList()" style="width: auto; padding: 5px 12px; font-size: 12px;">Admin: Usuarios</button>
         </div>
-        <div style="display: flex; gap: 15px;">
-            <button class="btn btn-blue" style="padding: 14px 28px;" onclick="openModal()">Nueva Publicación</button>
-            <button class="btn btn-s" style="padding: 14px 28px;" onclick="location.reload()">Cerrar Sistema</button>
+        <span id="nav-user-name" style="font-size: 14px; color: var(--apple-gray);"></span>
+        <button onclick="location.reload()" style="width: auto; padding: 5px 12px; background: #333; font-size: 12px;">Salir</button>
+    </div>
+</nav>
+
+<div id="view-login" class="container">
+    <div class="card">
+        <h1 id="auth-title">Diesel Colombia Styles</h1>
+        <p style="color: var(--apple-gray);">Inicia sesión para gestionar tu tiempo.</p>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button onclick="handleAuth()">Continuar</button>
+        <p id="toggle-text" onclick="toggleAuth()" style="font-size: 14px; color: var(--apple-blue); cursor: pointer; margin-top: 20px;">¿No tienes cuenta? Regístrate</p>
+    </div>
+</div>
+
+<div id="view-dashboard" class="container hidden">
+    <h2>Hola, <span id="worker-name"></span></h2>
+    <p style="color: var(--apple-gray);">Registra tu tiempo de trabajo hoy.</p>
+
+    <div class="card">
+        <div id="box-start">
+            <input type="text" id="task-name" placeholder="¿En qué vas a trabajar?">
+            <button onclick="startTimer()">Iniciar Jornada</button>
         </div>
-    </nav>
-
-    <div id="modal-post" class="modal">
-        <div class="modal-box">
-            <h2 style="font-size: 38px; font-weight: 900; letter-spacing: -2px; margin-bottom: 35px;">Crear para el Foro</h2>
-            
-            <div class="field-group">
-                <span class="label">Título de la Publicación</span>
-                <input type="text" id="p-titulo" class="field" placeholder="Ej: Cómo optimizar un Bot de Discord">
-            </div>
-
-            <div class="field-group">
-                <span class="label">Categoría / Tema</span>
-                <input type="text" id="p-tema" class="field" placeholder="Desarrollo Web, UI/UX, Node.js...">
-            </div>
-
-            <div class="field-group">
-                <span class="label">Contenido Detallado</span>
-                <textarea id="p-desc" class="field" style="height: 150px; resize: none;" placeholder="Escribe aquí tu contenido..."></textarea>
-            </div>
-
-            <div class="field-group">
-                <span class="label">URL de Imagen (Opcional)</span>
-                <input type="text" id="p-foto" class="field" placeholder="https://mi-imagen.com/foto.jpg">
-            </div>
-
-            <div style="display: flex; gap: 20px; margin-top: 15px;">
-                <button class="btn btn-p" style="flex: 1;" onclick="processNewPost()">Publicar en la Red</button>
-                <button class="btn btn-s" onclick="closeModal()">Descartar</button>
-            </div>
+        <div id="box-active" class="hidden">
+            <p style="text-transform: uppercase; font-size: 12px; color: var(--apple-blue); font-weight: bold;">Tiempo Actual</p>
+            <div class="timer-big" id="display-time">00:00:00</div>
+            <p id="active-task-label" style="margin-bottom: 20px; font-weight: 500;"></p>
+            <button onclick="stopTimer()" style="background: #1d1d1f;">Pausar y Guardar</button>
         </div>
     </div>
+    
+    <button class="btn-secondary" onclick="viewMyHistory()">Ver mis tiempos de trabajo</button>
 
-    <main id="view-auth" class="view active">
-        <div class="card" style="max-width: 550px; margin: 0 auto; text-align: center;">
-            <h1 style="font-size: 80px; font-weight: 900; letter-spacing: -6px; margin-bottom: 45px; line-height: 0.9;">ECHACA</h1>
-            
-            <div id="reg-extra" style="display: none;">
-                <div class="field-group"><input type="text" id="auth-n" class="field" placeholder="Tu Nombre"></div>
-            </div>
+    <div id="history-results" class="card hidden" style="margin-top: 20px; text-align: left;">
+        <h3 style="font-size: 18px;">Historial Reciente</h3>
+        <div id="list-tiempos"></div>
+    </div>
+</div>
 
-            <div class="field-group">
-                <input type="email" id="auth-e" class="field" placeholder="Correo Electrónico">
-            </div>
-            <div class="field-group">
-                <input type="password" id="auth-p" class="field" placeholder="Contraseña de Seguridad">
-            </div>
+<div id="view-admin" class="container hidden">
+    <div class="card">
+        <h2>Panel de Administración</h2>
+        <p style="color: var(--apple-gray);">Lista de trabajadores registrados</p>
+        <div id="list-users-admin"></div>
+        <button class="btn-secondary" onclick="showDashboard()">Volver a mi Perfil</button>
+    </div>
+</div>
 
-            <button class="btn btn-p" style="width: 100%; margin-top: 10px;" onclick="executeAuth()">Acceder al Sistema</button>
-            
-            <div style="height: 1px; background: var(--e-border); margin: 40px 0;"></div>
-            
-            <p style="font-weight: 800; font-size: 15px;">
-                <span id="auth-text">¿Nuevo en la red?</span>
-                <span id="auth-btn-toggle" onclick="toggleAuthMode()" style="color: var(--e-blue); cursor: pointer; text-decoration: underline; margin-left: 8px;">Crea una cuenta.</span>
-            </p>
-        </div>
-    </main>
+<script>
+    let user = null;
+    let timer = null;
+    let startTime = null;
+    let isRegister = false;
+    const ADMIN_EMAIL = "emma2013rqgmail.com"; // El correo que pediste
 
-    <main id="view-home" class="view">
-        <div class="grid-main">
-            <aside class="sticky-aside">
-                <div class="card" style="text-align: center;">
-                    <div id="me-av" class="avatar">E</div>
-                    <h2 id="me-name" style="font-size: 40px; font-weight: 900; letter-spacing: -2px;">Emmanuel</h2>
-                    <p id="me-mail" style="color: var(--e-sub); font-weight: 600; margin-bottom: 40px;">admin@echaca.com</p>
-                    
-                    <div class="stats-row">
-                        <div class="stat-box"><b id="stat-f">0</b><span>Seguidores</span></div>
-                        <div class="stat-box"><b id="stat-s">0</b><span>Siguiendo</span></div>
-                    </div>
+    function toggleAuth() {
+        isRegister = !isRegister;
+        document.getElementById('auth-title').innerText = isRegister ? "Crear Cuenta" : "Diesel Colombia Styles";
+        document.getElementById('toggle-text').innerText = isRegister ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
+    }
 
-                    <button id="admin-panel-btn" class="btn btn-p" style="width: 100%; margin-bottom: 15px; display: none;" onclick="navTo('admin')">Panel de Control</button>
-                    <button class="btn btn-blue" style="width: 100%;" onclick="navTo('myposts')">Gestionar Mis Publicaciones</button>
+    async function handleAuth() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('pass').value;
+        const url = isRegister ? '/api/register' : '/api/login';
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ nombre: email.split('@')[0], email, password })
+        });
+
+        if (res.ok) {
+            user = await res.json();
+            loginSuccess();
+        } else { alert("Error en credenciales"); }
+    }
+
+    function loginSuccess() {
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+        document.getElementById('navbar').classList.remove('hidden');
+        document.getElementById('worker-name').innerText = user.nombre;
+        document.getElementById('nav-user-name').innerText = user.nombre;
+
+        if (user.email === ADMIN_EMAIL) {
+            document.getElementById('admin-tools').classList.remove('hidden');
+        }
+    }
+
+    function startTimer() {
+        const task = document.getElementById('task-name').value;
+        if (!task) return alert("Escribe la actividad");
+        startTime = new Date();
+        document.getElementById('active-task-label').innerText = task;
+        document.getElementById('box-start').classList.add('hidden');
+        document.getElementById('box-active').classList.remove('hidden');
+        timer = setInterval(() => {
+            const diff = new Date(new Date() - startTime);
+            document.getElementById('display-time').innerText = diff.toISOString().substr(11, 8);
+        }, 1000);
+    }
+
+    async function stopTimer() {
+        clearInterval(timer);
+        const end = new Date();
+        await fetch('/api/tiempo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                usuario_id: user.id,
+                actividad: document.getElementById('active-task-label').innerText,
+                inicio: startTime.toLocaleTimeString(),
+                fin: end.toLocaleTimeString(),
+                fecha: new Date().toLocaleDateString()
+            })
+        });
+        alert("Guardado");
+        location.reload();
+    }
+
+    async function viewMyHistory() {
+        renderTiempos(user.id, 'list-tiempos');
+        document.getElementById('history-results').classList.remove('hidden');
+    }
+
+    async function showUserList() {
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-admin').classList.remove('hidden');
+        const res = await fetch('/api/admin/usuarios');
+        const users = await res.json();
+        const div = document.getElementById('list-users-admin');
+        div.innerHTML = users.map(u => `
+            <div class="user-row">
+                <div>
+                    <strong>${u.nombre}</strong><br>
+                    <small>${u.email}</small>
                 </div>
-            </aside>
+                <button onclick="viewUserTimes(${u.id}, '${u.nombre}')" style="width:auto; padding:5px 10px; font-size:11px;">Ver Tiempos</button>
+            </div>
+        `).join('');
+    }
 
-            <section>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                    <h2 style="font-size: 35px; font-weight: 900; letter-spacing: -1.5px;">Explorar Feed</h2>
-                    <div style="font-weight: 800; color: var(--e-sub); font-size: 14px;">ECHACA OS v120.0</div>
+    async function viewUserTimes(id, nombre) {
+        // Reutilizamos la lógica para mostrar tiempos de cualquier usuario
+        document.getElementById('view-admin').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+        document.getElementById('worker-name').innerText = "Tiempos de " + nombre;
+        renderTiempos(id, 'list-tiempos');
+        document.getElementById('history-results').classList.remove('hidden');
+        document.getElementById('box-start').classList.add('hidden');
+    }
+
+    async function renderTiempos(id, targetDiv) {
+        const res = await fetch(`/api/tiempos/${id}`);
+        const data = await res.json();
+        const div = document.getElementById(targetDiv);
+        if (data.length === 0) {
+            div.innerHTML = "<p style='color:gray'>No tiene tiempo de trabajo.</p>";
+        } else {
+            div.innerHTML = data.map(t => `
+                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <div style="font-weight:600">${t.actividad}</div>
+                    <div style="font-size:12px; color:gray">${t.fecha} | ${t.hora_inicio} - ${t.hora_fin}</div>
                 </div>
-
-                <div id="global-feed-container">
-                    </div>
-            </section>
-        </div>
-    </main>
-
-    <main id="view-myposts" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; border-bottom: 1px solid var(--e-border); padding-bottom: 30px;">
-            <div>
-                <h1 style="font-size: 65px; font-weight: 900; letter-spacing: -4px;">Mi Contenido</h1>
-                <p style="color: var(--e-sub); font-size: 20px; font-weight: 600;">Publicaciones realizadas por ti.</p>
-            </div>
-            <button class="btn btn-s" onclick="navTo('home')">← Volver al Inicio</button>
-        </div>
-
-        <div id="personal-feed-container">
-            </div>
-    </main>
-
-    <main id="view-dir" class="view">
-        <h1 id="dir-title" style="font-size: 50px; font-weight: 900; letter-spacing: -3px; margin-bottom: 50px;">Buscando...</h1>
-        
-        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">Usuarios Encontrados</h3>
-        <div id="dir-users-results" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; margin-bottom: 70px;">
-            </div>
-
-        <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">Publicaciones Coincidentes</h3>
-        <div id="dir-posts-results">
-            </div>
-    </main>
-
-    <main id="view-admin" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
-            <h1 style="font-size: 45px; font-weight: 900; letter-spacing: -3px;">Gestión de Nodos</h1>
-            <button class="btn btn-red" onclick="navTo('home')">Salir del Panel</button>
-        </div>
-
-        <div class="card">
-            <div id="admin-user-list">
-                </div>
-        </div>
-    </main>
-
-    <footer>ECHACA v120.0 • POWERED BY EMMANUEL • 2026</footer>
-
-    <script>
-        /* ================================================================
-           ECHACA MASTER LOGIC ENGINE
-           ================================================================
-        */
-
-        let ME = null;
-        let ALL_POSTS = [];
-        let IS_REGISTER_MODE = false;
-
-        // MOTOR DE NAVEGACIÓN INTERNA
-        function navTo(viewId) {
-            const views = document.querySelectorAll('.view');
-            views.forEach(v => {
-                v.style.opacity = '0';
-                v.style.transform = 'translateY(30px)';
-                setTimeout(() => v.classList.remove('active'), 350);
-            });
-
-            setTimeout(() => {
-                const target = document.getElementById('view-' + viewId);
-                target.classList.add('active');
-                setTimeout(() => {
-                    target.style.opacity = '1';
-                    target.style.transform = 'translateY(0)';
-                }, 100);
-
-                if(viewId === 'home' || viewId === 'myposts') syncData();
-                if(viewId === 'admin') loadAdminData();
-            }, 400);
+            `).join('');
         }
+    }
 
-        // CONTROL DE ACCESO
-        function toggleAuthMode() {
-            IS_REGISTER_MODE = !IS_REGISTER_MODE;
-            document.getElementById('reg-extra').style.display = IS_REGISTER_MODE ? 'block' : 'none';
-            document.getElementById('auth-text').innerText = IS_REGISTER_MODE ? '¿Ya eres miembro?' : '¿Nuevo en la red?';
-            document.getElementById('auth-btn-toggle').innerText = IS_REGISTER_MODE ? 'Entrar ahora.' : 'Crea una cuenta.';
-        }
-
-        async function executeAuth() {
-            const email = document.getElementById('auth-e').value;
-            const pass = document.getElementById('auth-p').value;
-            const name = document.getElementById('auth-n').value;
-
-            if(!email || !pass) return showToast("COMPLETA LOS CAMPOS");
-
-            // SEGURIDAD MAESTRA EMMANUEL
-            if(email === "emma2013rq@gmail.com") {
-                if(pass !== "emma06e") return showToast("LLAVE MAESTRA INVÁLIDA");
-                showToast("BIENVENIDO EMMANUEL");
-                return initSession({ id: 0, nombre: "Emmanuel", email: email, isAdmin: true, followers: [], following: [] });
-            }
-
-            const endpoint = IS_REGISTER_MODE ? '/auth/register' : '/auth/login';
-            
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ nombre: name, email: email, password: pass })
-                });
-
-                const data = await response.json();
-
-                if(response.ok) {
-                    if(IS_REGISTER_MODE) {
-                        showToast("CUENTA CREADA EXITOSAMENTE");
-                        toggleAuthMode();
-                    } else {
-                        showToast("IDENTIDAD VERIFICADA");
-                        initSession(data.user);
-                    }
-                } else {
-                    showToast(data.error || "ERROR DE ACCESO");
-                }
-            } catch (err) {
-                showToast("EL SERVIDOR NO RESPONDE");
-            }
-        }
-
-        function initSession(user) {
-            ME = user;
-            document.getElementById('navbar').style.display = 'flex';
-            document.getElementById('me-name').innerText = user.nombre;
-            document.getElementById('me-mail').innerText = user.email;
-            document.getElementById('me-av').innerText = user.nombre[0].toUpperCase();
-            
-            if(user.isAdmin) {
-                document.getElementById('admin-panel-btn').style.display = 'block';
-            }
-
-            syncData();
-            navTo('home');
-        }
-
-        // MOTOR DEL FORO
-        function openModal() { document.getElementById('modal-post').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-post').style.display = 'none'; }
-
-        async function processNewPost() {
-            const tit = document.getElementById('p-titulo').value;
-            const tag = document.getElementById('p-tema').value;
-            const des = document.getElementById('p-desc').value;
-            const img = document.getElementById('p-foto').value;
-
-            if(!tit || !des) return showToast("EL TÍTULO Y CONTENIDO SON OBLIGATORIOS");
-
-            const postObj = {
-                id: Date.now(),
-                authorId: ME.id,
-                authorName: ME.nombre,
-                titulo: tit,
-                tema: tag || "General",
-                descripcion: des,
-                foto: img || "",
-                time: new Date().toLocaleString('es-CO', { 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    day: '2-digit', 
-                    month: 'short',
-                    year: 'numeric'
-                })
-            };
-
-            try {
-                const res = await fetch('/api/posts/create', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(postObj)
-                });
-
-                if(res.ok) {
-                    showToast("SINCRONIZADO CON EL FEED GLOBAL");
-                    closeModal();
-                    // Limpiar campos
-                    document.getElementById('p-titulo').value = '';
-                    document.getElementById('p-desc').value = '';
-                    syncData();
-                }
-            } catch (e) {
-                showToast("ERROR AL PUBLICAR");
-            }
-        }
-
-        async function syncData() {
-            try {
-                const res = await fetch('/api/posts/all');
-                ALL_POSTS = await res.json();
-                
-                renderFeeds();
-                updateProfileStats();
-            } catch (e) {
-                console.error("Sync Error");
-            }
-        }
-
-        function updateProfileStats() {
-            document.getElementById('stat-f').innerText = ME.followers ? ME.followers.length : 0;
-            document.getElementById('stat-s').innerText = ME.following ? ME.following.length : 0;
-        }
-
-        function renderFeeds() {
-            const globalCont = document.getElementById('global-feed-container');
-            const localCont = document.getElementById('personal-feed-container');
-
-            // 1. Render Feed Global (Otras personas)
-            const othersPosts = ALL_POSTS.filter(p => p.authorId !== ME.id);
-            if(othersPosts.length === 0) {
-                globalCont.innerHTML = `
-                    <div class="empty-state">
-                        <h3>El mundo está en silencio</h3>
-                        <p>No hay publicaciones de otros usuarios por el momento.</p>
-                    </div>
-                `;
-            } else {
-                globalCont.innerHTML = othersPosts.map(p => postTemplate(p)).join('');
-            }
-
-            // 2. Render Mis Publicaciones
-            const myPosts = ALL_POSTS.filter(p => p.authorId === ME.id);
-            if(myPosts.length === 0) {
-                localCont.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aún no has compartido nada</h3>
-                        <p>Tus publicaciones aparecerán en esta sección dedicada.</p>
-                        <button class="btn btn-blue" style="margin-top:20px" onclick="openModal()">Crear mi primera publicación</button>
-                    </div>
-                `;
-            } else {
-                localCont.innerHTML = myPosts.map(p => postTemplate(p)).join('');
-            }
-        }
-
-        function postTemplate(p) {
-            return `
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-info">
-                            <span class="post-author">${p.authorName.toUpperCase()}</span>
-                            <span class="post-time">${p.time}</span>
-                        </div>
-                        <span class="post-tag">${p.tema}</span>
-                    </div>
-                    <h3 class="post-title">${p.titulo}</h3>
-                    <p class="post-desc">${p.descripcion}</p>
-                    ${p.foto ? `<img src="${p.foto}" class="post-img" onerror="this.style.display='none'">` : ''}
-                    <div style="margin-top:25px; padding-top:20px; border-top:1px solid #f0f0f0; display:flex; gap:20px;">
-                        <button class="btn btn-s" style="padding:10px 20px; font-size:12px;">Me gusta</button>
-                        <button class="btn btn-s" style="padding:10px 20px; font-size:12px;">Comentar</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // MOTOR DE BÚSQUEDA
-        async function handleGlobalSearch(e) {
-            if(e.key === 'Enter') {
-                const query = e.target.value.toLowerCase();
-                if(!query) return;
-
-                document.getElementById('dir-title').innerText = `Resultados para: "${query}"`;
-                
-                // Buscar Usuarios
-                const resU = await fetch(`/api/users/search?q=${query}`);
-                const usersFound = await resU.json();
-                
-                const userCont = document.getElementById('dir-users-results');
-                if(usersFound.length === 0) {
-                    userCont.innerHTML = '<p style="color:var(--e-sub); font-weight:800;">No se encontraron usuarios.</p>';
-                } else {
-                    userCont.innerHTML = usersFound.map(u => `
-                        <div class="card" style="padding:30px; text-align:center;">
-                            <div style="width:60px; height:60px; background:#000; color:#fff; border-radius:20px; display:grid; place-items:center; margin:0 auto 20px; font-weight:900; font-size:24px;">${u.nombre[0]}</div>
-                            <h4 style="font-size:22px; font-weight:900;">${u.nombre}</h4>
-                            <p style="color:var(--e-sub); margin-bottom:20px;">${u.email}</p>
-                            <button class="btn btn-p" style="width:100%;" onclick="showToast('PERFIL EN DESARROLLO')">Ver Perfil</button>
-                        </div>
-                    `).join('');
-                }
-
-                // Buscar Posts
-                const postsFound = ALL_POSTS.filter(p => 
-                    p.titulo.toLowerCase().includes(query) || 
-                    p.tema.toLowerCase().includes(query) ||
-                    p.descripcion.toLowerCase().includes(query)
-                );
-
-                const postCont = document.getElementById('dir-posts-results');
-                if(postsFound.length === 0) {
-                    postCont.innerHTML = '<div class="empty-state"><h3>No hay publicaciones que coincidan</h3></div>';
-                } else {
-                    postCont.innerHTML = postsFound.map(p => postTemplate(p)).join('');
-                }
-
-                navTo('dir');
-            }
-        }
-
-        // PANEL ADMIN
-        async function loadAdminData() {
-            const res = await fetch('/api/admin/database');
-            const users = await res.json();
-            
-            const cont = document.getElementById('admin-user-list');
-            cont.innerHTML = `
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="text-align:left; border-bottom:2px solid var(--e-border);">
-                            <th style="padding:20px;">USUARIO</th>
-                            <th>ID</th>
-                            <th>CORREO</th>
-                            <th>ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${users.map(u => `
-                            <tr style="border-bottom:1px solid var(--e-border);">
-                                <td style="padding:20px; font-weight:800;">${u.nombre}</td>
-                                <td style="font-family:monospace; color:var(--e-sub);">${u.id}</td>
-                                <td style="font-weight:600;">${u.email}</td>
-                                <td>
-                                    ${u.id !== 0 ? `<button class="btn btn-red" style="padding:10px 20px; font-size:12px;" onclick="deleteUser(${u.id})">Expulsar</button>` : '<b>SISTEMA</b>'}
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-        }
-
-        async function deleteUser(id) {
-            if(!confirm("¿ESTÁS SEGURO DE PURGAR ESTA IDENTIDAD?")) return;
-            const res = await fetch(`/api/admin/delete/${id}`, { method: 'DELETE' });
-            if(res.ok) {
-                showToast("NODO ELIMINADO");
-                loadAdminData();
-            }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('active');
-            setTimeout(() => t.classList.remove('active'), 3000);
-        }
-
-    </script>
+    function showDashboard() {
+        location.reload();
+    }
+</script>
 </body>
 </html>
