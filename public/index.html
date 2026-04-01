@@ -3,263 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diesel Colombia Styles | Workforce</title>
+    <title>Workforce | Diesel Colombia Styles</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
-            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --apple-blue: #0071e3;
             --apple-bg: #f5f5f7;
-            --white: #ffffff;
-            --text: #1d1d1f;
-            --gray: #86868b;
+            --apple-card: rgba(255, 255, 255, 0.85);
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+            --glass: blur(25px) saturate(180%);
         }
 
-        body { 
-            margin: 0; font-family: var(--sf-font); background: var(--apple-bg); color: var(--text);
-            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         .hidden { display: none !important; }
 
-        /* Navbar estilo macOS */
+        /* Barra de Navegación */
         nav {
-            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
-            background: rgba(255, 255, 255, 0.75);
-            height: 52px; display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; border-bottom: 1px solid rgba(0,0,0,0.1);
-            position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 1000;
-        }
-
-        /* Contenedores */
-        .page-content { padding-top: 80px; display: flex; flex-direction: column; align-items: center; flex: 1; }
-        
-        .apple-card {
-            background: var(--white); border-radius: 22px; padding: 45px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04); width: 100%; max-width: 400px;
-            text-align: center; border: 1px solid rgba(0,0,0,0.02);
-        }
-
-        .dashboard-card { max-width: 700px; text-align: left; }
-
-        h1 { font-size: 40px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
-        p { color: var(--gray); font-size: 17px; }
-
-        /* Inputs & Buttons */
-        input {
-            width: 100%; padding: 18px; margin: 10px 0; border: 1px solid #d2d2d7;
-            border-radius: 14px; font-size: 17px; background: #fff; box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-        input:focus { border-color: var(--apple-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
-
-        button {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
-            background: var(--apple-blue); color: white; font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: transform 0.2s, opacity 0.2s; margin-top: 15px;
-        }
-        button:active { transform: scale(0.97); }
-        .btn-link { background: none; color: var(--apple-blue); font-size: 15px; width: auto; margin: 0; padding: 5px; }
-
-        /* Timer */
-        .timer-val { font-size: 80px; font-weight: 700; text-align: center; margin: 30px 0; letter-spacing: -2px; }
-        
-        .user-list-item {
+            position: fixed; top: 0; width: 100%; height: 50px;
+            backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 18px; border-bottom: 1px solid #f2f2f2;
+            padding: 0 30px; z-index: 9999;
         }
+
+        .nav-logo { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+
+        /* Contenedores Principales */
+        .wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100vh; padding: 60px 20px;
+        }
+
+        .apple-card {
+            background: var(--apple-card);
+            backdrop-filter: var(--glass);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 100%; max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            text-align: center;
+        }
+
+        .dashboard { max-width: 800px; text-align: left; }
+
+        /* Tipografía */
+        h1 { font-size: 42px; font-weight: 700; letter-spacing: -1.2px; margin-bottom: 10px; }
+        h2 { font-size: 28px; font-weight: 600; margin-bottom: 5px; }
+        p { color: var(--text-secondary); margin-bottom: 30px; font-size: 17px; }
+
+        /* Formularios Apple */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-left: 10px; }
+        
+        input {
+            width: 100%; padding: 16px 20px; margin-top: 5px;
+            border-radius: 15px; border: 1px solid #d2d2d7;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 17px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input:focus {
+            border-color: var(--apple-blue); outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        }
+
+        /* Botones */
+        .btn-primary {
+            width: 100%; padding: 16px; border-radius: 15px; border: none;
+            background: var(--apple-blue); color: white;
+            font-size: 17px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; margin-top: 10px;
+        }
+
+        .btn-primary:hover { opacity: 0.9; transform: scale(0.98); }
+        .btn-primary:active { transform: scale(0.95); }
+
+        .btn-secondary {
+            background: none; color: var(--apple-blue); font-size: 15px;
+            font-weight: 500; cursor: pointer; border: none; margin-top: 20px;
+        }
+
+        /* Sección de Trabajo */
+        .timer-container {
+            background: #fff; border-radius: 25px; padding: 40px;
+            text-align: center; margin: 30px 0; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .timer-digits {
+            font-size: 85px; font-weight: 700; letter-spacing: -4px;
+            color: var(--text-main); font-variant-numeric: tabular-nums;
+        }
+
+        .badge-active {
+            display: inline-block; padding: 5px 12px; border-radius: 20px;
+            background: rgba(0, 113, 227, 0.1); color: var(--apple-blue);
+            font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;
+        }
+
+        /* Listas e Historial */
+        .history-item {
+            background: white; border-radius: 18px; padding: 20px;
+            margin-bottom: 12px; display: flex; justify-content: space-between;
+            align-items: center; border: 1px solid rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+        .history-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+
+        /* Estilos Admin */
+        .admin-user-card {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 25px; background: white; border-radius: 15px; margin-bottom: 10px;
+        }
+
+        /* Animaciones Personalizadas */
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-apple { animation: fadeInScale 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+
     </style>
 </head>
 <body>
 
-<nav id="nav" class="hidden">
-    <span style="font-weight: 600; font-size: 19px;">Diesel Styles</span>
-    <div style="display: flex; gap: 20px; align-items: center;">
-        <div id="admin-section" class="hidden">
-            <button onclick="showAdminPanel()" style="margin:0; width:auto; padding:6px 14px; font-size:13px;">Panel Admin</button>
-        </div>
-        <span id="nav-user" style="font-size: 14px; color: var(--gray);"></span>
-        <button onclick="location.reload()" style="margin:0; width:auto; padding:6px 14px; background:#1d1d1f; font-size:13px;">Salir</button>
+<nav id="top-nav" class="hidden">
+    <div class="nav-logo">Diesel Styles</div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <button id="btn-admin-view" onclick="openAdmin()" class="hidden btn-primary" style="padding: 6px 15px; font-size: 12px; width: auto; margin: 0;">Admin Panel</button>
+        <span id="user-display-name" style="font-size: 14px; font-weight: 500;"></span>
+        <button onclick="logout()" style="background: #1d1d1f; color: white; border: none; padding: 6px 15px; border-radius: 10px; font-size: 12px; cursor: pointer;">Cerrar Sesión</button>
     </div>
 </nav>
 
-<div class="page-content">
-    
-    <div id="view-login" class="apple-card animate__animated animate__fadeIn">
-        <h1 id="auth-title">Inicia Sesión</h1>
-        <p id="auth-sub">Diesel Colombia Styles</p>
-        
-        <div id="reg-form" class="hidden">
-            <input type="text" id="reg-name" placeholder="Nombre completo">
+<div class="wrapper">
+
+    <div id="section-auth" class="apple-card animate-apple">
+        <h1 id="auth-title">Entrar</h1>
+        <p id="auth-subtitle">Gestiona tu tiempo en Diesel Colombia.</p>
+
+        <div id="group-register" class="hidden">
+            <div class="input-group">
+                <label>NOMBRE COMPLETO</label>
+                <input type="text" id="in-name" placeholder="Ej: Emmanuel Rodriguez">
+            </div>
         </div>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="pass" placeholder="Contraseña">
-        
-        <button onclick="handleAuth()" id="btn-action">Continuar</button>
-        <div style="margin-top: 25px;">
-            <button class="btn-link" onclick="toggleAuth()" id="btn-switch">¿No tienes cuenta? Regístrate</button>
+
+        <div class="input-group">
+            <label>CORREO ELECTRÓNICO</label>
+            <input type="email" id="in-email" placeholder="correo@ejemplo.com">
+        </div>
+
+        <div class="input-group">
+            <label>CONTRASEÑA</label>
+            <input type="password" id="in-pass" placeholder="••••••••">
+        </div>
+
+        <button class="btn-primary" onclick="processAuth()" id="btn-auth-submit">Continuar</button>
+        <button class="btn-secondary" onclick="toggleAuthMode()" id="btn-auth-toggle">¿No tienes cuenta? Crea una ahora</button>
+    </div>
+
+    <div id="section-app" class="apple-card dashboard hidden animate-apple">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h2>Hola, <span id="worker-name"></span></h2>
+                <p>Bienvenido al registro de Diesel Colombia Styles.</p>
+            </div>
+            <div id="status-dot" style="width: 12px; height: 12px; background: #34c759; border-radius: 50%; margin-top: 10px; box-shadow: 0 0 10px #34c759;"></div>
+        </div>
+
+        <div id="work-init">
+            <div class="input-group">
+                <label>¿QUÉ ACTIVIDAD VAS A REALIZAR?</label>
+                <input type="text" id="work-task" placeholder="Ej: Diseño de interiores, Corte de materiales...">
+            </div>
+            <button class="btn-primary" onclick="startTracking()">Iniciar Jornada Laboral</button>
+        </div>
+
+        <div id="work-tracking" class="hidden">
+            <div class="timer-container">
+                <span class="badge-active">Sesión en Vivo</span>
+                <div class="timer-digits" id="stopwatch">00:00:00</div>
+                <p style="margin: 0; font-weight: 600;" id="current-task-label"></p>
+            </div>
+            <button class="btn-primary" style="background: #ff3b30;" onclick="stopTracking()">Detener y Registrar Tiempo</button>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <button class="btn-secondary" onclick="toggleHistory()">Ver mi historial de trabajo</button>
+            <div id="history-container" class="hidden" style="margin-top: 20px;">
+                <div id="history-list"></div>
+            </div>
         </div>
     </div>
 
-    <div id="view-worker" class="apple-card dashboard-card hidden animate__animated animate__fadeIn">
-        <h2 style="font-size: 32px; margin: 0;">Hola, <span id="user-welcome"></span></h2>
-        <p>Gestiona tu tiempo en Diesel Colombia Styles</p>
-        
-        <div id="start-work-box" class="card-inner">
-            <input type="text" id="task-desc" placeholder="¿Qué vas a hacer ahora?">
-            <button onclick="startSession()">Empezar a trabajar</button>
-        </div>
-
-        <div id="active-work-box" class="hidden" style="text-align: center;">
-            <p style="color: var(--apple-blue); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">En progreso</p>
-            <div id="timer-display" class="timer-val">00:00:00</div>
-            <p id="active-task-name" style="font-size: 18px; margin-bottom: 30px;"></p>
-            <button onclick="stopSession()" style="background: #000;">Pausar y Guardar</button>
-        </div>
-
-        <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
-            <button class="btn-link" onclick="fetchHistory(user.id)">Ver mi historial de tiempos</button>
-            <div id="history-area" class="hidden" style="margin-top: 20px;"></div>
-        </div>
-    </div>
-
-    <div id="view-admin" class="apple-card dashboard-card hidden animate__animated animate__fadeIn">
+    <div id="section-admin" class="apple-card dashboard hidden animate-apple">
         <h1>Administración</h1>
-        <p>Control de personal registrado</p>
-        <div id="admin-list" style="margin-top: 20px;"></div>
-        <button class="btn-link" onclick="showWorkerUI()" style="margin-top: 20px;">Volver a mi perfil</button>
+        <p>Control de tiempos de Diesel Colombia Styles</p>
+        
+        <div id="admin-user-list"></div>
+        
+        <button class="btn-secondary" onclick="closeAdmin()">Volver a mi perfil</button>
     </div>
 
 </div>
 
 <script>
-    let user = null;
-    let isReg = false;
-    let timerInt = null;
+    let currentUser = null;
+    let isRegisterMode = false;
+    let timerInterval = null;
     let startTime = null;
 
-    function toggleAuth() {
-        isReg = !isReg;
-        document.getElementById('auth-title').innerText = isReg ? "Crea tu Cuenta" : "Inicia Sesión";
-        document.getElementById('reg-form').classList.toggle('hidden');
-        document.getElementById('btn-action').innerText = isReg ? "Registrarme" : "Continuar";
-        document.getElementById('btn-switch').innerText = isReg ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
+    // --- LÓGICA DE INTERFAZ ---
+
+    function toggleAuthMode() {
+        isRegisterMode = !isRegisterMode;
+        document.getElementById('auth-title').innerText = isRegisterMode ? "Crear Cuenta" : "Entrar";
+        document.getElementById('group-register').classList.toggle('hidden');
+        document.getElementById('btn-auth-submit').innerText = isRegisterMode ? "Registrarme" : "Continuar";
+        document.getElementById('btn-auth-toggle').innerText = isRegisterMode ? "¿Ya tienes cuenta? Entra" : "¿No tienes cuenta? Crea una ahora";
     }
 
-    async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('pass').value;
-        const nombre = document.getElementById('reg-name').value;
+    async function processAuth() {
+        const email = document.getElementById('in-email').value;
+        const password = document.getElementById('in-pass').value;
+        const nombre = document.getElementById('in-name').value;
 
-        if (isReg) {
-            const res = await fetch('/api/register', {
+        if (!email || !password) return alert("Completa los campos");
+
+        const endpoint = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+        
+        try {
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ nombre, email, password })
             });
+
+            const data = await res.json();
+
             if (res.ok) {
-                Swal.fire({ title: '¡Éxito!', text: 'Cuenta creada correctamente.', icon: 'success', confirmButtonColor: '#0071e3' });
-                toggleAuth();
+                if (isRegisterMode) {
+                    Swal.fire({ icon: 'success', title: 'Cuenta creada', text: 'Ahora puedes iniciar sesión', confirmButtonColor: '#0071e3' });
+                    toggleAuthMode();
+                } else {
+                    currentUser = data;
+                    launchApp();
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: data.message, confirmButtonColor: '#0071e3' });
             }
-        } else {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ email, password })
-            });
-
-            if (res.status === 404) {
-                Swal.fire({ title: 'No existe', text: 'Esta cuenta no está registrada.', icon: 'error', confirmButtonColor: '#0071e3' });
-            } else if (res.status === 401) {
-                Swal.fire({ title: 'Error', text: 'La contraseña es incorrecta.', icon: 'warning', confirmButtonColor: '#0071e3' });
-            } else if (res.ok) {
-                user = await res.json();
-                startApp();
-            }
+        } catch (e) {
+            Swal.fire('Error de red', 'No se pudo conectar con el servidor', 'error');
         }
     }
 
-    function startApp() {
-        document.getElementById('view-login').classList.add('hidden');
-        document.getElementById('nav').classList.remove('hidden');
-        document.getElementById('view-worker').classList.remove('hidden');
-        document.getElementById('nav-user').innerText = user.nombre;
-        document.getElementById('user-welcome').innerText = user.nombre;
+    function launchApp() {
+        document.getElementById('section-auth').classList.add('hidden');
+        document.getElementById('top-nav').classList.remove('hidden');
+        document.getElementById('section-app').classList.remove('hidden');
+        document.getElementById('worker-name').innerText = currentUser.nombre;
+        document.getElementById('user-display-name').innerText = currentUser.nombre;
 
-        if (user.email === "emma2013rqgmail.com") {
-            document.getElementById('admin-section').classList.remove('hidden');
+        if (currentUser.rol === 'admin') {
+            document.getElementById('btn-admin-view').classList.remove('hidden');
         }
     }
 
-    function startSession() {
-        const task = document.getElementById('task-desc').value;
-        if (!task) return Swal.fire('Dato requerido', '¿Qué tarea vas a realizar?', 'info');
-        
+    // --- LÓGICA DE TIEMPOS ---
+
+    function startTracking() {
+        const task = document.getElementById('work-task').value;
+        if (!task) return Swal.fire('Tarea necesaria', 'Escribe qué vas a hacer', 'info');
+
         startTime = new Date();
-        document.getElementById('active-task-name').innerText = task;
-        document.getElementById('start-work-box').classList.add('hidden');
-        document.getElementById('active-work-box').classList.remove('hidden');
-        
-        timerInt = setInterval(() => {
-            const diff = new Date(new Date() - startTime);
-            document.getElementById('timer-display').innerText = diff.toISOString().substr(11, 8);
+        document.getElementById('current-task-label').innerText = task;
+        document.getElementById('work-init').classList.add('hidden');
+        document.getElementById('work-tracking').classList.remove('hidden');
+
+        timerInterval = setInterval(() => {
+            const now = new Date();
+            const diff = new Date(now - startTime);
+            document.getElementById('stopwatch').innerText = diff.toISOString().substr(11, 8);
         }, 1000);
     }
 
-    async function stopSession() {
-        clearInterval(timerInt);
-        const end = new Date();
-        await fetch('/api/tiempo', {
+    async function stopTracking() {
+        clearInterval(timerInterval);
+        const endTime = new Date();
+        const duration = document.getElementById('stopwatch').innerText;
+
+        const record = {
+            usuario_id: currentUser.id,
+            actividad: document.getElementById('current-task-label').innerText,
+            inicio: startTime.toLocaleTimeString(),
+            fin: endTime.toLocaleTimeString(),
+            fecha: new Date().toLocaleDateString(),
+            duracion: duration
+        };
+
+        const res = await fetch('/api/work/save', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                usuario_id: user.id,
-                actividad: document.getElementById('active-task-name').innerText,
-                inicio: startTime.toLocaleTimeString(),
-                fin: end.toLocaleTimeString(),
-                fecha: new Date().toLocaleDateString()
-            })
+            body: JSON.stringify(record)
         });
-        Swal.fire('Guardado', 'Jornada registrada con éxito.', 'success').then(() => location.reload());
+
+        if (res.ok) {
+            Swal.fire('¡Buen trabajo!', 'Tu tiempo ha sido registrado.', 'success').then(() => location.reload());
+        }
     }
 
-    async function fetchHistory(id, nombre = "Tu Historial") {
-        const res = await fetch(`/api/tiempos/${id}`);
+    async function toggleHistory(targetId = currentUser.id, targetName = "Tu Historial") {
+        const cont = document.getElementById('history-container');
+        cont.classList.toggle('hidden');
+        if (cont.classList.contains('hidden')) return;
+
+        const res = await fetch(`/api/work/history/${targetId}`);
         const data = await res.json();
-        const area = document.getElementById('history-area');
-        area.classList.remove('hidden');
-        
+        const list = document.getElementById('history-list');
+
+        list.innerHTML = `<h3 style="margin-bottom:15px">${targetName}</h3>`;
         if (data.length === 0) {
-            area.innerHTML = `<p style="text-align:center; padding:20px;">No tiene tiempo de trabajo.</p>`;
+            list.innerHTML += `<p style="font-size:14px">No tienes registros aún.</p>`;
         } else {
-            area.innerHTML = `<h3>${nombre}</h3>` + data.map(t => `
-                <div style="padding:15px 0; border-bottom:1px solid #f2f2f2;">
-                    <strong>${t.actividad}</strong><br>
-                    <small style="color:gray;">${t.fecha} • ${t.hora_inicio} - ${t.hora_fin}</small>
+            list.innerHTML += data.map(item => `
+                <div class="history-item">
+                    <div>
+                        <div style="font-weight:700">${item.actividad}</div>
+                        <div style="font-size:12px; color:gray">${item.fecha} • ${item.hora_inicio} a ${item.hora_fin}</div>
+                    </div>
+                    <div style="font-weight:700; color:var(--apple-blue)">${item.duracion_total || '--'}</div>
                 </div>
             `).join('');
         }
     }
 
-    async function showAdminPanel() {
-        document.getElementById('view-worker').classList.add('hidden');
-        document.getElementById('view-admin').classList.remove('hidden');
-        const res = await fetch('/api/admin/usuarios');
+    // --- LÓGICA ADMIN ---
+
+    async function openAdmin() {
+        document.getElementById('section-app').classList.add('hidden');
+        document.getElementById('section-admin').classList.remove('hidden');
+
+        const res = await fetch('/api/admin/all-users');
         const users = await res.json();
-        const list = document.getElementById('admin-list');
-        list.innerHTML = users.map(u => `
-            <div class="user-list-item">
-                <div><strong>${u.nombre}</strong><br><small>${u.email}</small></div>
-                <button onclick="fetchHistory(${u.id}, 'Tiempos de ${u.nombre}')" style="width:auto; padding:6px 12px; font-size:12px;">Ver Tiempos</button>
+        const container = document.getElementById('admin-user-list');
+
+        container.innerHTML = users.map(u => `
+            <div class="admin-user-card">
+                <div>
+                    <div style="font-weight:600">${u.nombre}</div>
+                    <div style="font-size:12px; color:gray">${u.email}</div>
+                </div>
+                <button onclick="inspectUser(${u.id}, '${u.nombre}')" style="width:auto; padding:8px 15px; font-size:11px; border-radius:10px; border:none; background:#000; color:white; cursor:pointer;">Auditar</button>
             </div>
         `).join('');
     }
 
-    function showWorkerUI() {
-        document.getElementById('view-admin').classList.add('hidden');
-        document.getElementById('view-worker').classList.remove('hidden');
+    function inspectUser(id, nombre) {
+        document.getElementById('section-admin').classList.add('hidden');
+        document.getElementById('section-app').classList.remove('hidden');
+        toggleHistory(id, "Tiempos de " + nombre);
+        document.getElementById('work-init').classList.add('hidden');
     }
+
+    function closeAdmin() {
+        document.getElementById('section-admin').classList.add('hidden');
+        document.getElementById('section-app').classList.remove('hidden');
+    }
+
+    function logout() { location.reload(); }
+
 </script>
 </body>
 </html>
