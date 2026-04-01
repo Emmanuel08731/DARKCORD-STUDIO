@@ -1,18 +1,14 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configuración de Seguridad y Base de Datos
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
-    console.log("****************************************************");
-    console.log("❌ ERROR: DATABASE_URL no configurada en Render.");
-    console.log("****************************************************");
+    console.error("❌ ERROR: Configura DATABASE_URL en Render.");
     process.exit(1);
 }
 
@@ -21,18 +17,19 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Inicialización de Tablas y Datos Críticos
+// FUNCIÓN DE AUTO-REPARACIÓN DE TABLAS
 const setupDatabase = async () => {
     const client = await pool.connect();
     try {
-        console.log("🚀 Iniciando conexión con PostgreSQL...");
+        console.log("🚀 Verificando estructura de base de datos...");
+        
+        // 1. Crear tablas si no existen
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
                 nombre VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
-                password VARCHAR(100) NOT NULL,
-                rol VARCHAR(20) DEFAULT 'worker'
+                password VARCHAR(100) NOT NULL
             );
             CREATE TABLE IF NOT EXISTS tiempos (
                 id SERIAL PRIMARY KEY,
@@ -44,18 +41,27 @@ const setupDatabase = async () => {
                 duracion_total VARCHAR(50)
             );
         `);
-        
-        // Crear Admin por defecto (Emma)
+
+        // 2. PARCHE CRÍTICO: Agregar columna 'rol' si no existe
+        await client.query(`
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                               WHERE table_name='usuarios' AND column_name='rol') THEN
+                    ALTER TABLE usuarios ADD COLUMN rol VARCHAR(20) DEFAULT 'worker';
+                END IF;
+            END $$;
+        `);
+
+        // 3. Asegurar cuenta Admin
         const adminEmail = 'emma2013rqgmail.com';
-        const checkAdmin = await client.query('SELECT id FROM usuarios WHERE email = $1', [adminEmail]);
-        if (checkAdmin.rows.length === 0) {
-            await client.query(
-                'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4)',
-                ['Admin Emmanuel', adminEmail, 'emma2013e', 'admin']
-            );
-            console.log("👤 Cuenta administrativa creada correctamente.");
-        }
-        console.log("✅ Base de datos lista para operar.");
+        await client.query(`
+            INSERT INTO usuarios (nombre, email, password, rol)
+            VALUES ('Admin Emmanuel', $1, 'emma2013e', 'admin')
+            ON CONFLICT (email) DO UPDATE SET rol = 'admin';
+        `, [adminEmail]);
+
+        console.log("✅ Base de datos actualizada y protegida.");
     } catch (err) {
         console.error("❌ Error en Setup DB:", err.message);
     } finally {
@@ -69,7 +75,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- ENDPOINTS API ---
+// --- RUTAS API ---
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
@@ -81,25 +87,18 @@ app.post('/api/auth/login', async (req, res) => {
         if (user.password.trim() !== password.trim()) return res.status(401).json({ message: "Contraseña incorrecta" });
         
         res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json({ message: "Error interno del servidor" });
-    }
+    } catch (err) { res.status(500).json({ message: "Error en servidor" }); }
 });
 
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
-        const check = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
-        if (check.rows.length > 0) return res.status(400).json({ message: "El email ya está registrado" });
-
         const newUser = await pool.query(
             'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre, email',
             [nombre, email, password]
         );
         res.status(201).json(newUser.rows[0]);
-    } catch (err) {
-        res.status(500).json({ message: "No se pudo crear la cuenta" });
-    }
+    } catch (err) { res.status(500).json({ message: "Email ya registrado o error de datos" }); }
 });
 
 app.post('/api/work/save', async (req, res) => {
@@ -110,27 +109,21 @@ app.post('/api/work/save', async (req, res) => {
             [usuario_id, actividad, inicio, fin, fecha, duracion]
         );
         res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ message: "Error al guardar tiempo" });
-    }
+    } catch (err) { res.status(500).json({ message: "Error al guardar" }); }
 });
 
 app.get('/api/work/history/:id', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM tiempos WHERE usuario_id = $1 ORDER BY id DESC', [req.params.id]);
         res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ message: "Error al cargar historial" });
-    }
+    } catch (err) { res.status(500).json({ message: "Error" }); }
 });
 
 app.get('/api/admin/all-users', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1 ORDER BY nombre ASC', ['admin']);
         res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ message: "Error al obtener usuarios" });
-    }
+    } catch (err) { res.status(500).json({ message: "Error" }); }
 });
 
-app.listen(port, () => console.log(`🚀 Diesel Styles App en Puerto ${port}`));
+app.listen(port, () => console.log(`🚀 Sistema activo en puerto ${port}`));
