@@ -3,338 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diesel Styles | Business Pro</title>
+    <title>Diesel Styles | Enterprise</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
         :root {
-            --blue: #007AFF;
-            --bg: #F5F5F7;
-            --white: #FFFFFF;
-            --gray: #86868B;
-            --text: #1D1D1F;
-            --glass: rgba(255, 255, 255, 0.72);
-            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+            --blue: #0071e3;
+            --bg: #f5f5f7;
+            --white: #ffffff;
+            --gray: #86868b;
+            --text: #1d1d1f;
+            --glass: rgba(255, 255, 255, 0.75);
+            --danger: #ff3b30;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "SF Pro Display", sans-serif; }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             background: var(--bg); color: var(--text); overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         .hidden { display: none !important; }
 
-        /* HEADER APPLE */
-        header {
+        /* HEADER APPLE DESIGN */
+        nav {
             position: fixed; top: 0; width: 100%; height: 52px;
             backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px);
-            background: var(--glass); border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: var(--glass); border-bottom: 1px solid rgba(0,0,0,0.08);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 40px; z-index: 1000;
         }
 
-        .logo { font-weight: 700; font-size: 20px; letter-spacing: -0.5px; }
+        .nav-brand { font-weight: 700; font-size: 19px; letter-spacing: -0.5px; }
 
-        /* CONTENEDORES PRINCIPALES */
-        .page-wrapper {
-            min-height: 100vh; display: flex; align-items: center;
-            justify-content: center; padding: 80px 20px;
+        /* CONTENEDORES */
+        .main-container {
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 80px 20px;
         }
 
         .apple-card {
-            background: var(--white); border-radius: 32px; padding: 48px;
-            width: 100%; max-width: 440px; box-shadow: var(--shadow);
-            border: 1px solid rgba(0,0,0,0.02); text-align: center;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--white); border-radius: 35px; padding: 50px;
+            width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.7); text-align: center;
+            transition: all 0.4s cubic-bezier(0.2, 1, 0.2, 1);
         }
 
-        .dash-card { max-width: 800px; text-align: left; }
+        .wide-card { max-width: 800px; text-align: left; }
 
         /* TIPOGRAFÍA */
-        h1 { font-size: 40px; font-weight: 700; letter-spacing: -1.5px; margin-bottom: 12px; }
-        h2 { font-size: 30px; font-weight: 600; margin-bottom: 8px; }
-        p { color: var(--gray); font-size: 17px; line-height: 1.4; margin-bottom: 30px; }
+        h1 { font-size: 42px; font-weight: 700; letter-spacing: -1.8px; margin-bottom: 8px; }
+        h2 { font-size: 32px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.8px; }
+        p { color: var(--gray); font-size: 17px; margin-bottom: 30px; }
 
-        /* FORMULARIOS */
-        .field { margin-bottom: 16px; text-align: left; }
-        .field label { font-size: 13px; font-weight: 600; color: var(--gray); margin-left: 10px; }
+        /* INPUTS ESTILO IOS */
+        .input-wrap { margin-bottom: 18px; text-align: left; }
+        .input-wrap label { font-size: 12px; font-weight: 700; color: var(--gray); margin-left: 15px; text-transform: uppercase; }
         
         input {
             width: 100%; padding: 18px; margin-top: 6px;
-            border-radius: 16px; border: 1px solid #D2D2D7;
-            background: rgba(255,255,255,0.8); font-size: 17px;
-            transition: all 0.3s ease;
+            border-radius: 16px; border: 1px solid #d2d2d7;
+            background: #fff; font-size: 17px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         input:focus {
             border-color: var(--blue); outline: none;
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12);
         }
 
         /* BOTONES */
-        .btn-main {
+        .btn-apple {
             width: 100%; padding: 18px; border-radius: 16px; border: none;
             background: var(--blue); color: white; font-size: 17px; font-weight: 600;
             cursor: pointer; transition: 0.3s; margin-top: 10px;
         }
-        .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-main:active { transform: scale(0.97); }
+        .btn-apple:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-apple:active { transform: scale(0.96); }
 
-        .btn-link { 
+        .btn-ghost {
             background: none; border: none; color: var(--blue);
-            font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 24px;
+            font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 25px;
         }
 
-        /* DASHBOARD ELEMENTOS */
-        .timer-hero {
-            background: #000; color: #fff; border-radius: 28px;
-            padding: 40px; text-align: center; margin: 30px 0;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        /* TIMER Y TRACKING */
+        .timer-display {
+            background: #000; color: #fff; border-radius: 30px;
+            padding: 45px 20px; text-align: center; margin: 30px 0;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.1);
         }
-        .clock { font-size: 76px; font-weight: 700; font-variant-numeric: tabular-nums; }
-
-        .status-pill {
-            display: inline-block; padding: 6px 14px; border-radius: 20px;
-            background: rgba(0, 122, 255, 0.1); color: var(--blue);
-            font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;
-        }
+        .clock-text { font-size: 82px; font-weight: 700; letter-spacing: -4px; font-variant-numeric: tabular-nums; }
 
         /* HISTORIAL */
-        .h-list { margin-top: 20px; }
-        .h-item {
-            background: white; border-radius: 20px; padding: 20px;
-            margin-bottom: 12px; display: flex; justify-content: space-between;
+        .history-card {
+            background: #fff; border-radius: 22px; padding: 20px;
+            margin-bottom: 15px; display: flex; justify-content: space-between;
             align-items: center; border: 1px solid rgba(0,0,0,0.04);
-            animation: fadeInUp 0.5s ease;
+            animation: fadeIn 0.5s ease;
         }
-        .h-info b { font-size: 18px; display: block; }
-        .h-info span { color: var(--gray); font-size: 13px; }
-        .h-time { font-weight: 700; color: var(--blue); font-size: 19px; }
+        .history-card:hover { transform: scale(1.01); box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .empty-msg { text-align: center; color: var(--gray); padding: 40px; font-style: italic; }
 
-        /* ADMIN */
-        .user-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 18px; background: #fff; border-radius: 18px; margin-bottom: 10px;
+        .view-more-btn {
+            display: block; width: 100%; padding: 15px; text-align: center;
+            background: rgba(0, 113, 227, 0.05); color: var(--blue);
+            border-radius: 15px; font-weight: 600; text-decoration: none; margin-top: 20px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .view-more-btn:hover { background: rgba(0, 113, 227, 0.1); }
+
+        /* MODAL OVERLAY */
+        .full-screen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 2000; overflow-y: auto; padding: 60px 20px;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 <body>
 
-<header id="nav-bar" class="hidden">
-    <div class="logo">Diesel Styles</div>
+<nav id="top-nav" class="hidden">
+    <div class="nav-brand">Diesel Styles</div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <button id="admin-badge" onclick="goAdmin()" class="hidden" style="background:#000; color:#fff; border:none; padding:6px 14px; border-radius:10px; cursor:pointer; font-size:12px;">Admin</button>
-        <span id="nav-name" style="font-weight: 500; font-size: 14px;"></span>
-        <button onclick="location.reload()" style="background:none; border:none; color:red; font-size:13px; cursor:pointer;">Cerrar</button>
+        <button id="admin-trigger" onclick="openAdmin()" class="hidden btn-apple" style="width:auto; padding:6px 15px; font-size:12px; margin:0; background:#1d1d1f;">Panel Admin</button>
+        <span id="nav-user-name" style="font-weight: 500; font-size: 14px; color: var(--gray);"></span>
+        <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-size:13px; font-weight:600; cursor:pointer;">Cerrar Sesión</button>
     </div>
-</header>
+</nav>
 
-<div class="page-wrapper">
+<div class="main-container">
 
-    <div id="auth-section" class="apple-card animate__animated animate__fadeInUp">
-        <h1 id="a-title">Entrar</h1>
-        <p id="a-sub">Usa tu ID de Diesel Colombia para acceder.</p>
+    <div id="auth-box" class="apple-card animate__animated animate__fadeInUp">
+        <h1 id="auth-title">Bienvenido</h1>
+        <p id="auth-subtitle">Ingresa tus credenciales de Diesel Styles.</p>
 
-        <div id="reg-fields" class="hidden">
-            <div class="field">
-                <label>NOMBRE COMPLETO</label>
-                <input type="text" id="reg-name" placeholder="Ej: Emmanuel Rodriguez">
+        <div id="reg-name-group" class="hidden">
+            <div class="input-wrap">
+                <label>Nombre Completo</label>
+                <input type="text" id="in-name" placeholder="Ej: Emmanuel Rodriguez">
             </div>
         </div>
 
-        <div class="field">
-            <label>CORREO ELECTRÓNICO</label>
+        <div class="input-wrap">
+            <label>Correo Corporativo</label>
             <input type="email" id="in-email" placeholder="nombre@gmail.com">
         </div>
 
-        <div class="field">
-            <label>CONTRASEÑA</label>
-            <input type="password" id="in-pass" placeholder="Contraseña">
+        <div class="input-wrap">
+            <label>Contraseña</label>
+            <input type="password" id="in-pass" placeholder="Mínimo 6 caracteres">
         </div>
 
-        <button class="btn-main" onclick="handleAuth()" id="btn-submit">Continuar</button>
-        <button class="btn-link" onclick="toggleMode()" id="btn-switch">¿No tienes cuenta? Regístrate</button>
+        <button class="btn-apple" onclick="processAuth()" id="btn-auth">Continuar</button>
+        <button class="btn-ghost" onclick="toggleAuth()" id="btn-toggle">¿Nuevo aquí? Crea una cuenta</button>
     </div>
 
-    <div id="app-section" class="apple-card dash-card hidden animate__animated animate__fadeIn">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>Hola, <span id="user-name"></span></h2>
-            <div id="live-dot" style="width: 10px; height: 10px; background: #34c759; border-radius: 50%; box-shadow: 0 0 8px #34c759;"></div>
+    <div id="app-box" class="apple-card wide-card hidden animate__animated animate__fadeIn">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h2 id="welcome-msg">Hola</h2>
+                <p>Gestiona tu tiempo de producción hoy.</p>
+            </div>
+            <div style="width: 12px; height: 12px; background: #34c759; border-radius: 50%; box-shadow: 0 0 10px #34c759; margin-top: 15px;"></div>
         </div>
-        <p>Registro de actividades para hoy.</p>
 
         <div id="work-setup">
-            <div class="field">
-                <label>ACTIVIDAD A REALIZAR</label>
-                <input type="text" id="work-input" placeholder="¿En qué vas a trabajar?">
+            <div class="input-wrap">
+                <label>Actividad Actual</label>
+                <input type="text" id="task-input" placeholder="¿En qué vas a trabajar hoy?">
             </div>
-            <button class="btn-main" onclick="startWork()">Iniciar Jornada Laboral</button>
+            <button class="btn-apple" onclick="startTracking()">Iniciar Cronómetro</button>
         </div>
 
         <div id="work-active" class="hidden">
-            <div class="timer-hero">
-                <span class="status-pill">Trabajando ahora</span>
-                <div class="clock" id="clock-display">00:00:00</div>
-                <p id="current-task" style="color:rgba(255,255,255,0.6); margin:0;"></p>
+            <div class="timer-display">
+                <div style="font-size: 12px; font-weight: 700; color: var(--blue); text-transform: uppercase; margin-bottom: 10px;">Sesión en curso</div>
+                <div class="clock-text" id="clock-run">00:00:00</div>
+                <p id="active-task-label" style="color: rgba(255,255,255,0.5); font-weight: 500;"></p>
             </div>
-            <button class="btn-main" style="background:#ff3b30;" onclick="stopWork()">Finalizar Actividad</button>
+            <button class="btn-apple" style="background:var(--danger);" onclick="stopTracking()">Finalizar y Guardar</button>
         </div>
 
-        <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px;">
-            <h3>Historial de hoy</h3>
-            <div id="history-list" class="h-list"></div>
+        <div style="margin-top: 50px;">
+            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 20px;">Historial de Hoy</h3>
+            <div id="today-list"></div>
+            <div id="view-more-container" class="hidden">
+                <span class="view-more-btn" onclick="openFullHistory()">Ver historial completo de la semana →</span>
+            </div>
         </div>
     </div>
+</div>
 
-    <div id="admin-section" class="apple-card dash-card hidden animate__animated animate__fadeIn">
-        <h1>Administración</h1>
-        <p>Control de tiempos de Diesel Colombia Styles.</p>
-        <div id="admin-users"></div>
-        <button class="btn-link" onclick="goBack()">Volver a mi perfil</button>
+<div id="modal-history" class="full-screen-overlay hidden animate__animated animate__fadeIn">
+    <div style="max-width: 700px; margin: 0 auto;">
+        <button onclick="closeFullHistory()" style="background:none; border:none; color:var(--blue); font-size:17px; font-weight:600; cursor:pointer; margin-bottom:30px;">✕ Cerrar Historial</button>
+        <h1>Todos los Registros</h1>
+        <p>Listado completo de tiempos guardados.</p>
+        <div id="all-history-content" style="margin-top:30px;"></div>
     </div>
+</div>
 
+<div id="modal-admin" class="full-screen-overlay hidden animate__animated animate__fadeIn">
+    <div style="max-width: 700px; margin: 0 auto;">
+        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--blue); font-size:17px; font-weight:600; cursor:pointer; margin-bottom:30px;">✕ Volver al Perfil</button>
+        <h1>Panel Administrativo</h1>
+        <p>Auditoría de empleados y tiempos de Diesel Styles.</p>
+        <div id="admin-user-list" style="margin-top:30px;"></div>
+    </div>
 </div>
 
 <script>
-    let user = null;
-    let isReg = false;
-    let timer = null;
-    let start = null;
+    let user = null; let isReg = false; let timerInt = null; let startT = null; let historyData = [];
 
-    function toggleMode() {
+    function toggleAuth() {
         isReg = !isReg;
-        document.getElementById('a-title').innerText = isReg ? "Registro" : "Entrar";
-        document.getElementById('reg-fields').classList.toggle('hidden');
-        document.getElementById('btn-submit').innerText = isReg ? "Crear Cuenta" : "Continuar";
-        document.getElementById('btn-switch').innerText = isReg ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate";
+        document.getElementById('auth-title').innerText = isReg ? "Crear Cuenta" : "Bienvenido";
+        document.getElementById('reg-name-group').classList.toggle('hidden');
+        document.getElementById('btn-auth').innerText = isReg ? "Registrarme" : "Continuar";
+        document.getElementById('btn-toggle').innerText = isReg ? "¿Ya tienes cuenta? Entra aquí" : "¿Nuevo aquí? Crea una cuenta";
     }
 
-    async function handleAuth() {
+    async function processAuth() {
         const email = document.getElementById('in-email').value;
         const password = document.getElementById('in-pass').value;
-        const nombre = document.getElementById('reg-name').value;
-
+        const nombre = document.getElementById('in-name').value;
         const path = isReg ? '/api/auth/register' : '/api/auth/login';
-        
-        try {
-            const res = await fetch(path, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nombre, email, password })
-            });
-            const data = await res.json();
 
-            if (res.ok) {
-                if (isReg) {
-                    Swal.fire({ title: '¡Cuenta Creada!', text: 'Ya puedes iniciar sesión', icon: 'success', confirmButtonColor: '#007AFF' });
-                    toggleMode();
-                } else {
-                    user = data;
-                    launch();
-                }
+        const res = await fetch(path, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ nombre, email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            if (isReg) {
+                Swal.fire({ title: '¡Excelente!', text: 'Tu cuenta ha sido creada. Ingresa ahora.', icon: 'success', confirmButtonColor: '#0071e3' });
+                toggleAuth();
             } else {
-                Swal.fire({ title: 'Atención', text: data.message, icon: 'warning', confirmButtonColor: '#007AFF' });
+                user = data;
+                launchApp();
             }
-        } catch (e) { Swal.fire('Error', 'No hay conexión', 'error'); }
+        } else {
+            Swal.fire({ title: 'Error', text: data.message, icon: 'error', confirmButtonColor: '#ff3b30' });
+        }
     }
 
-    function launch() {
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-        document.getElementById('nav-bar').classList.remove('hidden');
-        document.getElementById('user-name').innerText = user.nombre;
-        document.getElementById('nav-name').innerText = user.nombre;
-        if (user.rol === 'admin') document.getElementById('admin-badge').classList.remove('hidden');
-        refreshHistory();
+    function launchApp() {
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('app-box').classList.remove('hidden');
+        document.getElementById('top-nav').classList.remove('hidden');
+        document.getElementById('welcome-msg').innerText = "Hola, " + user.nombre;
+        document.getElementById('nav-user-name').innerText = user.nombre;
+        
+        if (user.rol === 'admin') document.getElementById('admin-trigger').classList.remove('hidden');
+        loadHistory();
     }
 
-    function startWork() {
-        const task = document.getElementById('work-input').value;
-        if (!task) return Swal.fire('Falta información', 'Escribe tu tarea', 'info');
+    function startTracking() {
+        const task = document.getElementById('task-input').value;
+        if (!task) return Swal.fire({ title: 'Campo vacío', text: 'Escribe qué actividad vas a realizar.', icon: 'info' });
 
-        start = new Date();
-        document.getElementById('current-task').innerText = task;
+        startT = new Date();
+        document.getElementById('active-task-label').innerText = task;
         document.getElementById('work-setup').classList.add('hidden');
         document.getElementById('work-active').classList.remove('hidden');
 
-        timer = setInterval(() => {
-            const diff = new Date(new Date() - start);
-            document.getElementById('clock-display').innerText = diff.toISOString().substr(11, 8);
+        timerInt = setInterval(() => {
+            const diff = new Date(new Date() - startT);
+            document.getElementById('clock-run').innerText = diff.toISOString().substr(11, 8);
         }, 1000);
     }
 
-    async function stopWork() {
-        clearInterval(timer);
-        const duration = document.getElementById('clock-display').innerText;
-        
+    async function stopTracking() {
+        clearInterval(timerInt);
+        const duration = document.getElementById('clock-run').innerText;
+
         await fetch('/api/work/save', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                usuario_id: user.id,
-                actividad: document.getElementById('current-task').innerText,
-                inicio: start.toLocaleTimeString(),
-                fin: new Date().toLocaleTimeString(),
-                fecha: new Date().toLocaleDateString(),
-                duracion: duration
+                usuario_id: user.id, actividad: document.getElementById('active-task-label').innerText,
+                inicio: startT.toLocaleTimeString(), fin: new Date().toLocaleTimeString(),
+                fecha: new Date().toLocaleDateString(), duracion: duration
             })
         });
 
-        // Limpiar para nueva tarea sin cerrar sesión
-        document.getElementById('work-input').value = "";
-        document.getElementById('clock-display').innerText = "00:00:00";
+        // REINICIO DE UI SIN CERRAR SESIÓN
+        document.getElementById('clock-run').innerText = "00:00:00";
+        document.getElementById('task-input').value = "";
         document.getElementById('work-setup').classList.remove('hidden');
         document.getElementById('work-active').classList.add('hidden');
         
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Tiempo guardado', showConfirmButton: false, timer: 2000 });
-        refreshHistory();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Registro guardado con éxito', showConfirmButton: false, timer: 2500 });
+        loadHistory();
     }
 
-    async function refreshHistory(targetId = user.id, targetName = "Hoy") {
-        const res = await fetch(`/api/work/history/${targetId}`);
-        const data = await res.json();
-        const list = document.getElementById('history-list');
-        list.innerHTML = data.length ? data.map(i => `
-            <div class="h-item">
-                <div class="h-info"><b>${i.actividad}</b><span>${i.fecha} • ${i.hora_inicio} - ${i.hora_fin}</span></div>
-                <div class="h-time">${i.duracion_total}</div>
-            </div>
-        `).join('') : '<p style="text-align:center; padding:20px;">Sin registros hoy.</p>';
+    async function loadHistory(id = user.id, name = "Hoy") {
+        const res = await fetch(`/api/work/history/${id}`);
+        historyData = await res.json();
+        
+        const todayStr = new Date().toLocaleDateString();
+        const todayItems = historyData.filter(i => i.fecha === todayStr);
+        const list = document.getElementById('today-list');
+
+        if (todayItems.length === 0) {
+            list.innerHTML = `<div class="empty-msg">No has registrado actividades el día de hoy.</div>`;
+        } else {
+            list.innerHTML = todayItems.map(i => `
+                <div class="history-card">
+                    <div>
+                        <div style="font-weight:700; font-size:17px;">${i.actividad}</div>
+                        <div style="color:var(--gray); font-size:12px;">${i.hora_inicio} - ${i.hora_fin}</div>
+                    </div>
+                    <div style="font-weight:800; color:var(--blue); font-size:18px;">${i.duracion_total}</div>
+                </div>
+            `).join('');
+        }
+
+        if (historyData.length > todayItems.length) {
+            document.getElementById('view-more-container').classList.remove('hidden');
+        } else {
+            document.getElementById('view-more-container').classList.add('hidden');
+        }
     }
 
-    async function goAdmin() {
-        document.getElementById('app-section').classList.add('hidden');
-        document.getElementById('admin-section').classList.remove('hidden');
-        const res = await fetch('/api/admin/users');
-        const users = await res.json();
-        document.getElementById('admin-users').innerHTML = users.map(u => `
-            <div class="user-row">
-                <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
-                <button onclick="inspect(${u.id}, '${u.nombre}')" style="background:#000; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Ver Tiempos</button>
+    function openFullHistory() {
+        document.getElementById('modal-history').classList.remove('hidden');
+        const content = document.getElementById('all-history-content');
+        content.innerHTML = historyData.map(i => `
+            <div class="history-card">
+                <div>
+                    <div style="font-weight:700;">${i.actividad}</div>
+                    <div style="color:var(--gray); font-size:12px;">${i.fecha} • ${i.hora_inicio}</div>
+                </div>
+                <div style="font-weight:800; color:var(--blue);">${i.duracion_total}</div>
             </div>
         `).join('');
     }
 
-    function inspect(id, name) {
-        document.getElementById('admin-section').classList.add('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-        document.getElementById('work-setup').classList.add('hidden');
-        refreshHistory(id, name);
+    function closeFullHistory() { document.getElementById('modal-history').classList.add('hidden'); }
+
+    async function openAdmin() {
+        document.getElementById('modal-admin').classList.remove('hidden');
+        const res = await fetch('/api/admin/users');
+        const users = await res.json();
+        document.getElementById('admin-user-list').innerHTML = users.map(u => `
+            <div class="history-card">
+                <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
+                <button onclick="inspectUser(${u.id}, '${u.nombre}')" style="width:auto; background:#000; color:#fff; border:none; padding:8px 15px; border-radius:10px; cursor:pointer; font-size:11px;">Auditar Tiempos</button>
+            </div>
+        `).join('');
     }
 
-    function goBack() {
-        document.getElementById('admin-section').classList.add('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-        document.getElementById('work-setup').classList.remove('hidden');
-        refreshHistory();
+    function inspectUser(id, name) {
+        closeAdmin();
+        loadHistory(id, name);
+        document.getElementById('welcome-msg').innerText = "Viendo a: " + name;
+        document.getElementById('work-setup').classList.add('hidden');
     }
+
+    function closeAdmin() { document.getElementById('modal-admin').classList.add('hidden'); }
 </script>
 </body>
 </html>
