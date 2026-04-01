@@ -5,28 +5,27 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 10000;
 
-// Configuración de la Base de Datos con Pool de Conexiones de Alto Rendimiento
+// Configuración de conexión con reintentos automáticos
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 20, // Capacidad para múltiples peticiones simultáneas
-    idleTimeoutMillis: 30000
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
 });
 
-// ================================================================
-// 🔑 PROTOCOLO DE AUTORIDAD SUPREMA: EMMANUEL RODRIGUEZ
-// ================================================================
+// ==========================================
+// 🛡️ IDENTIDAD DEL ADMINISTRADOR SUPREMO
+// ==========================================
 const MASTER_EMAIL = 'emmanuel2013rq@gmail.com';
 
-const bootDatabase = async () => {
-    const client = await pool.connect();
+const inicializarBaseDeDatos = async () => {
+    let client;
     try {
-        console.log("--------------------------------------------------");
-        console.log("💎 DIESEL STYLES INFINITY OS v6.0 - ONLINE");
-        console.log("🛡️  SISTEMA DE CAPA 7 DE SEGURIDAD ACTIVADO");
-        console.log("👤 MASTER ADMIN: " + MASTER_EMAIL);
-        
-        // Creación de tablas con integridad referencial y auditoría
+        client = await pool.connect();
+        console.log("💎 Conexión establecida con la Base de Datos Diesel.");
+
+        // Tabla de Usuarios: El email es UNIQUE para evitar duplicados
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -34,100 +33,128 @@ const bootDatabase = async () => {
                 email VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 rol VARCHAR(50) DEFAULT 'worker',
-                color_ui VARCHAR(50) DEFAULT '#0071e3',
-                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS logs_trabajo (
-                id SERIAL PRIMARY KEY,
-                usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
-                tarea TEXT NOT NULL,
-                hora_entrada VARCHAR(100),
-                hora_salida VARCHAR(100),
-                fecha_registro VARCHAR(100),
-                duracion_string VARCHAR(100),
-                segundos_totales INTEGER,
-                metadatos JSONB DEFAULT '{}'
+                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
-        // Reset de seguridad para garantizar permisos de Emmanuel
-        await client.query("DELETE FROM usuarios WHERE email = $1", [MASTER_EMAIL]);
-        console.log("✅ SISTEMA DEPURADO: Esperando registro del Administrador.");
-        console.log("--------------------------------------------------");
+        // Tabla de Tiempos: Vinculada al ID del usuario
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS registros_tiempo (
+                id SERIAL PRIMARY KEY,
+                usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+                proyecto TEXT,
+                hora_inicio VARCHAR(100),
+                hora_fin VARCHAR(100),
+                fecha_dia VARCHAR(100),
+                duracion_total VARCHAR(100)
+            );
+        `);
+        
+        console.log("✅ Estructura de tablas verificada.");
     } catch (err) {
-        console.error("❌ ERROR DE ARRANQUE:", err.stack);
+        console.error("❌ Error de inicialización:", err.message);
     } finally {
-        client.release();
+        if (client) client.release();
     }
 };
-bootDatabase();
+inicializarBaseDeDatos();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- SISTEMA DE GESTIÓN DE IDENTIDAD (IAM) ---
-
+// --- RUTA DE REGISTRO (BLOQUEA DUPLICADOS) ---
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
-    const mailNormalizado = email.toLowerCase().trim();
-    const esAdmin = (mailNormalizado === MASTER_EMAIL) ? 'admin' : 'worker';
-    
+    const correoLimpio = email.toLowerCase().trim();
+    const rango = (correoLimpio === MASTER_EMAIL) ? 'admin' : 'worker';
+
     try {
-        const query = 'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1,$2,$3,$4) RETURNING *';
-        const values = [nombre, mailNormalizado, password, esAdmin];
-        const result = await pool.query(query, values);
-        res.status(201).json(result.rows[0]);
+        const nuevoUsuario = await pool.query(
+            'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING *',
+            [nombre, correoLimpio, password, rango]
+        );
+        res.status(201).json(nuevoUsuario.rows[0]);
     } catch (e) {
-        res.status(400).json({ error: "El correo ya está registrado en la red Diesel." });
+        // El error 23505 en PostgreSQL significa "Llave duplicada"
+        if (e.code === '23505') {
+            return res.status(400).json({ error: "Este correo ya existe. Intenta iniciar sesión." });
+        }
+        res.status(500).json({ error: "Error interno al crear la cuenta." });
     }
 });
 
+// --- RUTA DE LOGIN (BUSCA CUENTAS REALES) ---
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
+    const correoLimpio = email.toLowerCase().trim();
+
     try {
-        const user = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
-        if (user.rows.length === 0) return res.status(404).json({ error: "Usuario no encontrado." });
-        if (user.rows[0].password !== password) return res.status(401).json({ error: "Credenciales inválidas." });
-        res.json(user.rows[0]);
-    } catch (e) { res.status(500).json({ error: "Fallo en el servidor." }); }
+        const busqueda = await pool.query('SELECT * FROM usuarios WHERE email = $1', [correoLimpio]);
+        
+        if (busqueda.rows.length === 0) {
+            return res.status(404).json({ error: "No encontramos ninguna cuenta con ese correo." });
+        }
+
+        const usuario = busqueda.rows[0];
+        if (usuario.password !== password) {
+            return res.status(401).json({ error: "Contraseña incorrecta." });
+        }
+
+        res.json(usuario);
+    } catch (e) {
+        res.status(500).json({ error: "Fallo en la autenticación." });
+    }
 });
 
-// --- PANEL DE CONTROL ADMINISTRATIVO (SOLO EMMANUEL) ---
-
-app.get('/api/admin/users', async (req, res) => {
-    const { auth } = req.query;
-    if (auth !== MASTER_EMAIL) return res.status(403).json({ error: "No autorizado." });
-    
-    const r = await pool.query('SELECT id, nombre, email, rol, creado_en FROM usuarios WHERE email != $1 ORDER BY id DESC', [MASTER_EMAIL]);
-    res.json(r.rows);
-});
-
-// FUNCIÓN CLAVE: ELIMINACIÓN DE CUENTAS
-app.delete('/api/admin/user/:id', async (req, res) => {
-    const { auth } = req.query;
-    if (auth !== MASTER_EMAIL) return res.status(403).json({ error: "Acceso denegado." });
-    
-    try {
-        await pool.query('DELETE FROM usuarios WHERE id = $1', [req.params.id]);
-        res.json({ success: true, message: "Cuenta purgada del sistema." });
-    } catch (e) { res.status(500).json({ error: "Error en la base de datos." }); }
-});
-
-// --- REGISTRO DE PRODUCTIVIDAD ---
-
+// --- GESTIÓN DE TIEMPOS ---
 app.post('/api/work/save', async (req, res) => {
-    const { uid, tarea, inicio, fin, fecha, duracion, segs } = req.body;
-    await pool.query(
-        'INSERT INTO logs_trabajo (usuario_id, tarea, hora_entrada, hora_salida, fecha_registro, duracion_string, segundos_totales) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-        [uid, tarea, inicio, fin, fecha, duracion, segs]
-    );
-    res.json({ status: 'saved' });
+    const { uid, proyecto, inicio, fin, fecha, duracion } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO registros_tiempo (usuario_id, proyecto, hora_inicio, hora_fin, fecha_dia, duracion_total) VALUES ($1, $2, $3, $4, $5, $6)',
+            [uid, proyecto, inicio, fin, fecha, duracion]
+        );
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: "No se pudo guardar el registro." });
+    }
 });
 
 app.get('/api/work/history/:id', async (req, res) => {
-    const r = await pool.query('SELECT * FROM logs_trabajo WHERE usuario_id = $1 ORDER BY id DESC', [req.params.id]);
-    res.json(r.rows);
+    try {
+        const logs = await pool.query('SELECT * FROM registros_tiempo WHERE usuario_id = $1 ORDER BY id DESC', [req.params.id]);
+        res.json(logs.rows);
+    } catch (e) {
+        res.status(500).json({ error: "Error al obtener historial." });
+    }
 });
 
-app.listen(port);
+// --- PANEL DE CONTROL (SOLO EMMANUEL) ---
+app.get('/api/admin/all-users', async (req, res) => {
+    const { admin_key } = req.query;
+    if (admin_key !== MASTER_EMAIL) return res.status(403).json({ error: "Acceso denegado." });
+    
+    try {
+        const users = await pool.query('SELECT id, nombre, email, rol, fecha_creacion FROM usuarios WHERE email != $1', [MASTER_EMAIL]);
+        res.json(users.rows);
+    } catch (e) {
+        res.status(500).json({ error: "Error de admin." });
+    }
+});
+
+app.delete('/api/admin/delete/:id', async (req, res) => {
+    const { admin_key } = req.query;
+    if (admin_key !== MASTER_EMAIL) return res.status(403).json({ error: "No autorizado." });
+
+    try {
+        await pool.query('DELETE FROM usuarios WHERE id = $1', [req.params.id]);
+        res.json({ message: "Usuario eliminado correctamente." });
+    } catch (e) {
+        res.status(500).json({ error: "Fallo al borrar usuario." });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`>>> Servidor Diesel Styles corriendo en puerto ${port}`);
+});
