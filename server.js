@@ -5,19 +5,18 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configuración de conexión robusta
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// Función de inicialización y actualización de esquema
-const initializeApp = async () => {
+// --- SISTEMA DE AUTO-LIMPIEZA Y CONFIGURACIÓN ---
+const bootSystem = async () => {
     const client = await pool.connect();
     try {
-        console.log("🛠️  Sincronizando Base de Datos...");
+        console.log("🛠️  Preparando sistema Diesel Styles...");
         
-        // Tablas principales
+        // Crear tablas
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -37,77 +36,76 @@ const initializeApp = async () => {
             );
         `);
 
-        // Parche de seguridad: Asegurar que el admin tenga la clave 'admin'
-        const adminEmail = 'emma2013rqgmail.com';
-        await client.query(`
-            INSERT INTO usuarios (nombre, email, password, rol)
-            VALUES ('Admin Emmanuel', $1, 'admin', 'admin')
-            ON CONFLICT (email) DO UPDATE SET password = 'admin', rol = 'admin';
-        `, [adminEmail]);
+        // ELIMINAR CUENTA ADMIN ANTIGUA PARA PERMITIR NUEVO REGISTRO
+        const targetEmail = 'emma2013rqgmail.com';
+        await client.query('DELETE FROM usuarios WHERE email = $1', [targetEmail]);
+        console.log(`✅ Cuenta ${targetEmail} liberada. Ya puedes registrarte desde la web.`);
 
-        console.log("✅ Sistema de usuarios y Admin configurados.");
     } catch (err) {
-        console.error("❌ Error en arranque:", err.message);
+        console.error("❌ Error en boot:", err.message);
     } finally {
         client.release();
     }
 };
 
-initializeApp();
+bootSystem();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- RUTA DE AUTENTICACIÓN ---
-app.post('/api/auth/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.trim()]);
-        if (result.rows.length === 0) return res.status(404).json({ message: "No encontramos esta cuenta." });
-        
-        const user = result.rows[0];
-        if (user.password.trim() !== password.trim()) return res.status(401).json({ message: "La contraseña es incorrecta." });
-        
-        res.json(user);
-    } catch (e) { res.status(500).json({ message: "Error interno del sistema." }); }
-});
+// --- RUTAS DE AUTENTICACIÓN ---
 
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
     try {
+        // Lógica de Auto-Admin
+        const role = (email.trim() === 'emma2013rqgmail.com') ? 'admin' : 'worker';
+        
         const result = await pool.query(
-            'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [nombre, email, password]
+            'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING *',
+            [nombre, email.trim(), password.trim(), role]
         );
         res.status(201).json(result.rows[0]);
-    } catch (e) { res.status(500).json({ message: "El correo ya está en uso." }); }
+    } catch (e) {
+        res.status(500).json({ message: "Este correo ya está en uso o hubo un error." });
+    }
 });
 
-// --- RUTA DE GESTIÓN DE TIEMPOS ---
+app.post('/api/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.trim()]);
+        if (result.rows.length === 0) return res.status(404).json({ message: "Usuario no encontrado." });
+        
+        const user = result.rows[0];
+        if (user.password.trim() !== password.trim()) return res.status(401).json({ message: "Contraseña incorrecta." });
+        
+        res.json(user);
+    } catch (e) { res.status(500).json({ message: "Error de conexión." }); }
+});
+
+// --- RUTAS DE TRABAJO ---
+
 app.post('/api/work/save', async (req, res) => {
     const { usuario_id, actividad, inicio, fin, fecha, duracion } = req.body;
     try {
         await pool.query(
-            'INSERT INTO tiempos (usuario_id, actividad, hora_inicio, hora_fin, fecha, duracion_total) VALUES ($1, $2, $3, $4, $5, $6)',
+            'INSERT INTO tiempos (usuario_id, actividad, hora_inicio, hora_fin, fecha, duracion_total) VALUES ($1,$2,$3,$4,$5,$6)',
             [usuario_id, actividad, inicio, fin, fecha, duracion]
         );
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ message: "No se pudo guardar la sesión." }); }
+    } catch (e) { res.status(500).json({ message: "Error al guardar." }); }
 });
 
 app.get('/api/work/history/:id', async (req, res) => {
-    try {
-        const r = await pool.query('SELECT * FROM tiempos WHERE usuario_id = $1 ORDER BY id DESC', [req.params.id]);
-        res.json(r.rows);
-    } catch (e) { res.status(500).send(e); }
+    const r = await pool.query('SELECT * FROM tiempos WHERE usuario_id = $1 ORDER BY id DESC', [req.params.id]);
+    res.json(r.rows);
 });
 
 app.get('/api/admin/users', async (req, res) => {
-    try {
-        const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1 ORDER BY nombre ASC', ['admin']);
-        res.json(r.rows);
-    } catch (e) { res.status(500).send(e); }
+    const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1 ORDER BY nombre ASC', ['admin']);
+    res.json(r.rows);
 });
 
-app.listen(port, () => console.log(`🚀 Diesel Styles Pro en puerto ${port}`));
+app.listen(port, () => console.log(`🚀 Diesel Pro Online`));
