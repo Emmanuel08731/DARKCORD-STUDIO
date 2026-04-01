@@ -3,141 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diesel Styles | Premium Experience</title>
+    <title>Diesel Styles | Infinity Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        /* APPLE DESIGN LANGUAGE v3.0 */
+        /* APPLE DESIGN SYSTEM - SEQUOIA EDITION */
         :root {
-            --apple-blue: #0071e3;
-            --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.7);
-            --apple-text: #1d1d1f;
-            --apple-gray: #86868b;
+            --apple-blue: #0071e3; --apple-red: #ff3b30; --apple-green: #34c759;
+            --glass: rgba(255, 255, 255, 0.72); --text: #1d1d1f; --sub: #86868b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "SF Pro Display", sans-serif; }
 
         body { 
-            background: var(--apple-bg); color: var(--apple-text); 
-            min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(at 0% 0%, rgba(0,113,227,0.05) 0px, transparent 50%),
-                              radial-gradient(at 100% 100%, rgba(0,113,227,0.05) 0px, transparent 50%);
+            background: #f5f5f7; color: var(--text); overflow-x: hidden; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
         }
+
+        /* FONDO DINÁMICO DE PARTÍCULAS (DECORACIÓN EXTRA) */
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
 
         .hidden { display: none !important; }
 
-        /* NAVEGACIÓN ESTILO GLASSMORPISM */
+        /* NAVEGACIÓN ESTILO MAC */
         nav {
-            position: fixed; top: 0; width: 100%; height: 52px;
-            backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.75); border-bottom: 1px solid rgba(0,0,0,0.08);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; z-index: 2000;
+            position: fixed; top: 0; width: 100%; height: 44px; z-index: 1000;
+            backdrop-filter: blur(30px) saturate(200%); background: var(--glass);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px;
         }
 
-        .logo { font-weight: 700; font-size: 19px; letter-spacing: -0.5px; }
+        /* CONTENEDOR MAESTRO */
+        .app-container { width: 100%; max-width: 480px; padding: 20px; z-index: 10; }
 
-        /* CONTENEDORES MAESTROS */
-        .container { 
-            max-width: 460px; margin: 120px auto; padding: 20px; 
-            perspective: 1000px;
+        /* TARJETA DE CRISTAL (GLASSMORPHISM) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8); border-radius: 38px; padding: 50px;
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); text-align: center;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
 
-        .apple-card {
-            background: var(--apple-card); border-radius: 32px; padding: 45px;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.4);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
-            text-align: center; transition: 0.4s cubic-bezier(0.2, 1, 0.2, 1);
-        }
+        h1 { font-size: 52px; font-weight: 800; letter-spacing: -3px; margin-bottom: 8px; line-height: 0.9; }
+        .subtitle { color: var(--sub); font-size: 18px; margin-bottom: 40px; font-weight: 400; }
 
-        .apple-card:hover { transform: translateY(-5px); box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
-
-        h1 { font-size: 44px; font-weight: 700; letter-spacing: -2px; margin-bottom: 10px; }
-        .subtitle { color: var(--apple-gray); font-size: 17px; margin-bottom: 35px; }
-
-        /* INPUTS TIPO IOS 18 */
-        .field { text-align: left; margin-bottom: 20px; }
-        .field label { font-size: 12px; font-weight: 700; color: var(--apple-gray); margin-left: 15px; text-transform: uppercase; }
+        /* CAMPOS DE ENTRADA TIPO IOS */
+        .field { margin-bottom: 25px; text-align: left; }
+        .field label { font-size: 12px; font-weight: 700; color: var(--apple-blue); margin-left: 15px; text-transform: uppercase; }
         
         input {
-            width: 100%; padding: 18px; margin-top: 6px; border-radius: 16px;
-            border: 1px solid #d2d2d7; background: #fff; font-size: 17px;
-            transition: 0.3s; outline: none;
+            width: 100%; padding: 20px; border-radius: 18px; border: 1px solid #d2d2d7;
+            background: rgba(245,245,247,0.8); font-size: 17px; margin-top: 8px;
+            transition: all 0.3s; outline: none;
         }
-        input:focus { border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12); }
+        input:focus { border-color: var(--apple-blue); background: #fff; box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); }
 
-        /* BOTONES PREMIUM */
-        .btn-primary {
-            width: 100%; padding: 18px; border-radius: 16px; border: none;
+        /* BOTONES DE LUJO */
+        .btn-ios {
+            width: 100%; padding: 20px; border-radius: 18px; border: none;
             background: var(--apple-blue); color: white; font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: 0.3s; margin-top: 10px;
+            cursor: pointer; transition: 0.4s; box-shadow: 0 8px 20px rgba(0, 113, 227, 0.2);
         }
-        .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-ios:active { transform: scale(0.96); }
 
-        .btn-admin {
-            background: #1d1d1f; color: white; margin-top: 25px; padding: 12px;
-            border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer;
-            border: none; display: inline-block; width: 100%;
-            animation: pulse 2s infinite;
+        /* BOTÓN DE ADMINISTRACIÓN (SOLO EMMANUEL) */
+        .btn-admin-pill {
+            background: #1d1d1f; color: #fff; margin-top: 30px; padding: 15px;
+            border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer;
+            border: none; width: 100%; animation: pulse 2s infinite;
         }
 
-        /* TIMER & STATUS */
+        /* CRONÓMETRO */
         .timer-display {
-            background: #000; color: #fff; border-radius: 28px;
-            padding: 50px 20px; margin: 30px 0; position: relative; overflow: hidden;
+            background: #000; color: #fff; border-radius: 30px;
+            padding: 60px 10px; margin: 35px 0; position: relative; overflow: hidden;
         }
-        .timer-display::before {
+        .timer-display::after {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, transparent, var(--apple-blue), transparent);
-            animation: rotate 4s linear infinite; opacity: 0.2;
+            background: conic-gradient(from 180deg, transparent, var(--apple-blue), transparent);
+            animation: spin 5s linear infinite; opacity: 0.15;
         }
-        .clock { font-size: 78px; font-weight: 700; letter-spacing: -4px; position: relative; font-variant-numeric: tabular-nums; }
+        .clock { font-size: 88px; font-weight: 800; letter-spacing: -5px; position: relative; z-index: 5; font-variant-numeric: tabular-nums; }
 
-        /* HISTORIAL */
-        .history-item {
-            background: #fff; border-radius: 18px; padding: 18px;
-            margin-top: 12px; display: flex; justify-content: space-between;
-            align-items: center; border: 1px solid rgba(0,0,0,0.03);
-            text-align: left; animation: fadeInUp 0.5s ease;
-        }
-
-        .user-row {
-            background: #fff; padding: 20px; border-radius: 20px; margin-bottom: 10px;
+        /* LISTAS DE HISTORIAL */
+        .log-item {
+            background: #fff; border-radius: 20px; padding: 22px; margin-top: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03); animation: slideInUp 0.6s ease;
         }
-        .user-row:hover { background: #fbfbfd; transform: scale(1.02); }
+
+        .user-card-admin {
+            background: #fff; padding: 25px; border-radius: 25px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        .user-card-admin:hover { transform: scale(1.02); }
+
+        .btn-delete {
+            background: rgba(255, 59, 48, 0.1); color: var(--apple-red);
+            border: none; padding: 10px 18px; border-radius: 12px;
+            font-size: 12px; font-weight: 800; cursor: pointer;
+        }
+        .btn-delete:hover { background: var(--apple-red); color: white; }
 
         /* MODALES PANTALLA COMPLETA */
-        .full-modal {
+        .admin-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--apple-bg); z-index: 3000; overflow-y: auto;
-            padding: 60px 20px; animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #f5f5f7; z-index: 2000; padding: 80px 25px; overflow-y: auto;
         }
 
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.2); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.1); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
     </style>
 </head>
 <body>
 
-<nav id="top-nav" class="hidden">
-    <div class="logo">Diesel Styles</div>
+<canvas id="bg-canvas"></canvas>
+
+<nav id="nav-master" class="hidden">
+    <div style="font-weight: 900; font-size: 18px; letter-spacing: -1px;">DIESEL STUDIO</div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <span id="nav-user" style="font-weight: 600; font-size: 13px; color: var(--apple-gray);"></span>
+        <span id="user-pill" style="font-size: 12px; font-weight: 800; color: var(--sub);"></span>
         <button onclick="location.reload()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer;">Salir</button>
     </div>
 </nav>
 
-<div class="container">
+<div class="app-container">
     
-    <div id="auth-card" class="apple-card animate__animated animate__fadeIn">
+    <div id="auth-section" class="glass-card animate__animated animate__fadeIn">
         <h1>Hola</h1>
-        <p class="subtitle">Gestiona tu tiempo en la red Diesel.</p>
+        <p class="subtitle">Entra a la red Diesel Styles.</p>
 
-        <div id="reg-name-group" class="hidden field">
+        <div id="group-name" class="hidden field">
             <label>Nombre Completo</label>
             <input type="text" id="in-name" placeholder="Ej: Emmanuel Rodriguez">
         </div>
@@ -152,198 +151,230 @@
             <input type="password" id="in-pass" placeholder="••••••••">
         </div>
 
-        <button class="btn-primary" onclick="authAction()">Continuar</button>
-        <button onclick="toggleReg()" id="btn-switch" style="background:none; border:none; color:var(--apple-blue); margin-top:25px; cursor:pointer; font-weight:500;">¿Eres nuevo? Crea una cuenta</button>
+        <button class="btn-ios" onclick="submitAuth()">Continuar</button>
+        <button onclick="toggleMode()" id="mode-btn" style="background:none; border:none; color:var(--apple-blue); margin-top:30px; cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate gratis</button>
     </div>
 
-    <div id="work-card" class="apple-card hidden animate__animated animate__fadeInUp">
-        <div style="text-align: left; margin-bottom: 20px;">
-            <h2 id="user-welcome" style="font-size: 32px;">Hola</h2>
-            <p id="status-msg" style="color:var(--apple-gray);">Listo para empezar la jornada.</p>
+    <div id="dash-section" class="glass-card hidden animate__animated animate__fadeInUp">
+        <div style="text-align: left; margin-bottom: 25px;">
+            <h2 id="hello-user" style="font-size: 38px; font-weight: 800;">Hola</h2>
+            <p id="status-txt" style="color:var(--sub);">¿Qué vamos a producir hoy?</p>
         </div>
 
-        <div id="setup-panel">
+        <div id="setup-controls">
             <div class="field">
-                <label>¿Qué vas a hacer?</label>
-                <input type="text" id="task-name" placeholder="Ej: Diseño de Cuentas">
+                <label>Proyecto Actual</label>
+                <input type="text" id="task-input" placeholder="Ej: Diseño de Logo Premium">
             </div>
-            <button class="btn-primary" onclick="startWork()">Iniciar Cronómetro</button>
-            
-            <button id="admin-panel-btn" class="btn-admin hidden" onclick="openAdmin()">Ver Cuentas Registradas →</button>
+            <button class="btn-ios" onclick="startTimer()">Iniciar Jornada</button>
+            <button id="admin-panel-trigger" class="btn-admin-pill hidden" onclick="openAdmin()">Ver Cuentas y Control →</button>
         </div>
 
-        <div id="timer-panel" class="hidden">
+        <div id="timer-active" class="hidden">
             <div class="timer-display">
-                <div id="active-task" style="font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--apple-blue); margin-bottom: 10px;">PRODUCCIÓN ACTIVA</div>
-                <div class="clock" id="clock">00:00:00</div>
+                <div id="active-label" style="font-size: 11px; font-weight: 900; color: var(--apple-blue); text-transform: uppercase; margin-bottom: 15px; position:relative; z-index:5;">Grabando Tiempo</div>
+                <div class="clock" id="clock-display">00:00:00</div>
             </div>
-            <button class="btn-primary" style="background:#000;" onclick="stopWork()">Finalizar y Guardar</button>
+            <button class="btn-ios" style="background:#000;" onclick="stopTimer()">Finalizar Trabajo</button>
         </div>
 
-        <div style="text-align: left; margin-top: 40px;">
-            <h3 style="font-size: 20px; font-weight: 700;">Historial de Hoy</h3>
-            <div id="today-list"></div>
+        <div style="text-align: left; margin-top: 50px;">
+            <h3 style="font-size: 22px; font-weight: 800;">Actividad de Hoy</h3>
+            <div id="history-container"></div>
         </div>
     </div>
 </div>
 
-<div id="admin-modal" class="full-modal hidden">
+<div id="admin-view" class="admin-view hidden animate__animated animate__slideInUp">
     <div style="max-width: 500px; margin: 0 auto;">
-        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer; font-size:18px;">← Volver al Panel</button>
-        <h1 style="margin-top:30px;">Cuentas</h1>
-        <p class="subtitle">Base de datos de todos los registrados.</p>
-        <div id="user-list-content"></div>
+        <button onclick="closeAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer; font-size:18px;">← Panel de Usuario</button>
+        <h1 style="margin-top:40px; font-size: 44px;">Cuentas</h1>
+        <p class="subtitle">Administra los accesos de Diesel Styles.</p>
+        <div id="user-list-target"></div>
     </div>
 </div>
 
-<div id="detail-modal" class="full-modal hidden">
+<div id="detail-view" class="admin-view hidden animate__animated animate__fadeIn">
     <div style="max-width: 500px; margin: 0 auto;">
-        <button onclick="closeDetail()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer; font-size:18px;">← Volver a Cuentas</button>
-        <h1 id="det-user-name" style="margin-top:30px;">Usuario</h1>
-        <p id="det-user-mail" class="subtitle"></p>
-        <div id="det-history-content"></div>
+        <button onclick="openAdmin()" style="background:none; border:none; color:var(--apple-blue); font-weight:700; cursor:pointer; font-size:18px;">← Lista de Cuentas</button>
+        <h1 id="det-user-name" style="margin-top:40px;">Nombre</h1>
+        <p id="det-user-email" class="subtitle"></p>
+        <div id="det-history-target"></div>
     </div>
 </div>
 
 <script>
-    const SUPER_ADMIN = 'emmanuel2013rq@gmail.com';
-    let user = null; let isReg = false; let timerInt = null; let startT = null;
+    const MASTER_ACCOUNT = 'emmanuel2013rq@gmail.com';
+    let user = null; let isRegisterMode = false; let interval = null; let startT = null;
 
-    function toggleReg() {
-        isReg = !isReg;
-        document.getElementById('reg-name-group').classList.toggle('hidden');
-        document.getElementById('btn-switch').innerText = isReg ? "Ya tengo cuenta, entrar" : "¿Eres nuevo? Crea una cuenta";
+    // --- LÓGICA DE FONDO ANIMADO ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let particles = [];
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 5 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.2) this.size -= 0.01; }
+        draw() { ctx.fillStyle = 'rgba(0,113,227,0.05)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    }
+    function initBg() { for (let i = 0; i < 50; i++) particles.push(new Particle()); }
+    function animateBg() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+    initBg(); animateBg();
+
+    // --- LÓGICA DE AUTENTICACIÓN ---
+    function toggleMode() {
+        isRegisterMode = !isRegisterMode;
+        document.getElementById('group-name').classList.toggle('hidden');
+        document.getElementById('mode-btn').innerText = isRegisterMode ? "Ya tengo cuenta, entrar" : "¿No tienes cuenta? Regístrate gratis";
     }
 
-    async function authAction() {
+    async function submitAuth() {
         const email = document.getElementById('in-email').value.toLowerCase().trim();
         const password = document.getElementById('in-pass').value;
         const nombre = document.getElementById('in-name').value;
-        const path = isReg ? '/api/auth/register' : '/api/auth/login';
+        const path = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
 
-        const res = await fetch(path, {
+        const response = await fetch(path, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ nombre, email, password })
         });
 
-        const data = await res.json();
-        if (res.ok) {
-            if (isReg) {
-                // MENSAJE QUE NO SE QUITA RÁPIDO
-                Swal.fire({ title: '¡Bienvenido!', text: 'Cuenta creada con éxito. Ahora inicia sesión.', icon: 'success', confirmButtonColor: '#0071e3' });
-                toggleReg();
+        const data = await response.json();
+        if (response.ok) {
+            if (isRegisterMode) {
+                Swal.fire({ title: '¡Cuenta Lista!', text: 'Ahora puedes iniciar sesión con tus datos.', icon: 'success', confirmButtonColor: '#0071e3' });
+                toggleMode();
             } else {
                 user = data;
-                // MENSAJE DE BIENVENIDA AL ENTRAR
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `Bienvenido, ${user.nombre}`, showConfirmButton: false, timer: 4000 });
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `Bienvenido, ${user.nombre}`, showConfirmButton: false, timer: 3500 });
                 launchApp();
             }
-        } else {
-            Swal.fire('Error', data.message, 'error');
-        }
+        } else { Swal.fire('Atención', data.error, 'warning'); }
     }
 
     function launchApp() {
-        document.getElementById('auth-card').classList.add('hidden');
-        document.getElementById('work-card').classList.remove('hidden');
-        document.getElementById('top-nav').classList.remove('hidden');
-        document.getElementById('user-welcome').innerText = "Hola, " + user.nombre;
-        document.getElementById('nav-user').innerText = user.nombre;
-        
-        // MOSTRAR PANEL SOLO SI ES EL DUEÑO
-        if (user.email === SUPER_ADMIN) {
-            document.getElementById('admin-panel-btn').classList.remove('hidden');
-        }
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('dash-section').classList.remove('hidden');
+        document.getElementById('nav-master').classList.remove('hidden');
+        document.getElementById('hello-user').innerText = "Hola, " + user.nombre.split(' ')[0];
+        document.getElementById('user-pill').innerText = user.nombre;
+        if (user.email === MASTER_ACCOUNT) document.getElementById('admin-panel-trigger').classList.remove('hidden');
         loadHistory();
     }
 
-    function startWork() {
-        const task = document.getElementById('task-name').value;
-        if (!task) return Swal.fire('Aviso', 'Escribe qué tarea vas a realizar.', 'info');
+    // --- CRONÓMETRO ---
+    function startTimer() {
+        const task = document.getElementById('task-input').value;
+        if (!task) return Swal.fire('Aviso', 'Escribe el nombre del proyecto.', 'info');
         
         startT = new Date();
-        document.getElementById('setup-panel').classList.add('hidden');
-        document.getElementById('timer-panel').classList.remove('hidden');
-        document.getElementById('active-task').innerText = "TRABAJANDO EN: " + task;
-
-        timerInt = setInterval(() => {
+        document.getElementById('setup-controls').classList.add('hidden');
+        document.getElementById('timer-active').classList.remove('hidden');
+        document.getElementById('status-txt').innerText = "Trabajando en: " + task;
+        
+        interval = setInterval(() => {
             const diff = new Date(new Date() - startT);
-            document.getElementById('clock').innerText = diff.toISOString().substr(11, 8);
+            document.getElementById('clock-display').innerText = diff.toISOString().substr(11, 8);
         }, 1000);
     }
 
-    async function stopWork() {
-        clearInterval(timerInt);
-        const duration = document.getElementById('clock').innerText;
-        
+    async function stopTimer() {
+        clearInterval(interval);
+        const durationStr = document.getElementById('clock-display').innerText;
+        const seconds = Math.floor((new Date() - startT) / 1000);
+
         await fetch('/api/work/save', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                usuario_id: user.id, actividad: document.getElementById('task-name').value,
+                uid: user.id, tarea: document.getElementById('task-input').value,
                 inicio: startT.toLocaleTimeString(), fin: new Date().toLocaleTimeString(),
-                fecha: new Date().toLocaleDateString(), duracion: duration
+                fecha: new Date().toLocaleDateString(), duracion: durationStr, segs: seconds
             })
         });
 
-        document.getElementById('setup-panel').classList.remove('hidden');
-        document.getElementById('timer-panel').classList.add('hidden');
-        document.getElementById('clock').innerText = "00:00:00";
-        document.getElementById('task-name').value = "";
-        
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Registro guardado', showConfirmButton: false, timer: 3000 });
+        document.getElementById('setup-controls').classList.remove('hidden');
+        document.getElementById('timer-active').classList.add('hidden');
+        document.getElementById('status-txt').innerText = "¿Qué vamos a producir hoy?";
+        document.getElementById('task-input').value = "";
         loadHistory();
     }
 
     async function loadHistory(id = user.id) {
         const res = await fetch(`/api/work/history/${id}`);
-        const data = await res.json();
+        const logs = await res.json();
         const today = new Date().toLocaleDateString();
-        const filtered = data.filter(i => i.fecha === today);
+        const todayLogs = logs.filter(l => l.fecha_registro === today);
         
-        const list = document.getElementById('today-list');
-        list.innerHTML = filtered.length === 0 ? '<p style="color:#86868b; margin-top:20px; font-style:italic;">No hay registros hoy.</p>' :
-            filtered.map(i => `
-                <div class="history-item">
-                    <div><b>${i.actividad}</b><br><small>${i.hora_inicio}</small></div>
-                    <div style="font-weight:800; color:var(--apple-blue);">${i.duracion_total}</div>
+        const container = document.getElementById('history-container');
+        container.innerHTML = todayLogs.length === 0 ? '<p style="color:#86868b; margin-top:30px; font-style:italic;">No hay registros para hoy.</p>' :
+            todayLogs.map(l => `
+                <div class="log-item">
+                    <div><b>${l.tarea}</b><br><small>${l.hora_entrada} - ${l.hora_salida}</small></div>
+                    <div style="font-weight:800; color:var(--apple-blue);">${l.duracion_string}</div>
                 </div>
             `).join('');
     }
 
+    // --- FUNCIONES ADMINISTRATIVAS ---
     async function openAdmin() {
-        document.getElementById('admin-modal').classList.remove('hidden');
-        const res = await fetch(`/api/admin/all-users?requester=${user.email}`);
-        const list = await res.json();
+        document.getElementById('admin-view').classList.remove('hidden');
+        document.getElementById('detail-view').classList.add('hidden');
+        const res = await fetch(`/api/admin/users?auth=${user.email}`);
+        const users = await res.json();
         
-        document.getElementById('user-list-content').innerHTML = list.map(u => `
-            <div class="user-row" onclick="openDetail(${u.id}, '${u.nombre}', '${u.email}')">
-                <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
-                <div style="color:var(--apple-blue); font-size:18px;">➔</div>
+        document.getElementById('user-list-target').innerHTML = users.map(u => `
+            <div class="user-card-admin">
+                <div style="cursor:pointer;" onclick="inspectUser(${u.id}, '${u.nombre}', '${u.email}')">
+                    <b>${u.nombre}</b><br><small>${u.email}</small>
+                </div>
+                <button class="btn-delete" onclick="deleteUser(${u.id}, '${u.nombre}')">Eliminar</button>
             </div>
         `).join('');
     }
 
-    async function openDetail(id, name, email) {
-        document.getElementById('detail-modal').classList.remove('hidden');
+    async function deleteUser(id, name) {
+        const result = await Swal.fire({
+            title: `¿Eliminar a ${name}?`,
+            text: "Se borrarán permanentemente su cuenta y todos sus registros de tiempo.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff3b30',
+            confirmButtonText: 'Sí, eliminar cuenta'
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`/api/admin/user/${id}?auth=${user.email}`, { method: 'DELETE' });
+            Swal.fire('Eliminado', 'La cuenta ha sido purgada.', 'success');
+            openAdmin();
+        }
+    }
+
+    async function inspectUser(id, name, email) {
+        document.getElementById('admin-view').classList.add('hidden');
+        document.getElementById('detail-view').classList.remove('hidden');
         document.getElementById('det-user-name').innerText = name;
-        document.getElementById('det-user-mail').innerText = email;
-        
+        document.getElementById('det-user-email').innerText = email;
         const res = await fetch(`/api/work/history/${id}`);
-        const data = await res.json();
+        const logs = await res.json();
         
-        document.getElementById('det-history-content').innerHTML = data.length === 0 ? '<p>Sin actividad.</p>' :
-            data.map(i => `
-                <div class="history-item">
-                    <div><b>${i.actividad}</b><br><small>${i.fecha} • ${i.hora_inicio}</small></div>
-                    <div style="font-weight:800;">${i.duracion_total}</div>
+        document.getElementById('det-history-target').innerHTML = logs.length === 0 ? '<p>Sin historial registrado.</p>' :
+            logs.map(l => `
+                <div class="log-item">
+                    <div><b>${l.tarea}</b><br><small>${l.fecha_registro} • ${l.hora_entrada}</small></div>
+                    <div style="font-weight:800;">${l.duracion_string}</div>
                 </div>
             `).join('');
     }
 
-    function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
-    function closeDetail() { document.getElementById('detail-modal').classList.add('hidden'); }
+    function closeAdmin() { document.getElementById('admin-view').classList.add('hidden'); }
 </script>
 </body>
 </html>
