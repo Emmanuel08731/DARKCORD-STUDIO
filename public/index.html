@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workstation Pro | Apple Elite</title>
+    <title>Workstation Pro | Apple Elite Design</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -11,171 +11,208 @@
     
     <style>
         :root {
-            --blue: #007AFF;
-            --white: #ffffff;
-            --bg: #F2F2F7;
-            --glass: rgba(255, 255, 255, 0.7);
-            --border: rgba(0, 0, 0, 0.1);
+            --apple-blue: #007AFF;
+            --apple-red: #FF3B30;
+            --apple-gray-bg: #F5F5F7;
+            --apple-dark-text: #1D1D1F;
+            --glass-white: rgba(255, 255, 255, 0.85);
+            --border-standard: rgba(0, 0, 0, 0.08);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Icons", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
 
         body { 
-            background: #D1D1D6;
-            background-image: linear-gradient(135deg, #E5E5EA 0%, #D1D1D6 100%);
-            height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background-color: var(--apple-gray-bg);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
         }
 
         .hidden { display: none !important; }
 
-        /* Pantalla Principal (Estilo macOS Window) */
-        .apple-window {
-            background: var(--glass);
+        /* Contenedor Principal (Apple Canvas Pro) */
+        .apple-canvas {
+            background: var(--glass-white);
             backdrop-filter: blur(50px) saturate(210%);
-            width: 95%; max-width: 1000px; height: 750px;
+            width: 95%; max-width: 1000px;
+            min-height: 700px;
             border-radius: 35px;
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 50px 150px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.06), 0 10px 20px rgba(0,0,0,0.02);
+            display: flex; flex-direction: column;
+            overflow: hidden; position: relative;
         }
 
-        /* Toolbar Superior */
-        .toolbar {
-            padding: 25px 40px; border-bottom: 1px solid var(--border);
+        /* Barra Superior Estilo Mac */
+        .canvas-header {
+            padding: 20px 35px; border-bottom: 1px solid var(--border-standard);
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.4);
         }
-        .window-dots { display: flex; gap: 8px; }
-        .dot { width: 13px; height: 13px; border-radius: 50%; }
-        .dot-red { background: #FF5F57; } .dot-yellow { background: #FFBD2E; } .dot-green { background: #28C840; }
+        .window-controls { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; transition: 0.2s; }
+        .red { background: #FF5F57; } .yellow { background: #FFBD2E; } .green { background: #28C840; }
+        .window-controls:hover .dot { transform: scale(1.1); }
 
-        /* Contenido Central */
-        .content { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; }
+        /* Vistas de Contenido */
+        .view-frame { flex-grow: 1; padding: 50px; overflow-y: auto; text-align: center; position: relative; }
 
-        /* Tipografía Apple */
-        h1 { font-size: 42px; font-weight: 800; letter-spacing: -1.8px; color: #1c1c1e; margin-bottom: 8px; }
-        p.subtitle { color: #8E8E93; font-size: 18px; margin-bottom: 45px; }
+        /* Tipografía Refinada */
+        h1 { font-size: 42px; font-weight: 700; letter-spacing: -1.8px; color: var(--apple-dark-text); margin-bottom: 8px; }
+        p.desc { color: #86868b; font-size: 18px; margin-bottom: 45px; font-weight: 400; }
 
-        /* Entradas de Datos */
-        .field-container { max-width: 420px; margin: 0 auto 25px; text-align: left; }
-        label { font-size: 13px; font-weight: 700; color: #1c1c1e; margin-left: 15px; margin-bottom: 6px; display: block; opacity: 0.6; }
-        .input-wrapper { position: relative; }
+        /* Inputs Estilo iOS/macOS Moderno */
+        .input-group { margin-bottom: 25px; text-align: left; max-width: 420px; margin-left: auto; margin-right: auto; }
+        label { font-size: 13px; font-weight: 600; color: var(--apple-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-left: 15px; display: block; margin-bottom: 6px; }
+        
+        .pass-container { position: relative; }
         input {
-            width: 100%; padding: 18px 22px; border-radius: 18px; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.5); font-size: 17px; outline: none; transition: 0.3s;
+            width: 100%; padding: 18px 22px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.6); font-size: 17px; outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        input:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
-        .eye-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8E8E93; }
+        input:focus { border-color: var(--apple-blue); background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.12); }
 
-        /* Botones Pro */
+        .toggle-password {
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #8E8E93; font-size: 18px; transition: 0.2s;
+        }
+        .toggle-password:hover { color: var(--apple-blue); }
+
+        /* Botones Elite */
         .btn {
-            padding: 18px 30px; border-radius: 18px; border: none; font-size: 16px;
-            font-weight: 600; cursor: pointer; transition: 0.3s;
+            padding: 18px 30px; border-radius: 18px; border: none; font-size: 17px;
+            font-weight: 600; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-blue { background: var(--blue); color: white; width: 100%; max-width: 420px; }
-        .btn-blue:hover { opacity: 0.9; transform: scale(0.98); }
-        .btn-secondary { background: none; color: var(--blue); margin-top: 15px; }
-
-        /* Cronómetro Gigante */
-        .timer-val { font-size: 130px; font-weight: 800; color: #1c1c1e; margin: 40px 0; letter-spacing: -6px; }
-
-        /* Filas de Datos */
-        .data-row {
-            background: rgba(255,255,255,0.4); padding: 25px 35px; border-radius: 25px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(0,0,0,0.02); transition: 0.3s;
+        .btn-primary { 
+            background: linear-gradient(180deg, #007AFF 0%, #006EDF 100%);
+            color: white; width: 100%; max-width: 420px;
+            box-shadow: 0 10px 20px rgba(0,122,255,0.2);
         }
-        .data-row:hover { background: white; transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,122,255,0.3); }
+        .btn-primary:active { transform: scale(0.98); }
+        
+        .btn-ghost { background: none; color: var(--apple-blue); margin-top: 15px; font-size: 15px; }
 
-        /* Capas Deslizantes (Sub-webs) */
-        .sub-layer {
-            position: absolute; inset: 0; background: #F2F2F7; padding: 60px; z-index: 1000;
+        /* Cronómetro con Neon Suave */
+        .chrono-display {
+            font-size: 120px; font-weight: 800; letter-spacing: -6px; margin: 50px 0;
+            color: var(--apple-dark-text); font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        /* Listas y Filas de Datos (Apple Card Style) */
+        .row-card {
+            background: rgba(255,255,255,0.5); padding: 25px 35px; border-radius: 25px;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(0,0,0,0.02); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .row-card:hover { 
+            background: white; 
+            transform: translateY(-5px) scale(1.01); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border-color: rgba(0,113,227,0.1);
+        }
+
+        /* Sub-pestañas Deslizantes (Internal SPA) */
+        .internal-page {
+            position: absolute; inset: 0; background: #F2F2F7; padding: 50px; z-index: 100;
             display: flex; flex-direction: column; text-align: left;
         }
-        .back-btn { background: none; border: none; color: var(--blue); font-weight: 700; font-size: 17px; cursor: pointer; margin-bottom: 30px; }
+
+        /* Scrollbar Apple */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
     </style>
 </head>
 <body>
 
-<div class="apple-window animate__animated animate__fadeInUp">
-    <div class="toolbar">
-        <div class="window-dots">
-            <div class="dot dot-red"></div>
-            <div class="dot dot-yellow"></div>
-            <div class="dot dot-green"></div>
+<div class="apple-canvas animate__animated animate__fadeInUp">
+    <div class="canvas-header">
+        <div class="window-controls">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
         </div>
-        <div id="status-tag" style="font-size:12px; font-weight:700; color:#8E8E93; text-transform:uppercase;">Station Standby</div>
+        <div id="status-display" style="font-weight: 700; font-size: 12px; color: #8E8E93; text-transform: uppercase; letter-spacing: 1px;">Station Idle</div>
     </div>
 
-    <div id="view-auth" class="content">
-        <h1 id="auth-title">Bienvenido</h1>
-        <p class="subtitle">Gestiona tu tiempo con elegancia.</p>
+    <div id="view-auth" class="view-frame animate__animated animate__fadeIn">
+        <h1 id="auth-title" class="animate__animated animate__fadeInDown animate__delay-1s">Bienvenido</h1>
+        <p class="desc animate__animated animate__fadeIn animate__delay-1s">Control de Jornada Laboral | Workstation Pro</p>
         
-        <div id="reg-area" class="hidden">
-            <div class="field-container"><label>Nombre Completo</label><input type="text" id="reg-name"></div>
+        <div id="reg-fields" class="hidden animate__animated animate__fadeIn">
+            <div class="input-group"><label>Nombre</label><input type="text" id="a-name"></div>
         </div>
-        <div class="field-container"><label>Correo Electrónico</label><input type="email" id="log-email"></div>
-        <div class="field-container">
+        <div class="input-group animate__animated animate__fadeInUp animate__delay-1s"><label>Email</label><input type="email" id="a-email"></div>
+        
+        <div class="input-group animate__animated animate__fadeInUp animate__delay-2s">
             <label>Contraseña</label>
-            <div class="input-wrapper">
-                <input type="password" id="log-pass">
-                <i class="fa fa-eye eye-icon" onclick="togglePass('log-pass', this)"></i>
+            <div class="pass-container">
+                <input type="password" id="a-pass">
+                <i class="fa fa-eye toggle-password" onclick="togglePass('a-pass', this)"></i>
             </div>
         </div>
         
-        <button class="btn btn-blue" onclick="handleAuth()">Continuar</button><br>
-        <button class="btn btn-secondary" onclick="toggleMode()" id="mode-btn">¿No tienes cuenta? Regístrate</button>
+        <button class="btn btn-primary animate__animated animate__fadeInUp animate__delay-2s" onclick="processAuth()">Continuar <i class="fa fa-chevron-right"></i></button><br>
+        <button class="btn btn-ghost" onclick="toggleMode()" id="t-btn">¿No tienes cuenta? Regístrate</button>
     </div>
 
-    <div id="view-dash" class="content hidden">
-        <h1 id="greet-user">Hola</h1>
-        <div id="setup-task">
-            <div class="field-container" style="margin-top:40px;">
-                <label>Proyecto o Actividad</label>
-                <input type="text" id="task-name" placeholder="Ej: Diseño de Interfaz">
+    <div id="view-dash" class="view-frame hidden animate__animated animate__fadeIn">
+        <h1 id="welcome-msg" class="animate__animated animate__fadeInDown">Hola</h1>
+        <p class="desc">Registra tu actividad actual</p>
+
+        <div id="timer-setup" class="animate__animated animate__fadeIn">
+            <div class="input-group" style="margin-top: 30px;">
+                <label>Proyecto / Tarea Actual</label>
+                <input type="text" id="project-name" placeholder="Ej: Voy a hacer una iglesia">
             </div>
-            <button class="btn btn-blue" onclick="initTimer()"><i class="fa fa-play"></i> Iniciar Jornada</button>
-            <div style="margin-top:30px; display:flex; gap:15px; justify-content:center;">
-                <button class="btn" style="background:#E5E5EA; color:#000;" onclick="openLayer('layer-mine')">Mis Tareas</button>
-                <button id="admin-p" class="btn hidden" style="background:#000; color:#fff;" onclick="openAdmin()">Administrador</button>
+            <button class="btn btn-primary" onclick="startCounter()"><i class="fa fa-play"></i> Iniciar Jornada</button>
+            <div style="margin-top: 25px; display: flex; justify-content: center; gap: 15px; max-width: 420px; margin-left: auto; margin-right: auto;">
+                <button class="btn" style="background:rgba(0,0,0,0.05); color:var(--apple-blue); flex:1;" onclick="openMine()"><i class="fa fa-list-check"></i> Mis Tareas</button>
+                <button id="adm-btn" class="btn hidden animate__animated animate__pulse animate__infinite" style="background:#1d1d1f; color:#fff; flex:1;" onclick="openAdmin()"><i class="fa fa-shield"></i> Panel Admin</button>
             </div>
-            <button onclick="signOut()" style="margin-top:50px; color:#FF3B30; border:none; background:none; font-weight:700; cursor:pointer;">Cerrar Sesión</button>
+            <button class="btn btn-ghost" style="color:var(--apple-red); margin-top: 40px; font-weight:700;" onclick="logout()">Cerrar Sesión</button>
         </div>
 
-        <div id="timer-active" class="hidden">
-            <div class="timer-val" id="clock-display">00:00:00</div>
-            <button class="btn btn-blue" style="background:#FF3B30;" onclick="endTimer()">Finalizar Trabajo</button>
+        <div id="timer-running" class="hidden animate__animated animate__zoomIn">
+            <div class="chrono-display" id="clock">00:00:00</div>
+            <button class="btn btn-primary" style="background:var(--apple-red); box-shadow: 0 10px 20px rgba(255,59,48,0.3);" onclick="stopCounter()">
+                <i class="fa fa-stop"></i> Finalizar Registro
+            </button>
         </div>
     </div>
 
-    <div id="layer-mine" class="sub-layer hidden animate__animated animate__slideInRight">
-        <button class="back-btn" onclick="closeLayer('layer-mine')"><i class="fa fa-chevron-left"></i> Panel Principal</button>
+    <div id="sub-mine" class="internal-page hidden animate__animated animate__slideInRight">
+        <button onclick="closeSub('sub-mine')" class="btn" style="background:#fff; color:var(--apple-blue); width:auto; padding:10px 20px; margin-bottom:30px;"><i class="fa fa-chevron-left"></i> Volver</button>
         <h1>Mis Registros</h1>
-        <div id="mine-list" style="margin-top:40px;"></div>
+        <p class="desc">Historial completo de tu productividad.</p>
+        <div id="mine-list" style="overflow-y:auto; flex-grow:1;"></div>
     </div>
 
-    <div id="layer-admin" class="sub-layer hidden animate__animated animate__slideInRight">
-        <button class="back-btn" onclick="closeLayer('layer-admin')"><i class="fa fa-chevron-left"></i> Salir de Administración</button>
+    <div id="sub-admin" class="internal-page hidden animate__animated animate__slideInRight">
+        <button onclick="closeSub('sub-admin')" class="btn" style="background:#fff; color:var(--apple-blue); width:auto; padding:10px 20px; margin-bottom:30px;"><i class="fa fa-chevron-left"></i> Salir de Admin</button>
         <h1>Auditoría Global</h1>
-        <p class="subtitle" style="margin-bottom:30px;">Selecciona un usuario para ver su actividad o credenciales.</p>
-        <div id="admin-user-list"></div>
+        <p class="desc">Gestión avanzada de usuarios y credenciales (0613).</p>
+        <div id="admin-list" style="overflow-y:auto; flex-grow:1;"></div>
     </div>
 
-    <div id="layer-user-tasks" class="sub-layer hidden animate__animated animate__slideInRight">
-        <button class="back-btn" onclick="closeLayer('layer-user-tasks')"><i class="fa fa-chevron-left"></i> Volver a Usuarios</button>
-        <h1 id="user-task-title">Actividad de Usuario</h1>
-        <div id="user-task-list" style="margin-top:40px;"></div>
+    <div id="sub-user-detail" class="internal-page hidden animate__animated animate__slideInRight">
+        <button onclick="closeSub('sub-user-detail')" class="btn" style="background:#fff; color:var(--apple-blue); width:auto; padding:10px 20px; margin-bottom:30px;"><i class="fa fa-chevron-left"></i> Volver a Usuarios</button>
+        <h1 id="user-detail-title">Actividad</h1>
+        <div id="user-detail-list" style="overflow-y:auto; flex-grow:1;"></div>
     </div>
 </div>
 
 <script>
     const MASTER = 'emmanuel2013rq@gmail.com';
-    const SECRET_CODE = '0613';
+    const CODE = '0613';
     let user = null;
     let isReg = false;
-    let interval = null;
+    let timer = null;
+    let startTime = null;
 
+    // Función para VER CONTRASEÑA con el Ojo
     function togglePass(id, icon) {
         const x = document.getElementById(id);
         if (x.type === "password") { x.type = "text"; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
@@ -184,158 +221,143 @@
 
     function toggleMode() {
         isReg = !isReg;
-        document.getElementById('reg-area').classList.toggle('hidden');
-        document.getElementById('auth-title').innerText = isReg ? 'Crear Cuenta' : 'Bienvenido';
-        document.getElementById('mode-btn').innerText = isReg ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate';
+        document.getElementById('reg-fields').classList.toggle('hidden');
+        document.getElementById('auth-title').innerText = isReg ? 'Registro Elite' : 'Bienvenido';
+        document.getElementById('t-btn').innerText = isReg ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate';
     }
 
-    async function handleAuth() {
-        const email = document.getElementById('log-email').value;
-        const password = document.getElementById('log-pass').value;
-        const nombre = document.getElementById('reg-name').value;
-        const r = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
+    async function processAuth() {
+        const email = document.getElementById('a-email').value;
+        const password = document.getElementById('a-pass').value;
+        const nombre = document.getElementById('a-name').value;
+        const res = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ nombre, email, password })
         });
-        const d = await r.json();
-        if (r.ok) {
+        const data = await res.json();
+        if (res.ok) {
             if (isReg) { Swal.fire('Éxito', 'Registrado correctamente', 'success'); toggleMode(); }
-            else { user = d; localStorage.setItem('ap_session', JSON.stringify(d)); startSession(); }
-        } else { Swal.fire('Error', d.error, 'error'); }
+            else { user = data; localStorage.setItem('sesion_ap', JSON.stringify(data)); goDash(); }
+        } else { Swal.fire('Error', data.error, 'error'); }
     }
 
-    function startSession() {
+    function goDash() {
         document.getElementById('view-auth').classList.add('hidden');
         document.getElementById('view-dash').classList.remove('hidden');
-        document.getElementById('greet-user').innerText = "Hola, " + user.nombre;
-        document.getElementById('status-tag').innerText = "ACTIVE: " + user.nombre;
-        if (user.email === MASTER) document.getElementById('admin-p').classList.remove('hidden');
+        document.getElementById('welcome-msg').innerText = "Hola, " + user.nombre;
+        document.getElementById('status-display').innerText = "Sesión Activa: " + user.nombre.toUpperCase();
+        if (user.email === MASTER) document.getElementById('adm-btn').classList.remove('hidden');
         
-        const savedStart = localStorage.getItem('ap_start');
-        const savedName = localStorage.getItem('ap_name');
-        if (savedStart && savedName) {
-            document.getElementById('task-name').value = savedName;
-            runClock(parseInt(savedStart));
+        checkTimer();
+    }
+
+    // --- LÓGICA DE TIEMPO INFINITO ---
+    function checkTimer() {
+        const sTime = localStorage.getItem('s_start');
+        const sName = localStorage.getItem('s_name');
+        if (sTime && sName) {
+            document.getElementById('project-name').value = sName;
+            runClock(parseInt(sTime));
         }
     }
 
-    function initTimer() {
-        const name = document.getElementById('task-name').value;
-        if (!name) return Swal.fire('Aviso', 'Define el nombre del proyecto', 'info');
-        const now = new Date().getTime();
-        localStorage.setItem('ap_start', now);
-        localStorage.setItem('ap_name', name);
-        runClock(now);
+    function startCounter() {
+        const name = document.getElementById('project-name').value;
+        if (!name) return Swal.fire('Nota', 'Escribe el proyecto', 'info');
+        startTime = new Date().getTime();
+        localStorage.setItem('s_start', startTime);
+        localStorage.setItem('s_name', name);
+        runClock(startTime);
     }
 
-    function runClock(startTime) {
-        document.getElementById('setup-task').classList.add('hidden');
-        document.getElementById('timer-active').classList.remove('hidden');
-        interval = setInterval(() => {
-            const diff = new Date().getTime() - startTime;
+    function runClock(start) {
+        document.getElementById('timer-setup').classList.add('hidden');
+        document.getElementById('timer-running').classList.remove('hidden');
+        if (timer) clearInterval(timer);
+        timer = setInterval(() => {
+            const diff = new Date().getTime() - start;
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            document.getElementById('clock-display').innerText = `${h}:${m}:${s}`;
+            document.getElementById('clock').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
 
-    async function endTimer() {
-        clearInterval(interval);
-        const duracion = document.getElementById('clock-display').innerText;
-        const proyecto = localStorage.getItem('ap_name');
+    async function stopCounter() {
+        clearInterval(timer);
+        const duracion = document.getElementById('clock').innerText;
+        const proyecto = localStorage.getItem('s_name');
         await fetch('/api/tiempo/guardar', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ usuario_id: user.id, proyecto, duracion })
         });
-        localStorage.removeItem('ap_start'); localStorage.removeItem('ap_name');
+        localStorage.removeItem('s_start'); localStorage.removeItem('s_name');
         location.reload();
     }
 
-    async function openLayer(id) {
-        document.getElementById(id).classList.remove('hidden');
-        if (id === 'layer-mine') {
-            const r = await fetch(`/api/tareas/mias?uid=${user.id}`);
-            const data = await r.json();
-            document.getElementById('mine-list').innerHTML = data.map(t => `
-                <div class="data-row">
-                    <div><b>${t.proyecto}</b><br><small>${t.fecha}</small></div>
-                    <div style="font-size:22px; font-weight:800; color:var(--blue)">${t.duracion}</div>
-                </div>
-            `).join('') || '<p>No hay registros.</p>';
-        }
+    // --- NAVEGACIÓN SPA ---
+    async function openMine() {
+        document.getElementById('sub-mine').classList.remove('hidden');
+        const r = await fetch(`/api/tareas/mias?uid=${user.id}`);
+        const data = await r.json();
+        document.getElementById('mine-list').innerHTML = data.map(t => `
+            <div class="row-card animate__animated animate__fadeInUp">
+                <div><b style="font-size:18px;">${t.proyecto}</b><br><small style="color:#8E8E93;">${t.fecha}</small></div>
+                <div style="font-size:24px; font-weight:800; color:var(--apple-blue);">${t.duracion}</div>
+            </div>
+        `).join('') || '<p>No hay registros aún.</p>';
     }
 
     async function openAdmin() {
-        document.getElementById('layer-admin').classList.remove('hidden');
+        document.getElementById('sub-admin').classList.remove('hidden');
         const r = await fetch(`/api/admin/usuarios?admin_email=${user.email}`);
         const list = await r.json();
         document.getElementById('admin-user-list').innerHTML = list.map(u => `
-            <div class="data-row">
-                <div onclick="viewUserDetail(${u.id}, '${u.nombre}')" style="cursor:pointer; flex:1;">
-                    <b style="font-size:18px;">${u.nombre}</b><br><small>Ver historial de trabajo <i class="fa fa-external-link" style="font-size:10px;"></i></small>
+            <div class="row-card animate__animated animate__fadeInUp">
+                <div onclick="viewUser(${u.id}, '${u.nombre}')" style="cursor:pointer; flex-grow:1;">
+                    <b style="font-size:18px;">${u.nombre}</b><br><small style="color:var(--apple-blue);">Ver historial <i class="fa fa-chevron-right"></i></small>
                 </div>
-                <div style="display:flex; gap:12px;">
-                    <button class="btn btn-action" style="background:#fff; border:1px solid #ddd; padding:10px;" onclick="showUserCreds('${u.email}', '${u.password}')"><i class="fa fa-key"></i> Credenciales</button>
-                    <button class="btn btn-action" style="background:#fff; border:1px solid #ddd; color:#FF3B30; padding:10px;" onclick="deleteUser(${u.id})"><i class="fa fa-trash"></i></button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:#fff; border:1px solid #ddd; padding:10px; width:auto; color:var(--apple-dark-text);" onclick="showCreds('${u.email}', '${u.password}')"><i class="fa fa-key"></i> Credenciales</button>
+                    <button class="btn" style="background:#fff; border:1px solid #ddd; padding:10px; width:auto; color:var(--apple-red);" onclick="delUser(${u.id})"><i class="fa fa-trash"></i></button>
                 </div>
             </div>
         `).join('');
     }
 
-    async function viewUserDetail(id, name) {
-        document.getElementById('layer-user-tasks').classList.remove('hidden');
-        document.getElementById('user-task-title').innerText = "Tareas de " + name;
+    async function viewUser(id, name) {
+        document.getElementById('sub-user-detail').classList.remove('hidden');
+        document.getElementById('user-detail-title').innerText = "Tareas de " + name;
         const r = await fetch(`/api/admin/tareas-usuario/${id}?admin_email=${user.email}`);
         const data = await r.json();
-        document.getElementById('user-task-list').innerHTML = data.map(t => `
-            <div class="data-row">
+        document.getElementById('user-detail-list').innerHTML = data.map(t => `
+            <div class="row-card animate__animated animate__fadeInUp">
                 <div><b>${t.proyecto}</b><br><small>${t.fecha}</small></div>
-                <div style="font-weight:800; color:var(--blue)">${t.duracion}</div>
+                <div style="font-weight:800; color:var(--apple-blue);">${t.duracion}</div>
             </div>
-        `).join('') || '<p>Este usuario no tiene tareas registradas.</p>';
+        `).join('') || '<p>Este usuario no tiene registros.</p>';
     }
 
-    async function showUserCreds(email, pass) {
-        const { value: code } = await Swal.fire({
-            title: 'Acceso Restringido',
-            text: 'Ingresa el código de administrador para ver las credenciales',
-            input: 'password',
-            inputAttributes: { autofocus: 'true' },
-            showCancelButton: true,
-            confirmButtonColor: '#007AFF'
-        });
-
-        if (code === SECRET_CODE) {
-            Swal.fire({
-                title: 'Credenciales del Usuario',
-                html: `<div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:10px;">
-                    <p><b>Email:</b> ${email}</p>
-                    <p><b>Password:</b> ${pass}</p>
-                </div>`,
-                icon: 'success'
-            });
-        } else if (code) {
-            Swal.fire('Error', 'Código de seguridad incorrecto.', 'error');
-        }
+    async function showCreds(email, pass) {
+        const { value: code } = await Swal.fire({ title: 'Código Admin', input: 'password', showCancelButton: true, confirmButtonColor: '#007AFF' });
+        if (code === CODE) {
+            Swal.fire({ title: 'Credenciales', html: `<div style="text-align:left;"><b>Email:</b> ${email}<br><b>Password:</b> ${pass}</div>`, icon: 'success' });
+        } else if (code) { Swal.fire('Error', 'Código incorrecto', 'error'); }
     }
 
-    async function deleteUser(id) {
-        const { isConfirmed } = await Swal.fire({ title: '¿Eliminar Usuario?', text: 'Se perderán todos sus registros de tiempo.', showCancelButton: true, confirmButtonColor: '#FF3B30' });
-        if (isConfirmed) {
-            await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, { method: 'DELETE' });
-            openAdmin();
-        }
+    async function delUser(id) {
+        const { isConfirmed } = await Swal.fire({ title: '¿Borrar?', showCancelButton: true, confirmButtonColor: '#FF3B30' });
+        if (isConfirmed) { await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, {method: 'DELETE'}); openAdmin(); }
     }
 
-    function closeLayer(id) { document.getElementById(id).classList.add('hidden'); }
-    function signOut() { localStorage.clear(); location.reload(); }
+    function closeSub(id) { document.getElementById(id).classList.add('hidden'); }
+    function logout() { localStorage.clear(); location.reload(); }
 
     window.onload = () => {
-        const s = localStorage.getItem('ap_session');
-        if (s) { user = JSON.parse(s); startSession(); }
+        const saved = localStorage.getItem('sesion_ap');
+        if (saved) { user = JSON.parse(saved); goDash(); }
     };
 </script>
 </body>
