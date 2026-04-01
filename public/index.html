@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workstation Studio | Professional White</title>
+    <title>Workstation Studio | Professional Edition</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -12,314 +12,316 @@
     <style>
         :root {
             --apple-blue: #0071E3;
-            --apple-red: #FF3B30;
-            --bg-studio: #F5F5F7;
+            --apple-gray: #F5F5F7;
+            --apple-text: #1D1D1F;
+            --apple-sub: #86868B;
             --white: #FFFFFF;
-            --text-main: #1D1D1F;
-            --text-sub: #86868B;
             --border: #D2D2D7;
-            --shadow: 0 20px 40px rgba(0,0,0,0.08);
+            --red: #FF3B30;
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif; }
 
         body { 
-            background: var(--bg-studio); 
+            background-color: var(--apple-gray); 
             height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
-            color: var(--text-main);
+            color: var(--apple-text);
         }
 
-        /* Ventana Principal */
-        .studio-frame {
+        /* Contenedor Estilo Mac Studio */
+        .app-window {
             background: var(--white);
-            width: 95%; max-width: 1100px; height: 850px;
-            border-radius: 30px; border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 95%; max-width: 1000px; height: 850px;
+            border-radius: 32px;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.07);
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+            animation: fadeIn 0.8s ease;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .top-nav {
-            padding: 25px 45px; border-bottom: 1px solid var(--bg-studio);
+        .title-bar {
+            padding: 20px 40px; border-bottom: 1px solid var(--apple-gray);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .window-dots { display: flex; gap: 10px; }
+        .dots { display: flex; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        .main-content { flex: 1; padding: 60px; overflow-y: auto; text-align: center; }
-        h1 { font-size: 60px; font-weight: 800; letter-spacing: -3px; color: var(--text-main); margin-bottom: 10px; }
-        .tagline { font-size: 20px; color: var(--text-sub); margin-bottom: 50px; font-weight: 400; }
+        /* Vistas principales */
+        .view { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; }
+        h1 { font-size: 55px; font-weight: 800; letter-spacing: -2.5px; margin-bottom: 5px; }
+        .sub { color: var(--apple-sub); font-size: 19px; margin-bottom: 45px; }
 
-        /* Formulario Studio */
-        .form-center { max-width: 420px; margin: 0 auto; }
-        .field { margin-bottom: 25px; text-align: left; }
-        .field label { font-size: 13px; font-weight: 700; color: var(--apple-blue); margin-left: 10px; margin-bottom: 8px; display: block; }
-        
-        input {
-            width: 100%; padding: 22px; border-radius: 16px; border: 1px solid var(--border);
-            background: var(--bg-studio); color: var(--text-main); font-size: 18px; outline: none; transition: 0.3s;
+        /* Inputs Studio */
+        .field { max-width: 400px; margin: 0 auto 20px; text-align: left; }
+        label { font-size: 12px; font-weight: 700; color: var(--apple-blue); margin-left: 10px; margin-bottom: 6px; display: block; text-transform: uppercase; }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%; padding: 20px; border-radius: 14px; border: 1px solid var(--border);
+            background: var(--apple-gray); font-size: 17px; outline: none; transition: 0.2s;
         }
         input:focus { border-color: var(--apple-blue); background: var(--white); box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
 
-        /* Botones Pro */
-        .btn-studio {
-            padding: 22px; border-radius: 16px; border: none; font-size: 18px; font-weight: 600;
-            cursor: pointer; width: 100%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+        /* Input de Imagen Profesional */
+        .file-drop {
+            border: 2px dashed var(--border); border-radius: 14px; padding: 20px;
+            background: var(--apple-gray); cursor: pointer; transition: 0.3s;
+            margin-bottom: 25px; position: relative;
         }
-        .btn-primary { background: var(--apple-blue); color: white; box-shadow: 0 10px 25px rgba(0,113,227,0.25); }
-        .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-ghost { background: transparent; color: var(--apple-blue); margin-top: 15px; }
+        .file-drop:hover { border-color: var(--apple-blue); background: var(--white); }
+        .file-drop i { font-size: 24px; color: var(--apple-sub); margin-bottom: 5px; }
 
-        /* Cronómetro */
-        .chrono-text { font-size: 150px; font-weight: 800; letter-spacing: -8px; color: var(--text-main); margin: 40px 0; }
+        /* Botones */
+        .btn {
+            padding: 20px 35px; border-radius: 14px; border: none; font-size: 17px; font-weight: 600;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-blue { background: var(--apple-blue); color: white; width: 100%; max-width: 400px; box-shadow: 0 10px 20px rgba(0,113,227,0.2); }
+        .btn-blue:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-red { background: var(--red); color: white; }
+
+        /* Timer Studio */
+        .timer-display { font-size: 130px; font-weight: 800; letter-spacing: -6px; margin: 30px 0; color: var(--apple-text); }
 
         /* Admin Cards */
-        .admin-card {
-            background: var(--white); padding: 25px 35px; border-radius: 20px;
-            margin-bottom: 15px; border: 1px solid #E5E5EA; display: flex; justify-content: space-between; align-items: center;
-            transition: 0.4s; text-align: left;
+        .user-card {
+            background: var(--white); padding: 25px; border-radius: 20px;
+            margin-bottom: 12px; border: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center; transition: 0.3s;
         }
-        .admin-card:hover { transform: scale(1.02); box-shadow: var(--shadow); }
-        .user-name { font-size: 22px; font-weight: 700; color: var(--apple-blue); cursor: pointer; }
-        .user-name:hover { text-decoration: underline; }
+        .user-card:hover { transform: scale(1.01); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .u-name { font-size: 20px; font-weight: 700; color: var(--apple-blue); cursor: pointer; }
+        .u-cred { font-family: monospace; font-size: 13px; color: var(--apple-sub); background: #eee; padding: 8px; border-radius: 8px; margin-top: 5px; }
 
-        .vault-info { 
-            background: #F2F2F7; padding: 12px; border-radius: 12px; margin-top: 10px; 
-            font-family: 'SF Mono', monospace; font-size: 13px; color: #3A3A3C;
-        }
+        .btn-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-vault { color: #FF9500; background: #FFF9F0; } .btn-vault:hover { background: #FF9500; color: white; }
+        .btn-del { color: var(--red); background: #FFF2F1; } .btn-del:hover { background: var(--red); color: white; }
 
-        .action-tray { display: flex; gap: 12px; }
-        .action-btn { 
-            width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; font-size: 18px;
-        }
-        .btn-unlock { color: #FF9500; background: #FFF9F0; border: 1px solid #FFCC00; }
-        .btn-unlock:hover { background: #FFCC00; color: white; }
-        .btn-delete { color: var(--apple-red); background: #FFF2F1; border: 1px solid #FFD5D2; }
-        .btn-delete:hover { background: var(--apple-red); color: white; }
+        /* Capas de información */
+        .layer { position: absolute; inset: 0; background: var(--white); z-index: 100; padding: 60px; overflow-y: auto; text-align: left; }
+        .back-link { color: var(--apple-blue); font-weight: 700; cursor: pointer; margin-bottom: 30px; display: block; font-size: 18px; }
 
-        /* Capas */
-        .overlay { position: absolute; inset: 0; background: var(--white); z-index: 1000; padding: 60px; overflow-y: auto; text-align: left; }
-        .close-btn { color: var(--apple-blue); font-weight: 700; cursor: pointer; margin-bottom: 40px; font-size: 18px; display: block; }
         .hidden { display: none !important; }
-
-        /* Estilo para las tareas (Web Blanca) */
-        .task-row {
-            padding: 20px; border-bottom: 1px solid var(--bg-studio); display: flex; justify-content: space-between;
-            font-size: 18px;
-        }
+        .evidence-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="studio-frame">
-    <div class="top-nav">
-        <div class="window-dots">
-            <div class="dot" style="background:#FF5F57"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#28C840"></div>
+<div class="app-window animate__animated animate__fadeInUp">
+    <div class="title-bar">
+        <div class="dots">
+            <div class="dot" style="background:#FF5F57"></div>
+            <div class="dot" style="background:#FFBD2E"></div>
+            <div class="dot" style="background:#28C840"></div>
         </div>
-        <div style="font-size:12px; font-weight:700; color:var(--text-sub); letter-spacing:1px;">STUDIO WORKSTATION V7</div>
+        <div style="font-size:11px; font-weight:800; letter-spacing:1.5px; opacity:0.4;">WORKSTATION STUDIO V9</div>
     </div>
 
-    <div class="main-content">
-        <div id="auth-box">
-            <h1>Workstation</h1>
-            <p class="tagline">Diseñado para la simplicidad y el rendimiento.</p>
-            
-            <div class="form-center">
-                <div id="name-wrap" class="field hidden animate__animated animate__fadeInDown">
-                    <label>Nombre Profesional</label>
-                    <input type="text" id="in-name" placeholder="Ej. Alex Studio">
-                </div>
+    <div id="v-auth" class="view">
+        <h1>Workstation</h1>
+        <p class="sub">Potencia y simplicidad profesional.</p>
+        
+        <div class="form-studio">
+            <div id="reg-box" class="hidden animate__animated animate__fadeInDown">
                 <div class="field">
-                    <label>ID de Acceso (Email)</label>
-                    <input type="email" id="in-email" placeholder="nombre@estudio.com">
+                    <label>Nombre de Usuario</label>
+                    <input type="text" id="i-name" placeholder="Ej. Alex Rivera">
                 </div>
-                <div class="field">
-                    <label>Clave</label>
-                    <input type="password" id="in-pass" placeholder="••••••••">
-                </div>
-                
-                <button class="btn-studio btn-primary" onclick="processAuth()" id="btn-main-auth">
-                    Entrar al Studio <i class="fa fa-arrow-right"></i>
-                </button>
-                
-                <button class="btn-studio btn-ghost" onclick="switchMode()" id="btn-switch">
-                    ¿Nuevo aquí? Crea tu cuenta
-                </button>
             </div>
-        </div>
-
-        <div id="dash-box" class="hidden animate__animated animate__fadeIn">
-            <h1 id="welcome-txt">Hola</h1>
-            <p class="tagline">Gestión de tiempo en tiempo real.</p>
+            <div class="field">
+                <label>Email Corporativo</label>
+                <input type="email" id="i-email" placeholder="nombre@studio.com">
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" id="i-pass" placeholder="••••••••">
+            </div>
             
-            <div id="idle-view">
-                <div class="form-center">
-                    <div class="field">
-                        <label>Proyecto Actual</label>
-                        <input type="text" id="in-proj" placeholder="Ej. Diseño de Interfaz Pro">
-                    </div>
-                    <button class="btn-studio btn-primary" onclick="startTimer()">
-                        <i class="fa fa-play"></i> Iniciar Sesión
-                    </button>
-                    
-                    <div style="margin-top:25px; display:flex; gap:15px; justify-content:center;">
-                        <button class="btn-studio" style="background:#F2F2F7; color:#1D1D1F; width:auto;" onclick="viewMyHistory()">
-                            Historial
-                        </button>
-                        <button id="adm-access" class="btn-studio hidden" style="background:black; color:white; width:auto;" onclick="openAdminVault()">
-                            Panel Admin
-                        </button>
-                    </div>
-                    
-                    <p onclick="logout()" style="margin-top:60px; color:var(--apple-red); font-weight:700; cursor:pointer;">Cerrar Sesión</p>
-                </div>
-            </div>
-
-            <div id="active-view" class="hidden">
-                <div class="chrono-text" id="timer-out">00:00:00</div>
-                <button class="btn-studio btn-primary" style="background:var(--apple-red); width:auto;" onclick="stopTimer()">
-                    <i class="fa fa-stop"></i> Finalizar y Guardar
-                </button>
-            </div>
+            <button class="btn btn-blue" onclick="handleAuth()" id="btn-auth">Iniciar Sesión</button>
+            <p onclick="toggleReg()" id="mode-txt" style="margin-top:25px; color:var(--apple-blue); cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</p>
         </div>
     </div>
 
-    <div id="layer-admin" class="overlay hidden animate__animated animate__slideInRight">
-        <span class="close-btn" onclick="closeLayer('layer-admin')"><i class="fa fa-chevron-left"></i> SALIR DE LA BÓVEDA</span>
-        <h1>Bóveda de Control</h1>
-        <p class="tagline">Seguridad y auditoría de miembros del equipo.</p>
-        <div id="admin-feed"></div>
+    <div id="v-dash" class="view hidden">
+        <h1 id="user-hi">Hola</h1>
+        <p class="sub">Gestiona tu productividad diaria.</p>
+        
+        <div id="prep-zone">
+            <div class="field">
+                <label>Proyecto / Tarea</label>
+                <input type="text" id="p-title" placeholder="Ej. Desarrollo de API Core">
+            </div>
+            <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
+                <button class="btn btn-blue" onclick="startClock()" style="width:auto;"><i class="fa fa-play"></i> Iniciar</button>
+                <button class="btn" style="background:var(--apple-gray); width:auto;" onclick="openLayer('l-history')">Historial</button>
+                <button id="adm-btn" class="btn hidden" style="background:black; color:white; width:auto;" onclick="openLayer('l-admin')">Bóveda Admin</button>
+            </div>
+            <p onclick="logout()" style="margin-top:60px; color:var(--red); font-weight:700; cursor:pointer; opacity:0.6;">Cerrar sesión segura</p>
+        </div>
+
+        <div id="work-zone" class="hidden">
+            <div class="timer-display" id="timer">00:00:00</div>
+            
+            <div class="field">
+                <label>Imagen de Prueba (Obligatoria)</label>
+                <div class="file-drop" onclick="document.getElementById('i-file').click()">
+                    <i class="fa fa-camera"></i><br>
+                    <span id="file-name" style="font-size:13px; color:var(--apple-sub);">Haz clic para subir evidencia</span>
+                    <input type="file" id="i-file" accept="image/*" class="hidden" onchange="fileSelected()">
+                </div>
+            </div>
+
+            <button class="btn btn-blue btn-red" style="width:auto;" onclick="stopClock()">
+                <i class="fa fa-stop"></i> Finalizar y Guardar
+            </button>
+        </div>
     </div>
 
-    <div id="layer-tasks" class="overlay hidden animate__animated animate__slideInRight">
-        <span class="close-btn" onclick="closeLayer('layer-tasks')"><i class="fa fa-chevron-left"></i> VOLVER</span>
-        <h1 id="task-title">Actividades</h1>
-        <p class="tagline">Listado detallado de sesiones guardadas.</p>
-        <div id="task-feed" style="margin-top:30px; background:var(--bg-studio); border-radius:20px; overflow:hidden;"></div>
+    <div id="l-admin" class="layer hidden">
+        <span class="back-link" onclick="closeLayer('l-admin')"><i class="fa fa-chevron-left"></i> Volver al Studio</span>
+        <h1>Control de Usuarios</h1>
+        <p class="sub">Bóveda de seguridad activa.</p>
+        <div id="admin-list"></div>
+    </div>
+
+    <div id="l-history" class="layer hidden">
+        <span class="back-link" onclick="closeLayer('l-history')"><i class="fa fa-chevron-left"></i> Volver al Studio</span>
+        <h1 id="hist-title">Mi Actividad</h1>
+        <p class="sub">Registros sincronizados con la nube.</p>
+        <div id="hist-list" style="margin-top:20px; background:var(--apple-gray); border-radius:24px; overflow:hidden;"></div>
     </div>
 </div>
 
 <script>
     const MASTER = 'emmanuel2013rq@gmail.com';
-    let user = null, isReg = false, clockInt = null;
+    let user = null, isReg = false, timerInt = null;
 
-    function switchMode() {
+    function toggleReg() {
         isReg = !isReg;
-        document.getElementById('name-wrap').classList.toggle('hidden');
-        document.getElementById('btn-main-auth').innerText = isReg ? 'Registrarse' : 'Entrar al Studio';
-        document.getElementById('btn-switch').innerText = isReg ? '¿Ya tienes cuenta? Inicia sesión' : '¿Nuevo aquí? Crea tu cuenta';
+        document.getElementById('reg-box').classList.toggle('hidden');
+        document.getElementById('btn-auth').innerText = isReg ? 'Crear Cuenta' : 'Iniciar Sesión';
+        document.getElementById('mode-txt').innerText = isReg ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
     }
 
-    async function processAuth() {
-        const email = document.getElementById('in-email').value, password = document.getElementById('in-pass').value, nombre = document.getElementById('in-name').value;
+    async function handleAuth() {
+        const email = document.getElementById('i-email').value, 
+              password = document.getElementById('i-pass').value, 
+              nombre = document.getElementById('i-name').value;
+
         const res = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ nombre, email, password })
         });
         const data = await res.json();
+
         if (res.ok) {
-            if (isReg) { Swal.fire('Listo', 'Cuenta creada con éxito.', 'success'); switchMode(); }
-            else { user = data; localStorage.setItem('studio_user', JSON.stringify(data)); enterDash(); }
-        } else { Swal.fire('Error', data.error, 'error'); }
+            if (isReg) { Swal.fire('Bienvenido', 'Cuenta creada.', 'success'); toggleReg(); }
+            else { user = data; localStorage.setItem('ws_user', JSON.stringify(data)); launch(); }
+        } else { Swal.fire('Acceso Denegado', data.error, 'error'); }
     }
 
-    function enterDash() {
-        document.getElementById('auth-box').classList.add('hidden');
-        document.getElementById('dash-box').classList.remove('hidden');
-        document.getElementById('welcome-txt').innerText = "Hola, " + user.nombre;
-        if (user.email === MASTER) document.getElementById('adm-access').classList.remove('hidden');
+    function launch() {
+        document.getElementById('v-auth').classList.add('hidden');
+        document.getElementById('v-dash').classList.remove('hidden');
+        document.getElementById('user-hi').innerText = "Hola, " + user.nombre;
+        if (user.email === MASTER) document.getElementById('adm-btn').classList.remove('hidden');
     }
 
-    function startTimer() {
-        const p = document.getElementById('in-proj').value;
-        if (!p) return Swal.fire('Proyecto', 'Ingresa el nombre de la tarea.', 'info');
-        document.getElementById('idle-view').classList.add('hidden');
-        document.getElementById('active-view').classList.remove('hidden');
+    function startClock() {
+        if (!document.getElementById('p-title').value) return Swal.fire('Proyecto', 'Ingresa un nombre de tarea.', 'info');
+        document.getElementById('prep-zone').classList.add('hidden');
+        document.getElementById('work-zone').classList.remove('hidden');
         const start = Date.now();
-        clockInt = setInterval(() => {
+        timerInt = setInterval(() => {
             const d = Date.now() - start;
             const h = Math.floor(d/3600000).toString().padStart(2,'0');
             const m = Math.floor((d%3600000)/60000).toString().padStart(2,'0');
             const s = Math.floor((d%60000)/1000).toString().padStart(2,'0');
-            document.getElementById('timer-out').innerText = `${h}:${m}:${s}`;
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
 
-    async function stopTimer() {
-        clearInterval(clockInt);
-        const dur = document.getElementById('timer-out').innerText;
-        await fetch('/api/trabajo/guardar', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ usuario_id: user.id, proyecto: document.getElementById('in-proj').value, duracion: dur })
-        });
-        location.reload();
+    function fileSelected() {
+        const file = document.getElementById('i-file').files[0];
+        document.getElementById('file-name').innerText = file ? `Imagen cargada: ${file.name}` : "Haz clic para subir evidencia";
     }
 
-    async function openAdminVault() {
-        document.getElementById('layer-admin').classList.remove('hidden');
-        const r = await fetch(`/api/admin/usuarios?admin_email=${user.email}`);
-        const data = await r.json();
-        document.getElementById('admin-feed').innerHTML = data.map(u => `
-            <div class="admin-card animate__animated animate__fadeInUp">
-                <div>
-                    <span class="user-name" onclick="inspectUser(${u.id}, '${u.nombre}')">${u.nombre}</span>
-                    <div id="vault-${u.id}" class="vault-info hidden">
-                        📧 ${u.email} <br> 🔑 ${u.password}
-                    </div>
-                </div>
-                <div class="action-tray">
-                    <div class="action-btn btn-unlock" onclick="unlockCreds('${u.id}')" title="Revelar">
-                        <i class="fa fa-key"></i>
-                    </div>
-                    <div class="action-btn btn-delete" onclick="removeUser(${u.id})" title="Eliminar">
-                        <i class="fa fa-trash"></i>
-                    </div>
-                </div>
-            </div>
-        `).join('') || 'No hay usuarios registrados.';
+    async function stopClock() {
+        const file = document.getElementById('i-file').files[0];
+        if (!file) return Swal.fire('Evidencia Obligatoria', 'Debes subir una foto de tu trabajo para guardar.', 'warning');
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const base64 = reader.result;
+            const dur = document.getElementById('timer').innerText;
+            
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+
+            await fetch('/api/tareas/guardar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ usuario_id: user.id, proyecto: document.getElementById('p-title').value, duracion: dur, evidencia: base64 })
+            });
+            location.reload();
+        };
     }
 
-    async function unlockCreds(id) {
-        const { value: key } = await Swal.fire({
-            title: 'Código Maestro',
-            input: 'password',
-            inputPlaceholder: 'Introduce la clave de la bóveda',
-        });
-        if (key === '0613') {
-            document.getElementById(`vault-${id}`).classList.toggle('hidden');
-        } else {
-            Swal.fire('Denegado', 'Clave de bóveda incorrecta.', 'error');
+    async function openLayer(id) {
+        document.getElementById(id).classList.remove('hidden');
+        if (id === 'l-admin') {
+            const r = await fetch(`/api/admin/usuarios?admin_email=${user.email}`);
+            const users = await r.json();
+            document.getElementById('admin-list').innerHTML = users.map(u => `
+                <div class="user-card animate__animated animate__fadeInUp">
+                    <div>
+                        <span class="u-name" onclick="inspectUser(${u.id}, '${u.nombre}')">${u.nombre}</span>
+                        <div id="vault-${u.id}" class="u-cred hidden">📧 ${u.email} <br> 🔑 ${u.password}</div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="btn-icon btn-vault" onclick="unlock('${u.id}')"><i class="fa fa-key"></i></div>
+                        <div class="btn-icon btn-del" onclick="deleteUser(${u.id})"><i class="fa fa-trash"></i></div>
+                    </div>
+                </div>
+            `).join('') || 'No hay registros.';
         }
+        if (id === 'l-history') inspectUser(user.id, "Mi Actividad");
+    }
+
+    async function unlock(id) {
+        const { value: pin } = await Swal.fire({ title: 'Bóveda de Seguridad', input: 'password', inputPlaceholder: 'Clave Maestra' });
+        if (pin === '0613') document.getElementById(`vault-${id}`).classList.toggle('hidden');
+        else Swal.fire('Error', 'PIN incorrecto', 'error');
     }
 
     async function inspectUser(id, nombre) {
-        document.getElementById('layer-tasks').classList.remove('hidden');
-        document.getElementById('task-title').innerText = "Tareas de " + nombre;
+        document.getElementById('l-history').classList.remove('hidden');
+        document.getElementById('hist-title').innerText = "Tareas: " + nombre;
         const r = await fetch(`/api/admin/tareas/${id}`);
-        const data = await r.json();
-        document.getElementById('task-feed').innerHTML = data.map(t => `
-            <div class="task-row">
-                <span><b>${t.proyecto}</b> <small style="color:var(--text-sub); margin-left:10px;">${t.fecha}</small></span>
-                <span style="color:var(--apple-blue); font-weight:800;">${t.duracion}</span>
+        const tasks = await r.json();
+        document.getElementById('hist-list').innerHTML = tasks.map(t => `
+            <div style="padding:20px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; background:white;">
+                <div><b>${t.proyecto}</b><br><small style="color:var(--apple-sub)">${t.fecha}</small></div>
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <span style="font-weight:800; color:var(--apple-blue); font-size:18px;">${t.duracion}</span>
+                    <img src="${t.evidencia}" class="evidence-thumb" onclick="Swal.fire({imageUrl: '${t.evidencia}', imageWidth:600})">
+                </div>
             </div>
-        `).join('') || '<p style="padding:40px; text-align:center;">Este usuario no tiene tareas registradas.</p>';
+        `).join('') || '<p style="padding:30px; text-align:center;">Sin registros de tiempo.</p>';
     }
 
-    async function removeUser(id) {
-        const c = await Swal.fire({ title: '¿Eliminar miembro?', icon: 'warning', showCancelButton: true, confirmButtonColor: var(--apple-red) });
-        if (c.isConfirmed) { await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, {method: 'DELETE'}); openAdminVault(); }
+    async function deleteUser(id) {
+        const c = await Swal.fire({ title: '¿Eliminar usuario?', icon: 'warning', showCancelButton: true });
+        if (c.isConfirmed) { 
+            await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, { method: 'DELETE' }); 
+            openLayer('l-admin'); 
+        }
     }
 
-    function viewMyHistory() { inspectUser(user.id, "Mis Actividades"); }
     function closeLayer(id) { document.getElementById(id).classList.add('hidden'); }
     function logout() { localStorage.clear(); location.reload(); }
-    window.onload = () => { const s = localStorage.getItem('studio_user'); if(s) { user = JSON.parse(s); enterDash(); } };
+    window.onload = () => { const s = localStorage.getItem('ws_user'); if(s) { user = JSON.parse(s); launch(); } };
 </script>
 </body>
 </html>
