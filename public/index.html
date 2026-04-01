@@ -18,19 +18,16 @@
             --border: rgba(0, 0, 0, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif; }
 
         body { 
             background-color: #E5E5EA;
-            background-image: radial-gradient(circle at 10% 20%, rgba(0,122,255,0.05) 0%, transparent 50%),
-                              radial-gradient(circle at 90% 80%, rgba(0,122,255,0.05) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 10% 20%, rgba(0,122,255,0.05) 0%, transparent 50%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
         }
 
         .hidden { display: none !important; }
 
-        /* Contenedor Principal (Canvas Grande) */
         .apple-canvas {
             background: var(--glass);
             backdrop-filter: blur(60px) saturate(210%);
@@ -43,195 +40,182 @@
             overflow: hidden; position: relative;
         }
 
-        /* Cabecera Estilo Mac */
         .canvas-header {
             padding: 25px 35px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.3);
         }
-        .window-controls { display: flex; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .red { background: #FF5F57; } .yellow { background: #FFBD2E; } .green { background: #28C840; }
 
-        /* Vistas (Contenido) */
-        .view-content { flex-grow: 1; padding: 50px; overflow-y: auto; position: relative; }
+        .view-content { flex-grow: 1; padding: 50px; overflow-y: auto; text-align: center; }
 
-        /* Tipografía y Textos */
-        h1 { font-size: 38px; font-weight: 700; letter-spacing: -1.5px; color: var(--dark-text); }
+        h1 { font-size: 38px; font-weight: 700; letter-spacing: -1.5px; margin-bottom: 10px; }
         p.desc { color: #8E8E93; font-size: 17px; margin-bottom: 40px; }
 
-        /* Inputs Estilo Apple */
-        .input-group { margin-bottom: 25px; text-align: left; max-width: 450px; margin-left: auto; margin-right: auto; }
-        label { font-size: 13px; font-weight: 600; color: #1c1c1e; margin-left: 15px; display: block; margin-bottom: 6px; }
+        /* Estilo para el Input con Ojo */
+        .input-group { margin-bottom: 25px; text-align: left; max-width: 450px; margin-left: auto; margin-right: auto; position: relative; }
+        label { font-size: 13px; font-weight: 600; margin-left: 15px; display: block; margin-bottom: 6px; }
+        
+        .pass-wrapper { position: relative; }
         input {
             width: 100%; padding: 18px 22px; border-radius: 16px; border: 1px solid var(--border);
             background: rgba(255,255,255,0.6); font-size: 17px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+        input:focus { border-color: var(--blue); background: #fff; }
 
-        /* Botones Pro */
+        .toggle-pass {
+            position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #8E8E93; font-size: 18px; transition: 0.2s;
+        }
+        .toggle-pass:hover { color: var(--blue); }
+
         .btn {
             padding: 18px 30px; border-radius: 18px; border: none; font-size: 16px;
-            font-weight: 600; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600; cursor: pointer; transition: 0.3s;
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-primary { background: var(--blue); color: white; width: 100%; max-width: 450px; }
-        .btn-primary:hover { opacity: 0.9; transform: scale(0.99); }
-        
-        .btn-ghost { background: none; color: var(--blue); margin-top: 15px; font-size: 15px; }
+        .btn-ghost { background: none; color: var(--blue); margin-top: 15px; }
 
-        /* Cronómetro Gigante */
-        .chrono-display {
-            font-size: 120px; font-weight: 800; letter-spacing: -6px; margin: 50px 0;
-            color: var(--dark-text); font-variant-numeric: tabular-nums;
-        }
+        .chrono-display { font-size: 120px; font-weight: 800; letter-spacing: -6px; margin: 50px 0; font-variant-numeric: tabular-nums; }
 
-        /* Listas y Filas de Datos */
         .row-item {
             background: rgba(255,255,255,0.5); padding: 22px 30px; border-radius: 22px;
             margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(0,0,0,0.03); transition: 0.2s;
         }
-        .row-item:hover { background: white; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
 
-        /* Sub-Vistas (Deslizantes) */
         .sub-view {
             position: absolute; inset: 0; background: #F2F2F7; padding: 50px; z-index: 100;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; text-align: left;
         }
-
-        /* Scrollbar Minimal */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="apple-canvas animate__animated animate__fadeInUp">
     <div class="canvas-header">
-        <div class="window-controls">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
+        <div style="display:flex; gap:8px;">
+            <div style="width:12px; height:12px; border-radius:50%; background:#FF5F57;"></div>
+            <div style="width:12px; height:12px; border-radius:50%; background:#FFBD2E;"></div>
+            <div style="width:12px; height:12px; border-radius:50%; background:#28C840;"></div>
         </div>
-        <div id="session-info" style="font-weight: 600; font-size: 13px; color: #8E8E93;">SYSTEM IDLE</div>
+        <div id="session-info" style="font-weight: 600; font-size: 13px; color: #8E8E93;">IDLE</div>
     </div>
 
-    <div id="view-auth" class="view-content animate__animated animate__fadeIn">
-        <div style="text-align: center; margin-top: 50px;">
-            <h1 id="auth-title">Bienvenido</h1>
-            <p class="desc" id="auth-sub">Inicia sesión para continuar con tu jornada</p>
-            
-            <div id="reg-fields" class="hidden">
-                <div class="input-group"><label>Nombre Completo</label><input type="text" id="i-name"></div>
+    <div id="view-auth" class="view-content">
+        <h1 id="auth-title">Bienvenido</h1>
+        <p class="desc">Sistema de Gestión de Jornada</p>
+        
+        <div id="reg-fields" class="hidden">
+            <div class="input-group"><label>Nombre</label><input type="text" id="i-name"></div>
+        </div>
+        <div class="input-group"><label>Email</label><input type="email" id="i-email"></div>
+        
+        <div class="input-group">
+            <label>Contraseña</label>
+            <div class="pass-wrapper">
+                <input type="password" id="i-pass">
+                <i class="fa fa-eye toggle-pass" onclick="togglePassView('i-pass', this)"></i>
             </div>
-            <div class="input-group"><label>Correo Electrónico</label><input type="email" id="i-email"></div>
-            <div class="input-group"><label>Contraseña</label><input type="password" id="i-pass"></div>
-            
-            <button class="btn btn-primary" onclick="processAuth()">Continuar</button><br>
-            <button class="btn btn-ghost" onclick="toggleMode()" id="mode-btn">¿No tienes cuenta? Regístrate</button>
+        </div>
+        
+        <button class="btn btn-primary" onclick="processAuth()">Continuar</button><br>
+        <button class="btn btn-ghost" onclick="toggleMode()" id="mode-btn">¿No tienes cuenta? Regístrate</button>
+    </div>
+
+    <div id="view-dash" class="view-content hidden">
+        <h1 id="welcome-msg">Hola</h1>
+        <p class="desc">Panel de Control</p>
+
+        <div id="setup-section">
+            <div class="input-group">
+                <label>Proyecto Actual</label>
+                <input type="text" id="task-name" placeholder="Ej: Desarrollo Web">
+            </div>
+            <button class="btn btn-primary" onclick="startCounter()"><i class="fa fa-play"></i> Iniciar Tarea</button>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; max-width: 450px; margin-left: auto; margin-right: auto;">
+                <button class="btn" style="background:#E5E5EA; flex:1;" onclick="openMyTasks()"><i class="fa fa-list"></i> Mis Tareas</button>
+                <button id="admin-lock" class="btn hidden" style="background:#1c1c1e; color:#fff; flex:1;" onclick="openAdmin()"><i class="fa fa-shield"></i> Admin</button>
+            </div>
+            <button class="btn btn-ghost" style="color:#FF3B30; margin-top: 30px;" onclick="logOut()">Cerrar Sesión</button>
+        </div>
+
+        <div id="active-section" class="hidden">
+            <div class="chrono-display" id="display">00:00:00</div>
+            <button class="btn btn-primary" style="background:#FF3B30;" onclick="stopCounter()">Finalizar Registro</button>
         </div>
     </div>
 
-    <div id="view-dash" class="view-content hidden animate__animated animate__fadeIn">
-        <div style="text-align: center;">
-            <h1 id="welcome-msg">Hola</h1>
-            <p class="desc">Panel de Control de Actividades</p>
-
-            <div id="setup-section">
-                <div class="input-group">
-                    <label>¿En qué vas a trabajar hoy?</label>
-                    <input type="text" id="task-name" placeholder="Ej: Voy a hacer una iglesia">
-                </div>
-                <button class="btn btn-primary" onclick="startCounter()"><i class="fa fa-play"></i> Iniciar Tarea</button>
-                <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; max-width: 450px; margin-left: auto; margin-right: auto;">
-                    <button class="btn" style="background:#E5E5EA; flex:1;" onclick="openMyTasks()"><i class="fa fa-list"></i> Mis Tareas</button>
-                    <button id="admin-lock" class="btn hidden" style="background:#1c1c1e; color:#fff; flex:1;" onclick="openAdmin()"><i class="fa fa-shield"></i> Admin</button>
-                </div>
-                <button class="btn btn-ghost" style="color:#FF3B30; margin-top: 30px;" onclick="logOut()">Cerrar Sesión</button>
-            </div>
-
-            <div id="active-section" class="hidden">
-                <div class="chrono-display" id="display">00:00:00</div>
-                <button class="btn btn-primary" style="background:#FF3B30;" onclick="stopCounter()">
-                    <i class="fa fa-stop"></i> Finalizar y Guardar Registro
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="sub-tasks" class="sub-view hidden animate__animated animate__slideInRight">
+    <div id="sub-tasks" class="sub-view hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
             <h1>Mis Tareas</h1>
             <button onclick="closeSub('sub-tasks')" class="btn" style="background:#fff; width:auto; padding:10px 25px;">Cerrar</button>
         </div>
-        <div id="mytasks-list" style="overflow-y:auto; flex-grow:1;"></div>
+        <div id="mytasks-list"></div>
     </div>
 
-    <div id="sub-admin" class="sub-view hidden animate__animated animate__slideInRight">
+    <div id="sub-admin" class="sub-view hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
-            <h1>Administración</h1>
+            <h1>Usuarios del Sistema</h1>
             <button onclick="closeSub('sub-admin')" class="btn" style="background:#fff; width:auto; padding:10px 25px;">Cerrar</button>
         </div>
-        <div id="admin-list" style="overflow-y:auto; flex-grow:1;"></div>
+        <p style="color:#8E8E93; margin-bottom:20px;">Gestión de accesos y eliminación de cuentas.</p>
+        <div id="admin-list"></div>
     </div>
 </div>
 
 <script>
-    const MASTER_EMAIL = 'emmanuel2013rq@gmail.com';
+    const MASTER = 'emmanuel2013rq@gmail.com';
     let currentUser = null;
-    let isRegisterMode = false;
+    let isReg = false;
     let mainTimer = null;
 
-    // --- AUTENTICACIÓN ---
+    // Función para VER CONTRASEÑA
+    function togglePassView(id, icon) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
     function toggleMode() {
-        isRegisterMode = !isRegisterMode;
+        isReg = !isReg;
         document.getElementById('reg-fields').classList.toggle('hidden');
-        document.getElementById('auth-title').innerText = isRegisterMode ? 'Crear Cuenta' : 'Bienvenido';
-        document.getElementById('mode-btn').innerText = isRegisterMode ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate';
+        document.getElementById('auth-title').innerText = isReg ? 'Crear Cuenta' : 'Bienvenido';
+        document.getElementById('mode-btn').innerText = isReg ? 'Ya tengo cuenta' : '¿No tienes cuenta? Regístrate';
     }
 
     async function processAuth() {
         const email = document.getElementById('i-email').value;
         const password = document.getElementById('i-pass').value;
         const nombre = document.getElementById('i-name').value;
-        const url = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+        const url = isReg ? '/api/auth/register' : '/api/auth/login';
 
-        try {
-            const r = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nombre, email, password })
-            });
-            const d = await r.json();
-            if (r.ok) {
-                if (isRegisterMode) { 
-                    Swal.fire('Registrado', 'Inicia sesión ahora', 'success'); 
-                    toggleMode(); 
-                } else { 
-                    currentUser = d; 
-                    localStorage.setItem('apple_session', JSON.stringify(d)); 
-                    loadDashboard(); 
-                }
-            } else { Swal.fire('Error', d.error, 'error'); }
-        } catch (e) { Swal.fire('Error', 'Servidor desconectado', 'error'); }
+        const r = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ nombre, email, password })
+        });
+        const d = await r.json();
+        if (r.ok) {
+            if (isReg) { Swal.fire('Éxito', 'Cuenta creada', 'success'); toggleMode(); }
+            else { currentUser = d; localStorage.setItem('apple_session', JSON.stringify(d)); loadDashboard(); }
+        } else { Swal.fire('Error', d.error, 'error'); }
     }
 
     function loadDashboard() {
         document.getElementById('view-auth').classList.add('hidden');
         document.getElementById('view-dash').classList.remove('hidden');
         document.getElementById('welcome-msg').innerText = "Hola, " + currentUser.nombre;
-        document.getElementById('session-info').innerText = "SESSION: " + currentUser.nombre.toUpperCase();
-        if (currentUser.email === MASTER_EMAIL) document.getElementById('admin-lock').classList.remove('hidden');
-        
+        if (currentUser.email === MASTER) document.getElementById('admin-lock').classList.remove('hidden');
         checkActiveTimer();
     }
 
-    // --- LÓGICA DE CRONÓMETRO PERSISTENTE ---
     function checkActiveTimer() {
         const savedStart = localStorage.getItem('task_start_time');
         const savedName = localStorage.getItem('task_active_name');
-        
         if (savedStart && savedName) {
             document.getElementById('task-name').value = savedName;
             runVisualTimer(parseInt(savedStart));
@@ -240,29 +224,22 @@
 
     function startCounter() {
         const name = document.getElementById('task-name').value;
-        if (!name) return Swal.fire('Nota', 'Escribe el nombre del proyecto', 'info');
-        
+        if (!name) return Swal.fire('Aviso', 'Escribe el nombre del proyecto', 'info');
         const startTime = new Date().getTime();
         localStorage.setItem('task_start_time', startTime);
         localStorage.setItem('task_active_name', name);
-        
         runVisualTimer(startTime);
     }
 
     function runVisualTimer(startTime) {
         document.getElementById('setup-section').classList.add('hidden');
         document.getElementById('active-section').classList.remove('hidden');
-
         if (mainTimer) clearInterval(mainTimer);
-        
         mainTimer = setInterval(() => {
-            const now = new Date().getTime();
-            const diff = now - startTime;
-            
+            const diff = new Date().getTime() - startTime;
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            
             document.getElementById('display').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
@@ -271,48 +248,42 @@
         clearInterval(mainTimer);
         const duracion = document.getElementById('display').innerText;
         const proyecto = localStorage.getItem('task_active_name');
-
         await fetch('/api/tiempo/guardar', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ usuario_id: currentUser.id, proyecto, duracion })
         });
-
         localStorage.removeItem('task_start_time');
         localStorage.removeItem('task_active_name');
-        
-        Swal.fire('Guardado', 'Registro almacenado correctamente', 'success').then(() => location.reload());
+        Swal.fire('Guardado', 'Registro almacenado', 'success').then(() => location.reload());
     }
 
-    // --- NAVEGACIÓN ---
     async function openMyTasks() {
         document.getElementById('sub-tasks').classList.remove('hidden');
         const r = await fetch(`/api/tareas/mias?uid=${currentUser.id}`);
         const data = await r.json();
-        const box = document.getElementById('mytasks-list');
-        box.innerHTML = data.map(t => `
+        document.getElementById('mytasks-list').innerHTML = data.map(t => `
             <div class="row-item">
-                <div><b style="font-size:18px">${t.proyecto}</b><br><small style="color:#8E8E93">${t.fecha}</small></div>
+                <div><b>${t.proyecto}</b><br><small>${t.fecha}</small></div>
                 <div style="font-size:20px; font-weight:700; color:var(--blue)">${t.duracion}</div>
             </div>
-        `).join('') || '<p>Aún no hay registros.</p>';
+        `).join('') || '<p>Sin registros.</p>';
     }
 
     async function openAdmin() {
         document.getElementById('sub-admin').classList.remove('hidden');
         const r = await fetch(`/api/admin/usuarios?admin_email=${currentUser.email}`);
         const list = await r.json();
-        const box = document.getElementById('admin-list');
-        box.innerHTML = list.map(u => `
+        document.getElementById('admin-list').innerHTML = list.map(u => `
             <div class="row-item">
                 <div><b>${u.nombre}</b><br><small>${u.email}</small></div>
-                <button onclick="deleteUser(${u.id})" class="btn" style="background:none; color:#FF3B30; width:auto;"><i class="fa fa-trash"></i></button>
+                <button onclick="deleteUser(${u.id})" class="btn" style="background:none; color:#FF3B30; width:auto;"><i class="fa fa-trash"></i> Borrar Cuenta</button>
             </div>
         `).join('');
     }
 
     async function deleteUser(id) {
-        const { isConfirmed } = await Swal.fire({ title: '¿Eliminar cuenta?', showCancelButton: true });
+        const { isConfirmed } = await Swal.fire({ title: '¿Eliminar usuario?', text: "Esta acción no se puede deshacer.", showCancelButton: true, confirmButtonColor: '#FF3B30' });
         if (isConfirmed) {
             await fetch(`/api/admin/usuarios/${id}?admin_email=${currentUser.email}`, { method: 'DELETE' });
             openAdmin();
