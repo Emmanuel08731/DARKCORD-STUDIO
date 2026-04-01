@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diesel Colombia Styles Workstation</title>
+    <title>Workstation Pro | Enterprise Edition</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -11,369 +11,437 @@
     
     <style>
         :root {
-            --apple-blue: #007AFF;
-            --apple-red: #FF3B30;
-            --apple-bg: #F5F5F7;
-            --white: #FFFFFF;
-            --text: #1D1D1F;
+            --accent: #007AFF;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --bg-page: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-sec: #8E8E93;
             --border: rgba(0,0,0,0.08);
-            --glass: rgba(255,255,255,0.85);
+            --radius: 20px;
+            --shadow-soft: 0 10px 30px rgba(0,0,0,0.04);
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; -webkit-font-smoothing: antialiased; }
-
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, system-ui, sans-serif; }
+        
         body { 
-            background: var(--apple-bg);
+            background: var(--bg-page); 
             height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
+            overflow: hidden; color: var(--text-main);
         }
 
-        /* Efecto de Profundidad Dinámica */
-        .apple-window {
-            background: var(--glass);
-            backdrop-filter: blur(50px) saturate(210%);
-            width: 95%; max-width: 1000px; height: 750px;
-            border-radius: 35px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.01);
-            border: 1px solid var(--white);
+        /* Contenedor Principal Estático */
+        .app-shell {
+            background: var(--bg-card);
+            width: 95%; max-width: 1050px; height: 780px;
+            border-radius: 30px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.08);
             display: flex; flex-direction: column;
             position: relative; overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: zoomIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        /* Definición de borde Premium */
-        .apple-window::before {
-            content: ''; position: absolute; inset: 0;
-            border-radius: 35px; padding: 1.5px;
-            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(0,122,255,0.1) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask-composite: exclude; pointer-events: none;
+            border: 1px solid var(--white);
         }
 
-        /* macOS Toolbar Refinada */
-        .toolbar {
-            padding: 22px 35px; border-bottom: 1px solid var(--border);
+        /* Barra de Navegación / Header */
+        header {
+            padding: 20px 40px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.4);
+            background: #fff; z-index: 10;
         }
-        .dots { display: flex; gap: 9px; }
-        .dot { width: 13px; height: 13px; border-radius: 50%; transition: transform 0.2s; }
-        .r { background: #FF5F57; } .y { background: #FFBD2E; } .g { background: #28C840; }
-        .dots:hover .dot { transform: scale(1.15); }
+        .window-dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .d1 { background: #FF5F57; } .d2 { background: #FFBD2E; } .d3 { background: #28C840; }
 
-        .view-content { flex-grow: 1; padding: 60px; overflow-y: auto; text-align: center; position: relative; }
-
-        /* Tipografía Refinada Apple */
-        h1 { font-size: 46px; font-weight: 700; letter-spacing: -2px; color: var(--text); margin-bottom: 8px; }
-        p.subtitle { color: #86868b; font-size: 20px; margin-bottom: 45px; font-weight: 400; }
-
-        /* Formulario Pro con Brillo de Foco */
-        .field { max-width: 420px; margin: 0 auto 25px; text-align: left; }
-        label { font-size: 13px; font-weight: 700; color: #86868b; margin-left: 15px; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group { position: relative; }
-        input {
-            width: 100%; padding: 18px 24px; border-radius: 16px; border: 1.5px solid rgba(0,0,0,0.06);
-            background: rgba(255,255,255,0.7); font-size: 17px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
-        }
-        input:focus { border-color: var(--apple-blue); background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.12); }
-        .eye { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #AEAEB2; font-size: 18px; }
-        .eye:hover { color: var(--apple-blue); }
-
-        /* Botones Elite (macos Sequoia style) */
-        .btn {
-            padding: 18px 32px; border-radius: 16px; border: none; font-size: 17px;
-            font-weight: 600; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: inline-flex; align-items: center; gap: 12px;
-        }
-        .btn-blue { 
-            background: linear-gradient(180deg, #007AFF 0%, #006EDF 100%);
-            color: white; width: 100%; max-width: 420px; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,122,255,0.25);
-        }
-        .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,122,255,0.35); }
-        .btn-blue:active { transform: scale(0.98); }
+        /* Vistas dinámicas */
+        .viewport { flex-grow: 1; position: relative; overflow-y: auto; overflow-x: hidden; }
         
-        .btn-ghost { background: none; color: var(--apple-blue); margin-top: 20px; font-size: 15px; }
-
-        /* Cronómetro Neon Soft */
-        .timer { 
-            font-size: 125px; font-weight: 800; color: var(--text); margin: 30px 0; letter-spacing: -6px; 
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 15px rgba(0,122,255,0.08);
+        .view {
+            padding: 60px; width: 100%; min-height: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Apple Cards Refinadas */
-        .card {
-            background: rgba(255,255,255,0.5); padding: 25px 35px; border-radius: 24px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(0,0,0,0.02); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card:hover { 
-            transform: translateY(-5px) scale(1.01); 
-            background: white; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            border-color: rgba(0,113,227,0.1);
+        /* Animaciones de Entrada */
+        .fade-in-up { animation: fadeInUp 0.8s ease-out both; }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sub-webs Deslizantes con Glassmorphism Profundo */
+        /* Tipografía */
+        h1 { font-size: 48px; font-weight: 800; letter-spacing: -2px; margin-bottom: 10px; }
+        .lead { font-size: 20px; color: var(--text-sec); margin-bottom: 40px; font-weight: 400; }
+
+        /* Estilos de Formulario */
+        .auth-form { width: 100%; max-width: 400px; }
+        .input-group { margin-bottom: 25px; text-align: left; }
+        .input-group label { font-size: 13px; font-weight: 700; color: var(--accent); margin-left: 10px; margin-bottom: 6px; display: block; }
+        
+        input {
+            width: 100%; padding: 18px 22px; border-radius: 16px; border: 1.5px solid #E5E5E7;
+            background: #FBFBFD; font-size: 17px; outline: none; transition: 0.3s;
+        }
+        input:focus { 
+            border-color: var(--accent); background: #fff; 
+            box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+            transform: scale(1.01);
+        }
+
+        /* Botones Animados */
+        .btn {
+            padding: 18px 30px; border-radius: 16px; border: none; font-size: 17px;
+            font-weight: 600; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-primary { background: var(--accent); color: white; width: 100%; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,122,255,0.2); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-ghost { background: transparent; color: var(--accent); margin-top: 15px; }
+
+        /* El Cronómetro */
+        .timer-display {
+            font-size: 130px; font-weight: 800; color: var(--text-main);
+            letter-spacing: -6px; margin: 40px 0; font-variant-numeric: tabular-nums;
+            animation: pulseTimer 2s infinite ease-in-out;
+        }
+        @keyframes pulseTimer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        /* Tarjetas de Lista con Animación de Entrada Lateral */
+        .item-card {
+            background: #fff; padding: 25px; border-radius: 20px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid var(--border); transition: 0.4s;
+            animation: slideInRight 0.5s ease-out both;
+        }
+        .item-card:hover { transform: translateX(10px); border-color: var(--accent); box-shadow: var(--shadow-soft); }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Overlay de Capas (Layers) */
         .layer {
-            position: absolute; inset: 0; background: var(--white); padding: 60px; z-index: 1000;
-            display: flex; flex-direction: column; text-align: left; overflow-y: auto;
+            position: absolute; inset: 0; background: #fff; z-index: 100; padding: 60px;
+            display: flex; flex-direction: column;
         }
-        .back { color: var(--apple-blue); font-weight: 700; cursor: pointer; margin-bottom: 30px; display: inline-block; font-size: 17px; }
-        .back:hover { opacity: 0.8; }
+        .btn-back { margin-bottom: 40px; align-self: flex-start; color: var(--accent); font-weight: 700; cursor: pointer; }
 
         .hidden { display: none !important; }
-
-        /* Scrollbar Minimalist Apple */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        
+        /* Loading Spinner */
+        .loader {
+            width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="apple-window animate__animated animate__fadeInUp">
-    <div class="toolbar">
-        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
-        <div id="user-tag" style="font-size:11px; font-weight:800; opacity:0.4; letter-spacing: 1px;">SISTEMA PROTEGIDO</div>
-    </div>
-
-    <div id="view-auth" class="view-content">
-        <h1 id="t-auth" class="animate__animated animate__fadeInDown animate__delay-1s">Bienvenido</h1>
-        <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">La estación de trabajo definitiva | Workstation Pro</p>
-        
-        <div id="box-reg" class="hidden animate__animated animate__fadeIn">
-            <div class="field"><label>Nombre Completo</label><input type="text" id="reg-n"></div>
+<div class="app-shell animate__animated animate__zoomIn">
+    <header>
+        <div class="window-dots">
+            <div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div>
         </div>
-        <div class="field animate__animated animate__fadeInUp animate__delay-1s"><label>Email</label><input type="email" id="log-e"></div>
-        
-        <div class="field animate__animated animate__fadeInUp animate__delay-2s">
-            <label>Contraseña</label>
-            <div class="input-group">
-                <input type="password" id="log-p">
-                <i class="fa fa-eye eye" onclick="toggleP('log-p', this)"></i>
+        <div id="user-pill" style="font-size:12px; font-weight:800; color:var(--text-sec);">SISTEMA PROTEGIDO</div>
+    </header>
+
+    <main class="viewport">
+        <div id="v-auth" class="view fade-in-up">
+            <h1 id="auth-title">Bienvenido</h1>
+            <p class="lead">Accede a tu estación de trabajo profesional.</p>
+            
+            <div class="auth-form">
+                <div id="reg-name" class="hidden animate__animated animate__fadeInDown">
+                    <div class="input-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="in-nombre" placeholder="Ej. Juan Pérez">
+                    </div>
+                </div>
+                
+                <div class="input-group stagger-1">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="in-email" placeholder="nombre@empresa.com">
+                </div>
+                
+                <div class="input-group stagger-2">
+                    <label>Contraseña Maestra</label>
+                    <input type="password" id="in-pass" placeholder="••••••••">
+                </div>
+                
+                <button class="btn btn-primary stagger-3" onclick="processAuth()" id="btn-auth-main">
+                    Ingresar al Sistema
+                </button>
+                
+                <button class="btn btn-ghost" onclick="toggleMode()" id="btn-switch">
+                    ¿No tienes cuenta? Regístrate gratis
+                </button>
             </div>
         </div>
-        
-        <button class="btn btn-blue animate__animated animate__fadeInUp animate__delay-2s" onclick="handleAuth()">Continuar <i class="fa fa-chevron-right"></i></button><br>
-        <button class="btn btn-ghost" onclick="toggleM()" id="m-btn">¿Eres nuevo? Regístrate</button>
-    </div>
 
-    <div id="view-dash" class="view-content hidden">
-        <h1 id="hello" class="animate__animated animate__fadeInDown">Hola</h1>
-        <p class="desc animate__animated animate__fadeIn animate__delay-1s">Registra tu jornada laboral actual.</p>
-        
-        <div id="setup" class="animate__animated animate__fadeIn animate__delay-1s">
-            <div class="field" style="margin-top:40px;">
-                <label>Proyecto / Actividad</label>
-                <input type="text" id="proj-n" placeholder="Ej: Diseño de Interfaz Pro">
+        <div id="v-dash" class="view hidden">
+            <h1 id="welcome-text" class="fade-in-up">Hola</h1>
+            <p class="lead fade-in-up stagger-1">Tu jornada laboral está lista para ser registrada.</p>
+            
+            <div id="timer-setup" class="fade-in-up stagger-2">
+                <div class="input-group" style="width: 400px;">
+                    <label>Nombre del Proyecto / Actividad</label>
+                    <input type="text" id="input-proyecto" placeholder="Ej. Desarrollo de API">
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="startSession()" style="width: auto;">
+                        <i class="fa fa-play"></i> Iniciar Cronómetro
+                    </button>
+                    <button class="btn" style="background:#E5E5EA; color:#1C1C1E; width:auto;" onclick="openLayer('layer-historial')">
+                        <i class="fa fa-history"></i> Mi Historial
+                    </button>
+                    <button id="btn-admin" class="btn hidden" style="background:var(--text-main); color:#fff; width:auto;" onclick="openAdmin()">
+                        <i class="fa fa-lock"></i> Panel Admin
+                    </button>
+                </div>
+                
+                <button onclick="logout()" style="margin-top:50px; background:none; border:none; color:var(--danger); font-weight:700; cursor:pointer;">Cerrar Sesión Activa</button>
             </div>
-            <button class="btn btn-blue" onclick="start()"><i class="fa fa-play"></i> Iniciar Cronómetro</button>
-            <div style="margin-top:25px; display:flex; gap:15px; justify-content:center;">
-                <button class="btn" style="background:rgba(0,0,0,0.04); color:var(--text);" onclick="openL('l-mine')">Mis Tareas</button>
-                <button id="adm-p" class="btn hidden animate__animated animate__pulse animate__infinite" style="background:#1d1d1f; color:#fff;" onclick="openAdmin()">Panel Admin</button>
+
+            <div id="timer-active" class="hidden animate__animated animate__fadeIn">
+                <div class="timer-display" id="clock-txt">00:00:00</div>
+                <button class="btn btn-primary" style="background:var(--danger); width:auto;" onclick="stopSession()">
+                    <i class="fa fa-stop"></i> Finalizar y Guardar Registro
+                </button>
             </div>
-            <button onclick="logout()" style="margin-top:60px; color:var(--apple-red); border:none; background:none; font-weight:700; cursor:pointer; font-size:16px;">Cerrar Sesión</button>
         </div>
 
-        <div id="running" class="hidden animate__animated animate__zoomIn">
-            <div class="timer" id="clock">00:00:00</div>
-            <button class="btn btn-blue" style="background:var(--apple-red); box-shadow: 0 10px 20px rgba(255,59,48,0.3);" onclick="stop()">
-                <i class="fa fa-stop"></i> Finalizar y Guardar
-            </button>
+        <div id="layer-historial" class="layer hidden animate__animated animate__slideInRight">
+            <div class="btn-back" onclick="closeLayer('layer-historial')">
+                <i class="fa fa-chevron-left"></i> VOLVER AL DASHBOARD
+            </div>
+            <h1>Mis Actividades</h1>
+            <p class="lead">Listado de tus últimas sesiones de trabajo sincronizadas.</p>
+            <div id="historial-list" style="margin-top:20px;"></div>
         </div>
-    </div>
 
-    <div id="l-mine" class="layer hidden animate__animated animate__slideInRight">
-        <span class="back" onclick="closeL('l-mine')"><i class="fa fa-chevron-left"></i> Volver</span>
-        <h1>Mis Registros</h1>
-        <p class="subtitle">Historial completo de tu productividad.</p>
-        <div id="list-mine" style="margin-top:30px; flex-grow:1;"></div>
-    </div>
-
-    <div id="l-admin" class="layer hidden animate__animated animate__slideInRight">
-        <span class="back" onclick="closeL('l-admin')"><i class="fa fa-chevron-left"></i> Salir de Administración</span>
-        <h1>Auditoría de Usuarios</h1>
-        <p class="subtitle">Gestión de credenciales y tiempos con código 0613.</p>
-        <div id="list-users" style="margin-top:30px; flex-grow:1;"></div>
-    </div>
-
-    <div id="l-user" class="layer hidden animate__animated animate__slideInRight">
-        <span class="back" onclick="closeL('l-user')"><i class="fa fa-chevron-left"></i> Volver a Usuarios</span>
-        <h1 id="u-title">Tareas de Usuario</h1>
-        <div id="list-u-tasks" style="margin-top:30px; flex-grow:1;"></div>
-    </div>
+        <div id="layer-admin" class="layer hidden animate__animated animate__slideInRight">
+            <div class="btn-back" onclick="closeLayer('layer-admin')">
+                <i class="fa fa-chevron-left"></i> SALIR DE ADMINISTRACIÓN
+            </div>
+            <h1>Control de Usuarios</h1>
+            <p class="lead">Auditoría global de accesos y credenciales del sistema.</p>
+            <div id="admin-user-list" style="margin-top:20px;"></div>
+        </div>
+    </main>
 </div>
 
 <script>
     const MASTER = 'emmanuel2013rq@gmail.com';
-    const CODE = '0613';
-    let user = null, isReg = false, interval = null;
+    let currentUser = null;
+    let isRegisterMode = false;
+    let clockInterval = null;
 
-    // Ver Contraseña con Ojo
-    function toggleP(id, i) {
-        const x = document.getElementById(id);
-        x.type = x.type === "password" ? "text" : "password";
-        i.classList.toggle('fa-eye-slash');
-    }
+    // --- MANEJO DE VISTAS Y ANIMACIONES ---
 
-    function toggleM() {
-        isReg = !isReg;
-        document.getElementById('box-reg').classList.toggle('hidden');
-        document.getElementById('t-auth').innerText = isReg ? 'Registro Elite' : 'Bienvenido';
-        document.getElementById('m-btn').innerText = isReg ? 'Ya tengo cuenta' : '¿Eres nuevo? Regístrate';
-    }
+    function toggleMode() {
+        isRegisterMode = !isRegisterMode;
+        const regField = document.getElementById('reg-name');
+        const title = document.getElementById('auth-title');
+        const btnMain = document.getElementById('btn-auth-main');
+        const btnSwitch = document.getElementById('btn-switch');
 
-    async function handleAuth() {
-        const email = document.getElementById('log-e').value, password = document.getElementById('log-p').value, nombre = document.getElementById('reg-n').value;
-        const res = await fetch(isReg ? '/api/auth/register' : '/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ nombre, email, password })
-        });
-        const d = await r.json();
-        if (res.ok) {
-            if (isReg) { Swal.fire('Éxito', 'Registrado', 'success'); toggleM(); }
-            else { user = d; localStorage.setItem('ap_session', JSON.stringify(d)); initDash(); }
-        } else { Swal.fire('Error', d.error, 'error'); }
-    }
-
-    function initDash() {
-        document.getElementById('view-auth').classList.add('hidden');
-        document.getElementById('view-dash').classList.remove('hidden');
-        document.getElementById('hello').innerText = "Hola, " + user.nombre;
-        document.getElementById('user-tag').innerText = "SESIÓN: " + user.nombre.toUpperCase();
-        if (user.email === MASTER) document.getElementById('adm-p').classList.remove('hidden');
-        
-        checkTimer();
-    }
-
-    // --- TIEMPO INFINITO PERSISTENTE ---
-    function checkTimer() {
-        const sTime = localStorage.getItem('s_start');
-        const sName = localStorage.getItem('s_name');
-        if (sTime && sName) {
-            document.getElementById('proj-n').value = sName;
-            runClock(parseInt(sTime));
+        if(isRegisterMode) {
+            regField.classList.remove('hidden');
+            title.innerText = "Crear Cuenta";
+            btnMain.innerText = "Registrarse en Pro";
+            btnSwitch.innerText = "Ya tengo cuenta, ingresar";
+        } else {
+            regField.classList.add('hidden');
+            title.innerText = "Bienvenido";
+            btnMain.innerText = "Ingresar al Sistema";
+            btnSwitch.innerText = "¿No tienes cuenta? Regístrate gratis";
         }
     }
 
-    function start() {
-        const name = document.getElementById('proj-n').value;
-        if (!name) return Swal.fire('Aviso', 'Escribe el nombre del proyecto', 'warning');
-        const now = new Date().getTime();
-        localStorage.setItem('s_start', now);
-        localStorage.setItem('s_name', name);
-        runClock(now);
+    async function processAuth() {
+        const email = document.getElementById('in-email').value;
+        const password = document.getElementById('in-pass').value;
+        const nombre = document.getElementById('in-nombre').value;
+
+        const btn = document.getElementById('btn-auth-main');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<div class="loader"></div>';
+
+        try {
+            const res = await fetch(isRegisterMode ? '/api/auth/register' : '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, email, password })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                if (isRegisterMode) {
+                    Swal.fire('¡Éxito!', 'Cuenta creada correctamente. Ya puedes iniciar sesión.', 'success');
+                    toggleMode();
+                } else {
+                    currentUser = data;
+                    localStorage.setItem('session_pro', JSON.stringify(data));
+                    enterDashboard();
+                }
+            } else {
+                Swal.fire('Error de Acceso', data.error, 'error');
+            }
+        } catch (e) {
+            Swal.fire('Error', 'No hay conexión con el servidor.', 'error');
+        } finally {
+            btn.innerHTML = originalText;
+        }
+    }
+
+    function enterDashboard() {
+        document.getElementById('v-auth').classList.add('hidden');
+        document.getElementById('v-dash').classList.remove('hidden');
+        document.getElementById('welcome-text').innerText = "Hola, " + currentUser.nombre;
+        document.getElementById('user-pill').innerText = "USUARIO: " + currentUser.nombre.toUpperCase();
+
+        if (currentUser.email === MASTER) {
+            document.getElementById('btn-admin').classList.remove('hidden');
+        }
+
+        // Recuperar cronómetro activo si existe
+        const savedStart = localStorage.getItem('timer_start');
+        if (savedStart) {
+            document.getElementById('input-proyecto').value = localStorage.getItem('timer_name');
+            runClock(parseInt(savedStart));
+        }
+    }
+
+    // --- LÓGICA DEL CRONÓMETRO ---
+
+    function startSession() {
+        const proyecto = document.getElementById('input-proyecto').value;
+        if (!proyecto) return Swal.fire('Aviso', 'Indica el nombre del proyecto antes de iniciar.', 'info');
+
+        const startTime = new Date().getTime();
+        localStorage.setItem('timer_start', startTime);
+        localStorage.setItem('timer_name', proyecto);
+        runClock(startTime);
     }
 
     function runClock(start) {
-        document.getElementById('setup').classList.add('hidden');
-        document.getElementById('running').classList.remove('hidden');
-        if (interval) clearInterval(interval);
-        interval = setInterval(() => {
-            const diff = new Date().getTime() - start;
+        document.getElementById('timer-setup').classList.add('hidden');
+        document.getElementById('timer-active').classList.remove('hidden');
+
+        clockInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const diff = now - start;
+            
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            document.getElementById('clock').innerText = `${h}:${m}:${s}`;
+            
+            document.getElementById('clock-txt').innerText = `${h}:${m}:${s}`;
         }, 1000);
     }
 
-    async function stop() {
-        clearInterval(interval);
-        const duracion = document.getElementById('clock').innerText;
-        const proyecto = localStorage.getItem('s_name');
-        await fetch('/api/tiempo/guardar', {
+    async function stopSession() {
+        clearInterval(clockInterval);
+        const duracion = document.getElementById('clock-txt').innerText;
+        const proyecto = localStorage.getItem('timer_name');
+
+        await fetch('/api/actividad/guardar', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ usuario_id: user.id, proyecto, duracion })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario_id: currentUser.id, proyecto, duracion })
         });
-        localStorage.removeItem('s_start');
+
+        localStorage.removeItem('timer_start');
+        localStorage.removeItem('timer_name');
         location.reload();
     }
 
     // --- NAVEGACIÓN SPA ---
-    async function openL(id) {
-        document.getElementById(id).classList.remove('hidden');
-        if (id === 'l-mine') {
-            const r = await fetch(`/api/tareas/mias?uid=${user.id}`);
-            const data = await r.json();
-            document.getElementById('list-mine').innerHTML = data.map(t => `
-                <div class="card animate__animated animate__fadeInUp">
-                    <div><b>${t.proyecto}</b><br><small style="color:#8E8E93;">${t.fecha}</small></div>
-                    <div style="font-size:24px; font-weight:800; color:var(--blue);">${t.duracion}</div>
+
+    async function openLayer(layerId) {
+        document.getElementById(layerId).classList.remove('hidden');
+        
+        if (layerId === 'layer-historial') {
+            const res = await fetch(`/api/actividad/usuario/${currentUser.id}`);
+            const logs = await res.json();
+            const list = document.getElementById('historial-list');
+            list.innerHTML = logs.map((log, i) => `
+                <div class="item-card" style="animation-delay: ${i * 0.05}s">
+                    <div>
+                        <b>${log.proyecto}</b><br>
+                        <small style="color:var(--text-sec)">${log.fecha}</small>
+                    </div>
+                    <div style="font-size:20px; font-weight:800; color:var(--accent)">${log.duracion}</div>
                 </div>
-            `).join('') || '<p>Aún no hay registros.</p>';
+            `).join('') || '<p style="text-align:center; padding:40px; color:var(--text-sec)">Aún no tienes registros de actividad.</p>';
         }
     }
 
     async function openAdmin() {
-        document.getElementById('l-admin').classList.remove('hidden');
-        const r = await fetch(`/api/admin/usuarios?admin_email=${encodeURIComponent(user.email)}`);
-        const list = await r.json();
-        document.getElementById('list-users').innerHTML = list.map(u => `
-            <div class="card animate__animated animate__fadeInUp">
-                <div onclick="viewUser(${u.id}, '${u.nombre}')" style="cursor:pointer; flex-grow:1;">
-                    <b style="font-size:18px;">${u.nombre}</b><br><small style="color:var(--apple-blue);">${u.email}</small>
+        document.getElementById('layer-admin').classList.remove('hidden');
+        const res = await fetch(`/api/admin/lista-usuarios?email=${currentUser.email}`);
+        const users = await res.json();
+        const list = document.getElementById('admin-user-list');
+        list.innerHTML = users.map(u => `
+            <div class="item-card">
+                <div>
+                    <b>${u.nombre}</b><br>
+                    <small>${u.email}</small>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:#fff; border:1px solid #ddd; padding:10px; width:auto; color:var(--text);" onclick="showCreds('${u.email}', '${u.password}')">
-                        <i class="fa fa-key"></i> Credenciales
-                    </button>
-                    <button class="btn" style="background:#fff; border:1px solid #ddd; padding:10px; width:auto; color:var(--apple-red);" onclick="delUser(${u.id})">
-                        <i class="fa fa-trash"></i>
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <code style="background:#F2F2F7; padding:5px 10px; border-radius:5px;">${u.password}</code>
+                    <button class="btn" style="background:var(--danger); padding:8px 12px; font-size:12px; color:#fff;" onclick="deleteUser(${u.id})">
+                        ELIMINAR
                     </button>
                 </div>
             </div>
-        `).join('') || '<p style="text-align:center; padding:20px; opacity:0.5;">No hay otros usuarios registrados.</p>';
+        `).join('') || '<p>No hay usuarios registrados aparte del administrador.</p>';
     }
 
-    async function viewUser(id, n) {
-        document.getElementById('l-user').classList.remove('hidden');
-        document.getElementById('u-title').innerText = "Tareas de " + n;
-        const r = await fetch(`/api/admin/tareas-usuario/${id}?admin_email=${user.email}`);
-        const data = await r.json();
-        document.getElementById('list-u-tasks').innerHTML = data.map(t => `
-            <div class="card animate__animated animate__fadeInUp">
-                <div><b>${t.proyecto}</b><br><small>${t.fecha}</small></div>
-                <div style="font-weight:800; color:var(--blue);">${t.duracion}</div>
-            </div>
-        `).join('') || 'Este usuario no tiene registros.';
-    }
-
-    async function showCreds(email, pass) {
-        const { value: code } = await Swal.fire({ title: 'Código Admin', input: 'password', showCancelButton: true, confirmButtonColor: '#007AFF' });
-        if (code === CODE) {
-            Swal.fire({ title: 'Credenciales', html: `<div style="text-align:left;"><b>Email:</b> ${email}<br><b>Password:</b> ${pass}</div>`, icon: 'success' });
-        } else if (code) { Swal.fire('Error', 'Código incorrecto', 'error'); }
-    }
-
-    async function delUser(id) {
-        const { isConfirmed } = await Swal.fire({ title: '¿Borrar Usuario?', showCancelButton: true, confirmButtonColor: '#FF3B30' });
-        if (isConfirmed) { await fetch(`/api/admin/usuarios/${id}?admin_email=${user.email}`, {method: 'DELETE'}); openAdmin(); }
-    }
-
-    function closeL(id) { document.getElementById(id).classList.add('hidden'); }
-    function logout() { localStorage.clear(); location.reload(); }
-
-    window.onload = () => {
-        const saved = localStorage.getItem('ap_session');
-        if (saved) { user = JSON.parse(saved); goDash(); }
-        
-        // Efecto de movimiento de sombra dinámico al mouse
-        const el = document.querySelector('.apple-window');
-        el.addEventListener('mousemove', (e) => {
-            let x = (e.clientX - (window.innerWidth / 2)) / 50;
-            let y = (e.clientY - (window.innerHeight / 2)) / 50;
-            el.style.transform = `translateY(-10px) rotateX(${-y}deg) rotateY(${x}deg)`;
+    async function deleteUser(id) {
+        const { isConfirmed } = await Swal.fire({
+            title: '¿Confirmar eliminación?',
+            text: 'Se borrarán todos sus registros de tiempo permanentemente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF3B30'
         });
-        el.addEventListener('mouseleave', () => el.style.transform = `translateY(-10px)`);
+        if (isConfirmed) {
+            await fetch(`/api/admin/eliminar-usuario/${id}?email=${currentUser.email}`, { method: 'DELETE' });
+            openAdmin();
+        }
+    }
+
+    function closeLayer(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    // Al cargar la página, verificar sesión activa
+    window.onload = () => {
+        const savedSession = localStorage.getItem('session_pro');
+        if (savedSession) {
+            currentUser = JSON.parse(savedSession);
+            enterDashboard();
+        }
     };
 </script>
+
 </body>
 </html>
