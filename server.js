@@ -10,15 +10,15 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// ================================================================
-// 🚨 OPERACIÓN DE RESCATE: LIMPIEZA DE BASE DE DATOS 🚨
-// ================================================================
-const emergencyCleanup = async () => {
+// ==========================================
+// ☢️ PROTOCOLO NUCLEAR DE LIMPIEZA ☢️
+// ==========================================
+const superClean = async () => {
     const client = await pool.connect();
     try {
-        console.log("🛠️  Iniciando protocolo de limpieza Diesel Styles...");
+        console.log("-----------------------------------------");
+        console.log("🚀 INICIANDO LIMPIEZA PROFUNDA DE TABLAS...");
         
-        // Crear tablas si no existen (Estructura base)
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
@@ -27,72 +27,65 @@ const emergencyCleanup = async () => {
                 password VARCHAR(100),
                 rol VARCHAR(20) DEFAULT 'worker'
             );
-            CREATE TABLE IF NOT EXISTS tiempos (
-                id SERIAL PRIMARY KEY,
-                usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
-                actividad TEXT,
-                hora_inicio VARCHAR(50),
-                hora_fin VARCHAR(50),
-                fecha VARCHAR(50),
-                duracion_total VARCHAR(50)
-            );
         `);
 
-        // BORRADO TOTAL DEL CORREO PARA PERMITIR REGISTRO LIMPIO
-        const targetEmail = 'emma2013rqgmail.com';
-        await client.query("DELETE FROM usuarios WHERE email = $1", [targetEmail]);
+        // 1. Cambiamos el correo de cualquier "fantasma" para liberar el índice UNIQUE
+        await client.query(`
+            UPDATE usuarios 
+            SET email = 'old_' || id || '@deleted.com' 
+            WHERE email = 'emma2013rqgmail.com'
+        `);
+
+        // 2. Ahora sí, borramos todo rastro
+        await client.query("DELETE FROM usuarios WHERE email LIKE '%@deleted.com'");
         
-        console.log(`✅ ¡ÉXITO! El correo ${targetEmail} ha sido eliminado de la base de datos.`);
-        console.log("👉 AHORA ve a la web y dale a 'REGISTRARSE' con ese correo.");
-        
+        console.log("✅ INDICE UNIQUE LIBERADO. El correo ya no existe en el sistema.");
+        console.log("-----------------------------------------");
     } catch (err) {
-        console.error("❌ Error en la limpieza:", err.message);
+        console.error("❌ Error Crítico:", err.message);
     } finally {
         client.release();
     }
 };
 
-emergencyCleanup();
+superClean();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// --- RUTAS DE AUTENTICACIÓN ---
-
+// --- AUTH CON AUTO-ADMIN ---
 app.post('/api/auth/register', async (req, res) => {
     const { nombre, email, password } = req.body;
+    const client = await pool.connect();
     try {
-        const cleanEmail = email.toLowerCase().trim();
-        // ASIGNACIÓN AUTOMÁTICA DE ADMIN AL REGISTRARSE
-        const role = (cleanEmail === 'emma2013rqgmail.com') ? 'admin' : 'worker';
+        const mail = email.toLowerCase().trim();
+        const role = (mail === 'emma2013rqgmail.com') ? 'admin' : 'worker';
         
-        const result = await pool.query(
+        const result = await client.query(
             'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING *',
-            [nombre, cleanEmail, password, role]
+            [nombre, mail, password.trim(), role]
         );
         res.status(201).json(result.rows[0]);
     } catch (e) {
-        console.error(e);
-        res.status(400).json({ message: "El correo ya existe. Intenta de nuevo en 10 segundos." });
+        console.log("Error en registro:", e.detail);
+        res.status(400).json({ message: "El sistema sigue detectando el correo. Intenta cambiar el nombre en el registro." });
+    } finally {
+        client.release();
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
-        if (result.rows.length === 0) return res.status(404).json({ message: "La cuenta no existe." });
-        
-        const user = result.rows[0];
-        if (user.password.trim() !== password.trim()) return res.status(401).json({ message: "Clave incorrecta." });
-        
-        res.json(user);
-    } catch (e) { res.status(500).json({ message: "Error de servidor." }); }
+        const r = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
+        if (r.rows.length === 0) return res.status(404).json({ message: "No existe la cuenta." });
+        if (r.rows[0].password.trim() !== password.trim()) return res.status(401).json({ message: "Clave errónea." });
+        res.json(r.rows[0]);
+    } catch (e) { res.status(500).json({ message: "Error fatal." }); }
 });
 
-// --- RUTAS DE TIEMPO ---
-
+// --- TIEMPOS ---
 app.post('/api/work/save', async (req, res) => {
     const { usuario_id, actividad, inicio, fin, fecha, duracion } = req.body;
     try {
@@ -110,8 +103,8 @@ app.get('/api/work/history/:id', async (req, res) => {
 });
 
 app.get('/api/admin/users', async (req, res) => {
-    const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1 ORDER BY nombre ASC', ['admin']);
+    const r = await pool.query('SELECT id, nombre, email FROM usuarios WHERE rol != $1', ['admin']);
     res.json(r.rows);
 });
 
-app.listen(port, () => console.log(`🚀 Diesel Styles Enterprise corriendo en puerto ${port}`));
+app.listen(port, () => console.log(`🚀 Diesel Pro en puerto ${port}`));
